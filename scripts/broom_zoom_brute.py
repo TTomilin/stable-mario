@@ -1,15 +1,17 @@
-from stable_baselines3.common.atari_wrappers import WarpFrame;
-import retro;
-import pickle;
-from retro.examples.brute import Brute;
+import pickle
 
-GAME_ENV = 'broom_zoom-MP';
-STATE = 'Level1';
-STEP_LIMIT = 2000000;
-EPISODE_LIMIT = 2000000;
+import stable_retro
+
+from stable_retro.examples.brute import Brute
+
+GAME_ENV = 'broom_zoom-MP'
+STATE = 'Level1'
+STEP_LIMIT = 2000000
+EPISODE_LIMIT = 2000000
+
 
 def main():
-    env = retro.make(game=GAME_ENV, state=STATE, use_restricted_actions=retro.Actions.DISCRETE)
+    env = stable_retro.make(game=GAME_ENV, state=STATE, use_restricted_actions=stable_retro.Actions.DISCRETE)
 
     brute = Brute(env, max_episode_steps=EPISODE_LIMIT)
     timesteps = 0
@@ -24,7 +26,7 @@ def main():
                 best_rew = rew
 
                 print("saving best list of actions found...")
-                out_file = open("saves/broom_zoom/brute.pkl", "wb");
+                out_file = open("saves/broom_zoom/brute.pkl", "wb")
                 pickle.dump(acts, out_file)
 
                 env.unwrapped.record_movie("best.bk2")
@@ -37,8 +39,8 @@ def main():
                 print("timestep limit exceeded")
                 break
     except KeyboardInterrupt:
-        print("aborting...");
-            
+        print("aborting...")
+
 
 if __name__ == '__main__':
-    main();
+    main()
