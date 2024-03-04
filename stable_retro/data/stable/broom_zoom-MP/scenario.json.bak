@@ -14,9 +14,11 @@
     }
   },
   "reward": {
-    "script": "lua:reward"
-  },
-  "scripts": [
-    "broom_zoom_reward.lua"
-  ]
+    "variables": {
+      "broom_zoom_score": {
+        "measurement": "delta",
+        "reward": 1.0
+      }
+    }
+  }
 }
