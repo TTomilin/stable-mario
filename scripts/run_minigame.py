@@ -26,12 +26,12 @@ def main(cfg: argparse.Namespace):
     env = ResizeObservation(env, CONFIG[game]["resize"])
     if "clip_reward" in CONFIG[game] and CONFIG[game]["clip_reward"]:
         env = ClipRewardEnv(env)
-    # env = RecordVideo(env=env, video_folder="./saves/spook_spike/videos", video_length=0, step_trigger=lambda x: x % 10000 == 0)
+    # env = RecordVideo(env=env, video_folder=f"./saves/{game}/videos", video_length=0, step_trigger=lambda x: x % 10000 == 0)
 
     # create callback to save best model found:
     eval_env = Monitor(copy(env))
-    eval_callback = EvalCallback(eval_env, best_model_save_path="./saves/spook_spike/checkpoint",
-                                 log_path="./saves/spook_spike/checkpoint", eval_freq=1000,
+    eval_callback = EvalCallback(eval_env, best_model_save_path=f"./saves/{game}/checkpoint",
+                                 log_path=f"./saves/{game}/checkpoint", eval_freq=1000,
                                  deterministic=True, render=False)
 
     # create model:
