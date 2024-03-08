@@ -10,6 +10,7 @@ from stable_baselines3.common.monitor import Monitor
 import stable_retro
 from scripts.config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
+from stable_retro.examples.ppo import StochasticFrameSkip
 
 
 class MiniGame(Discretizer):
@@ -24,6 +25,7 @@ def main(cfg: argparse.Namespace):
     env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
     env = MiniGame(env, CONFIG[game]["actions"])
     env = ResizeObservation(env, CONFIG[game]["resize"])
+    env = StochasticFrameSkip(env, n=4, stickprob=0.05)
     if "clip_reward" in CONFIG[game] and CONFIG[game]["clip_reward"]:
         env = ClipRewardEnv(env)
     # env = RecordVideo(env=env, video_folder=f"./saves/{game}/videos", video_length=0, step_trigger=lambda x: x % 10000 == 0)
