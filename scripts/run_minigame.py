@@ -1,7 +1,7 @@
 import argparse
 from copy import copy
 
-from gymnasium.wrappers import ResizeObservation
+from gymnasium.wrappers import ResizeObservation, NormalizeObservation
 from stable_baselines3 import PPO
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv
 from stable_baselines3.common.callbacks import EvalCallback
@@ -26,6 +26,7 @@ def main(cfg: argparse.Namespace):
     env = MiniGame(env, CONFIG[game]["actions"])
     env = ResizeObservation(env, CONFIG[game]["resize"])
     env = StochasticFrameSkip(env, n=4, stickprob=0.05)
+    env = NormalizeObservation(env)
     if "clip_reward" in CONFIG[game] and CONFIG[game]["clip_reward"]:
         env = ClipRewardEnv(env)
     # env = RecordVideo(env=env, video_folder=f"./saves/{game}/videos", video_length=0, step_trigger=lambda x: x % 10000 == 0)
