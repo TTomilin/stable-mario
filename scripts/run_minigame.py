@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 import wandb
-from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo
+from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack
 from stable_baselines3 import PPO
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv
 from stable_baselines3.common.callbacks import EvalCallback
@@ -35,7 +35,10 @@ def main(cfg: argparse.Namespace):
     env = ResizeObservation(env, CONFIG[game]["resize"])
     env = Rescale(env)
     env = NormalizeObservation(env)
-    env = StochasticFrameSkip(env, n=4, stickprob=0.05)
+    if cfg.skip_frames:
+        env = StochasticFrameSkip(env, n=cfg.frame_skip, stickprob=cfg.stick_prob)
+    if cfg.stack_frames:
+        env = FrameStack(env, cfg.n_frame_stack)
     if CONFIG[game]["clip_reward"]:
         env = ClipRewardEnv(env)
     if cfg.record:
@@ -93,6 +96,10 @@ if __name__ == '__main__':
     arg("--record_every", type=int, default=100, help="Record gameplay video every n episodes")
     arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--store_every", type=int, default=100, help="Save model every n episodes")
+    arg("--skip_frames", default=False, action='store_true', help="Whether to skip frames")
+    arg("--n_skip_frames", type=int, default=4, help="How many frames to skip")
+    arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
+    arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
