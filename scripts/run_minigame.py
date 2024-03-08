@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 import wandb
-from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack
+from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward
 from stable_baselines3 import PPO
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv
 from stable_baselines3.common.callbacks import EvalCallback
@@ -35,6 +35,7 @@ def main(cfg: argparse.Namespace):
     env = ResizeObservation(env, CONFIG[game]["resize"])
     env = Rescale(env)
     env = NormalizeObservation(env)
+    env = NormalizeReward(env)
     if cfg.skip_frames:
         env = StochasticFrameSkip(env, n=cfg.frame_skip, stickprob=cfg.stick_prob)
     if cfg.stack_frames:
