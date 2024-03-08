@@ -153,3 +153,4 @@ tests/test_cibuildwheel/tmp_dockerfiles
 /setup.py
 /setup.cfg
 /scripts/saves/
+/saves/
