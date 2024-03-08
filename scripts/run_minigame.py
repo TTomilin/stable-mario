@@ -48,7 +48,7 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = PPO(policy='CnnPolicy', env=env, verbose=True)
+    model = PPO(policy='CnnPolicy', env=env, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
 
     # Train the model
     try:
