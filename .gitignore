@@ -143,14 +143,5 @@ Temporary
 # cibuildwheel
 wheelhouse
 tests/test_cibuildwheel/tmp_dockerfiles
-/cores/
-/third-party/
-/tests/
-/src/
-/pyproject.toml
-/cmake-format.py
-/CMakeLists.txt
-/setup.py
-/setup.cfg
 /scripts/saves/
 /saves/
