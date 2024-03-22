@@ -59,7 +59,7 @@ class CMakeBuild(build_ext):
 
             jobs = f"-j{multiprocessing.cpu_count():d}"
 
-        subprocess.check_call(["make", jobs, "stable_retro"])
+        subprocess.check_call(["make", jobs, "retro"])
 
 
 platform_globs = [
