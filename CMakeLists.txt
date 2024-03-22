@@ -91,6 +91,8 @@ if(NOT BUILD_LUAJIT)
   find_package(Lua 5.1 EXACT REQUIRED)
   set(LUA_INCLUDE_DIRS "${LUA_INCLUDE_DIR}")
 else()
+  set(LUA_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third-party/luajit/src")
+
   if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(LUA_FLAGS ${LUA_FLAGS} CC=${CMAKE_C_COMPILER}
                   LDFLAGS=-mmacosx-version-min=10.7)
@@ -268,6 +270,7 @@ if(NOT CAPN_PROTO_FOUND AND NOT BUILD_MANYLINUX)
       set(CAPNP_LITE ON)
     endif()
 
+    set(CAPNP_INCLUDE_DIRECTORY third-party/capnproto/c++/src)
   endif()
 endif()
 
