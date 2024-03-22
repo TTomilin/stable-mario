@@ -8,7 +8,7 @@ from setuptools.command.build_ext import build_ext
 
 VERSION_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
-    "retro/VERSION.txt",
+    "stable_retro/VERSION.txt",
 )
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
