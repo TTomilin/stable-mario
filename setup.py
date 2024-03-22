@@ -59,7 +59,7 @@ class CMakeBuild(build_ext):
 
             jobs = f"-j{multiprocessing.cpu_count():d}"
 
-        subprocess.check_call(["make", jobs, "retro"])
+        subprocess.check_call(["make", jobs, "stable_retro"])
 
 
 platform_globs = [
@@ -95,8 +95,8 @@ setup(
     ext_modules=[Extension("retro._retro", ["CMakeLists.txt", "src/*.cpp"])],
     cmdclass={"build_ext": CMakeBuild},
     packages=[
-        "retro",
-        "retro.data",
+        "stable_retro",
+        "stable_retro.data",
         "stable_retro.data.stable",
         "stable_retro.data.experimental",
         "stable_retro.data.contrib",
