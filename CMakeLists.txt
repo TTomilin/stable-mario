@@ -270,7 +270,6 @@ if(NOT CAPN_PROTO_FOUND AND NOT BUILD_MANYLINUX)
       set(CAPNP_LITE ON)
     endif()
 
-    set(CAPNP_INCLUDE_DIRECTORY third-party/capnproto/c++/src)
   endif()
 endif()
 
