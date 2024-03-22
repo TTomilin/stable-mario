@@ -271,7 +271,6 @@ if(NOT CAPN_PROTO_FOUND AND NOT BUILD_MANYLINUX)
     endif()
 
     set(CAPNP_INCLUDE_DIRECTORY third-party/capnproto/c++/src)
-    add_subdirectory(third-party/capnproto/c++)
   endif()
 endif()
 
