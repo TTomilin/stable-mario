@@ -100,10 +100,10 @@ setup(
         "stable_retro.data.stable",
         "stable_retro.data.experimental",
         "stable_retro.data.contrib",
-        "retro.scripts",
-        "retro.import",
-        "retro.examples",
-        "retro.testing",
+        "stable_retro.scripts",
+        "stable_retro.import",
+        "stable_retro.examples",
+        "stable_retro.testing",
     ],
     package_data={
         "retro": [
