@@ -106,7 +106,7 @@ setup(
         "stable_retro.testing",
     ],
     package_data={
-        "retro": [
+        "stable_retro": [
             "cores/*.json",
             "cores/*_libretro*",
             "VERSION.txt",
