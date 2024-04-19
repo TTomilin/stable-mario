@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
-    arg('--wandb_entity', default=None, type=str, help='WandB username (entity).')
+    arg('--wandb_entity', default='automated-play', type=str, help='WandB username (entity).')
     arg('--wandb_project', default='Mario', type=str, help='WandB "Project"')
     arg('--wandb_group', default=None, type=str, help='WandB "Group". Name of the env by default.')
     arg('--wandb_job_type', default=None, type=str, help='WandB job type')
