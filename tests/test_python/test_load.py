@@ -7,7 +7,7 @@ from concurrent.futures.process import BrokenProcessPool
 import gymnasium as gym
 import pytest
 
-import retro
+import stable_retro
 from tests.test_python import all_games_with_roms
 
 pool = ProcessPoolExecutor(1)
@@ -32,8 +32,8 @@ def processpool():
 
 def load(game, inttype):
     errors = []
-    rom = retro.data.get_romfile_path(game, inttype)
-    emu = retro.RetroEmulator(rom)
+    rom = stable_retro.data.get_romfile_path(game, inttype)
+    emu = stable_retro.RetroEmulator(rom)
 
     emu.step()
 
@@ -45,16 +45,16 @@ def load(game, inttype):
 
 def state(game, inttype):
     errors = []
-    states = retro.data.list_states(game, inttype)
+    states = stable_retro.data.list_states(game, inttype)
     if not states:
         return [], []
 
-    rom = retro.data.get_romfile_path(game, inttype | retro.data.Integrations.STABLE)
-    emu = retro.RetroEmulator(rom)
+    rom = stable_retro.data.get_romfile_path(game, inttype | stable_retro.data.Integrations.STABLE)
+    emu = stable_retro.RetroEmulator(rom)
     for state_file in states:
         try:
             with gzip.open(
-                retro.data.get_file_path(game, f"{state_file}.state", inttype),
+                stable_retro.data.get_file_path(game, f"{state_file}.state", inttype),
                 "rb",
             ) as fh:
                 game_state = fh.read()
