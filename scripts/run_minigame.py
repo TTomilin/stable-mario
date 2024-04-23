@@ -11,11 +11,12 @@ from stable_baselines3.common.atari_wrappers import ClipRewardEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
-import stable_retro
-from scripts.config import CONFIG
-from stable_retro.examples.discretizer import Discretizer
-from stable_retro.examples.ppo import StochasticFrameSkip
+import retro
+from config import CONFIG
+from retro.examples.discretizer import Discretizer
+from retro.examples.ppo import StochasticFrameSkip
 from wrappers.observation import Rescale
+from wrappers.observation import ShowObservation
 
 
 def main(cfg: argparse.Namespace):
@@ -30,12 +31,14 @@ def main(cfg: argparse.Namespace):
     # Create environment
     game = cfg.game
     state = cfg.load_state if cfg.load_state is not None else CONFIG[game]["state"]
-    env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
+    env = retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
     env = Discretizer(env, CONFIG[game]["actions"])
     env = ResizeObservation(env, CONFIG[game]["resize"])
     env = Rescale(env)
     env = NormalizeObservation(env)
     env = NormalizeReward(env)
+    if cfg.show_observation:
+        env = ShowObservation(env);
     if cfg.skip_frames:
         env = StochasticFrameSkip(env, n=cfg.frame_skip, stickprob=cfg.stick_prob)
     if cfg.stack_frames:
@@ -101,6 +104,7 @@ if __name__ == '__main__':
     arg("--n_skip_frames", type=int, default=4, help="How many frames to skip")
     arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
     arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
+    arg("--show_observation", default=False, action='store_true', help="Show AI's observation.")
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
