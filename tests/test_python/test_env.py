@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-import stable_retro
+import retro
 
 
 @pytest.fixture(
@@ -12,25 +12,25 @@ import stable_retro
     ],
 )
 def generate_test_env(request):
-    import stable_retro.data
+    import retro.data
 
     path = os.path.join(os.path.dirname(__file__), "../roms")
 
-    get_file_path_fn = stable_retro.data.get_file_path
-    get_romfile_path_fn = stable_retro.data.get_romfile_path
+    get_file_path_fn = retro.data.get_file_path
+    get_romfile_path_fn = retro.data.get_romfile_path
 
-    stable_retro.data.get_file_path = lambda game, file, *args, **kwargs: os.path.join(
+    retro.data.get_file_path = lambda game, file, *args, **kwargs: os.path.join(
         path,
         file,
     )
-    stable_retro.data.get_romfile_path = lambda game, *args, **kwargs: [
+    retro.data.get_romfile_path = lambda game, *args, **kwargs: [
         os.path.join(path, rom) for rom in os.listdir(path) if rom.startswith(game)
     ][0]
 
     created_env = []
 
-    def create(state=stable_retro.State.NONE, *args, **kwargs):
-        env = stable_retro.make(game=request.param, state=state, *args, **kwargs)
+    def create(state=retro.State.NONE, *args, **kwargs):
+        env = retro.make(game=request.param, state=state, *args, **kwargs)
         created_env.append(env)  # noqa: F821
         return env
 
@@ -39,8 +39,8 @@ def generate_test_env(request):
     created_env[0].close()
     del created_env
 
-    stable_retro.data.get_file_path = get_file_path_fn
-    stable_retro.data.get_romfile_path = get_romfile_path_fn
+    retro.data.get_file_path = get_file_path_fn
+    retro.data.get_romfile_path = get_romfile_path_fn
 
 
 def test_env_create(generate_test_env):
@@ -48,7 +48,7 @@ def test_env_create(generate_test_env):
     assert generate_test_env(info=json_path, scenario=json_path)
 
 
-@pytest.mark.parametrize("obs_type", [retro.Observations.IMAGE, stable_retro.Observations.RAM])
+@pytest.mark.parametrize("obs_type", [retro.Observations.IMAGE, retro.Observations.RAM])
 def test_env_basic(obs_type, generate_test_env):
     json_path = os.path.join(os.path.dirname(__file__), "../dummy.json")
 
