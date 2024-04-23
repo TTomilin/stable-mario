@@ -73,6 +73,7 @@ def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
     wandb_unique_id = f'{wandb_job_type}_{wandb_group}_{timestamp}'
     wandb.init(
         dir=log_dir,
+        monitor_gym=True,
         project=args.wandb_project,
         entity=args.wandb_entity,
         sync_tensorboard=True,
