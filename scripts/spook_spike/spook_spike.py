@@ -6,8 +6,8 @@ from stable_baselines3.common.atari_wrappers import ClipRewardEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
-import stable_retro
-from stable_retro.examples.discretizer import Discretizer
+import retro
+from retro.examples.discretizer import Discretizer
 
 GAME_ENV = 'spook_spike-MP'
 STATE = 'Level1'
@@ -25,7 +25,7 @@ class SpookSpikeDiscretizer(Discretizer):
 def main():
     # create env:
     print("running")
-    env = stable_retro.make(game=GAME_ENV, state=STATE, render_mode="human")
+    env = retro.make(game=GAME_ENV, state=STATE, render_mode="human")
     env = SpookSpikeDiscretizer(env)
     env = ResizeObservation(env, (80, 72))
     env = ClipRewardEnv(env)

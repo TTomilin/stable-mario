@@ -4,7 +4,7 @@ import time
 
 import numpy as np
 
-import stable_retro
+import retro
 
 GAME_ENV = 'MarioParty-GbAdvance'
 LOAD_STATE = 'Level1'
@@ -13,9 +13,9 @@ PLAYTIME = 0
 
 def main():
     # create env:
-    env = stable_retro.make(game=GAME_ENV,
+    env = retro.make(game=GAME_ENV,
                             state=LOAD_STATE,
-                            use_restricted_actions=stable_retro.Actions.ALL,
+                            use_restricted_actions=retro.Actions.ALL,
                             # stable_retro.Actions.ALL needed to press start/select if needed
                             render_mode="none")  # rendering disabled for enhanced speed.
 

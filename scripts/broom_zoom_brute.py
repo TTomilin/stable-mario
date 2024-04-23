@@ -1,8 +1,8 @@
 import pickle
 
-import stable_retro
+import retro
 
-from stable_retro.examples.brute import Brute
+from retro.examples.brute import Brute
 
 GAME_ENV = 'broom_zoom-MP'
 STATE = 'Level1'
@@ -11,7 +11,7 @@ EPISODE_LIMIT = 2000000
 
 
 def main():
-    env = stable_retro.make(game=GAME_ENV, state=STATE, use_restricted_actions=stable_retro.Actions.DISCRETE)
+    env = retro.make(game=GAME_ENV, state=STATE, use_restricted_actions=retro.Actions.DISCRETE)
 
     brute = Brute(env, max_episode_steps=EPISODE_LIMIT)
     timesteps = 0

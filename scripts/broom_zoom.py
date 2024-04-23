@@ -1,13 +1,13 @@
 from copy import copy
 
-import stable_retro
+import retro
 from gymnasium.wrappers import RecordVideo
 from stable_baselines3 import PPO
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
-from stable_retro.examples.discretizer import Discretizer
+from retro.examples.discretizer import Discretizer
 
 GAME_ENV = 'broom_zoom-MP'
 STATE = 'Level1'
@@ -31,7 +31,7 @@ def rec(iter):
 
 def main():
     # create env:
-    env = stable_retro.make(game=GAME_ENV, state=STATE, render_mode="rgb_array")
+    env = retro.make(game=GAME_ENV, state=STATE, render_mode="rgb_array")
     env = BroomZoomDiscretizer(env)
     # env = WarpFrame(env)
     env = ClipRewardEnv(env)

@@ -1,5 +1,5 @@
 import numpy as np
-import stable_retro
+import retro
 from stable_baselines3 import PPO
 from stable_baselines3.common.atari_wrappers import WarpFrame, ClipRewardEnv
 from stable_baselines3.common.noise import NormalActionNoise
@@ -13,7 +13,7 @@ TIMESTEPS = 100000
 
 def main():
     # create env:
-    env = stable_retro.make(game=GAME_ENV, state=STATE)  # for DQN: use_restricted_actions=stable_retro.Actions.DISCRETE
+    env = retro.make(game=GAME_ENV, state=STATE)  # for DQN: use_restricted_actions=stable_retro.Actions.DISCRETE
     env = WarpFrame(env)
     env = ClipRewardEnv(env)
 
