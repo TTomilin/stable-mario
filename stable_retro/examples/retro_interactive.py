@@ -1,6 +1,6 @@
 import argparse
 
-from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
+from stable_baselines3.common.vec_env.subproc_vec_env import SubprocVecEnv
 
 import stable_retro
 from stable_retro.examples.interactive import Interactive
