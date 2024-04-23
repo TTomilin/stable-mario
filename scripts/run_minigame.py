@@ -11,10 +11,10 @@ from stable_baselines3.common.atari_wrappers import ClipRewardEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
-import retro
+import stable_retro
 from config import CONFIG
-from retro.examples.discretizer import Discretizer
-from retro.examples.ppo import StochasticFrameSkip
+from stable_retro.examples.discretizer import Discretizer
+from stable_retro.examples.ppo import StochasticFrameSkip
 from wrappers.observation import Rescale
 from wrappers.observation import ShowObservation
 
@@ -31,12 +31,17 @@ def main(cfg: argparse.Namespace):
     # Create environment
     game = cfg.game
     state = cfg.load_state if cfg.load_state is not None else CONFIG[game]["state"]
-    env = retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
-    env = Discretizer(env, CONFIG[game]["actions"])
-    env = ResizeObservation(env, CONFIG[game]["resize"])
-    env = Rescale(env)
-    env = NormalizeObservation(env)
-    env = NormalizeReward(env)
+    env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
+    if cfg.discretize:
+        env = Discretizer(env, CONFIG[game]["actions"])
+    if cfg.resize_observation:
+        env = ResizeObservation(env, CONFIG[game]["resize"])
+    if cfg.rescale:
+        env = Rescale(env)
+    if cfg.normalize_observation:
+        env = NormalizeObservation(env)
+    if cfg.normalize_reward:
+        env = NormalizeReward(env)
     if cfg.show_observation:
         env = ShowObservation(env);
     if cfg.skip_frames:
@@ -93,7 +98,7 @@ if __name__ == '__main__':
 
 
     parser = argparse.ArgumentParser()
-
+    
     arg("--game", type=str, default="broom_zoom", help="Name of the game")
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
@@ -106,6 +111,11 @@ if __name__ == '__main__':
     arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
     arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
     arg("--show_observation", default=False, action='store_true', help="Show AI's observation.")
+    arg("--normalize_reward", default=False, action='store_true', help="Normalize agent reward.")
+    arg("--normalize_observation", default=False, action='store_true', help="Normalize agent observations.")
+    arg("--resize_observation", default=False, action='store_true', help="Resize agent's observation to size specified in config.")
+    arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
+    arg("--discretize", default=False, action='store_true', help="Limit agent's actions as specified in config.")
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
