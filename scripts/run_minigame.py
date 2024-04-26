@@ -37,7 +37,6 @@ def main(cfg: argparse.Namespace):
     env = ResizeObservation(env, CONFIG[game]["resize"])
     env = Rescale(env)
     env = NormalizeObservation(env)
-    env = NormalizeReward(env)
     if cfg.skip_frames:
         env = StochasticFrameSkip(env, n=cfg.frame_skip, stickprob=cfg.stick_prob)
     if cfg.stack_frames:
@@ -96,7 +95,7 @@ if __name__ == '__main__':
     arg("--game", type=str, default="broom_zoom", help="Name of the game")
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
-    arg("--record", default=False, action='store_true', help="Whether to record gameplay videos")
+    arg("--record", default=True, action='store_true', help="Whether to record gameplay videos")
     arg("--record_every", type=int, default=100, help="Record gameplay video every n episodes")
     arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--store_every", type=int, default=100, help="Save model every n episodes")
