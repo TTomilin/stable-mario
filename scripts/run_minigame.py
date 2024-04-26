@@ -4,6 +4,7 @@ from copy import copy
 from datetime import datetime
 from pathlib import Path
 
+import torch
 import wandb
 from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward
 from stable_baselines3 import PPO
@@ -23,6 +24,7 @@ def main(cfg: argparse.Namespace):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_dir = f"{experiment_dir}/saves/{cfg.game}/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
+    device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
 
     if cfg.with_wandb:
         init_wandb(cfg, log_dir, timestamp)
@@ -52,7 +54,7 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = PPO(policy='CnnPolicy', env=env, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+    model = PPO(policy='CnnPolicy', env=env, device=device, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
 
     # Train the model
     try:
@@ -90,6 +92,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
+    arg("--device", default="cuda", type=str, choices=["cuda", "cpu"], help="Device to use")
     arg("--game", type=str, default="broom_zoom", help="Name of the game")
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
