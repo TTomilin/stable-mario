@@ -62,7 +62,8 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = PPO(policy='CnnPolicy', env=env, device=device, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+    model = PPO(policy='CnnPolicy', env=env, device=device, 
+                learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
 
     # Train the model
     try:
@@ -106,7 +107,7 @@ if __name__ == '__main__':
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
     arg("--record", default=False, action='store_true', help="Whether to record gameplay videos")
-    arg("--record_every", type=int, default=20, help="Record gameplay video every n updates")
+    arg("--record_every", type=int, default=20, help="Record gameplay video every n update steps")
     arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--store_every", type=int, default=100, help="Save model every n episodes")
     arg("--skip_frames", default=False, action='store_true', help="Whether to skip frames")
@@ -119,6 +120,7 @@ if __name__ == '__main__':
     arg("--resize_observation", default=False, action='store_true', help="Resize agent's observation to size specified in config.")
     arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
     arg("--discretize", default=False, action='store_true', help="Limit agent's actions as specified in config.")
+    arg("--learning_rate", type=float, default=0.0003, help="Set model's learning rate.")
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
