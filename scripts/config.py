@@ -1,6 +1,6 @@
 CONFIG = {
     'broom_zoom': {
-        'actions': [['UP'], ['DOWN'], ['UP', 'RIGHT'], ['DOWN', 'RIGHT'], ['UP', 'LEFT'], ['DOWN', 'LEFT'], [], ['LEFT'], ['RIGHT']],
+        'actions': [['UP'], ['DOWN'], ['UP', 'RIGHT'], ['DOWN', 'RIGHT'], ['UP', 'LEFT'], ['DOWN', 'LEFT'], []],
         'game_env': 'broom_zoom-MP',
         'state': 'Level1',
         'clip_reward': False,

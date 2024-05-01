@@ -48,7 +48,7 @@ def test_env_create(generate_test_env):
     assert generate_test_env(info=json_path, scenario=json_path)
 
 
-@pytest.mark.parametrize("obs_type", [retro.Observations.IMAGE, stable_retro.Observations.RAM])
+@pytest.mark.parametrize("obs_type", [stable_retro.Observations.IMAGE, stable_retro.Observations.RAM])
 def test_env_basic(obs_type, generate_test_env):
     json_path = os.path.join(os.path.dirname(__file__), "../dummy.json")
 
