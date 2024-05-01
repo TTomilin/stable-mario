@@ -107,7 +107,7 @@ if __name__ == '__main__':
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
     arg("--record", default=False, action='store_true', help="Whether to record gameplay videos")
-    arg("--record_every", type=int, default=20, help="Record gameplay video every n update steps")
+    arg("--record_every", type=int, default=50, help="Record gameplay video every n update steps")
     arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--store_every", type=int, default=100, help="Save model every n episodes")
     arg("--skip_frames", default=False, action='store_true', help="Whether to skip frames")
