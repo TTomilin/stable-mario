@@ -62,11 +62,11 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = PPO(policy='CnnPolicy', env=env, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+    model = PPO(policy='CnnPolicy', env=env, device=device, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
 
     # Train the model
     try:
-        model.learn(total_timesteps=CONFIG[game]["timesteps"], device=device, callback=eval_callback if cfg.store_model else None)
+        model.learn(total_timesteps=CONFIG[game]["timesteps"], callback=eval_callback if cfg.store_model else None)
         model.save(f"{log_dir}/{game}")
     except KeyboardInterrupt:
         model.save(f"{log_dir}/{game}-bak")
@@ -101,6 +101,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     
+    arg("--device", default="cuda", type=str, choices=["cuda", "cpu"], help="Device to use")
     arg("--game", type=str, default="broom_zoom", help="Name of the game")
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
