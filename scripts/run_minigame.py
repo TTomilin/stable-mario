@@ -8,7 +8,7 @@ import wandb
 import torch
 from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward
 from stable_baselines3 import PPO
-from stable_baselines3.common.atari_wrappers import ClipRewardEnv
+from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
@@ -47,7 +47,7 @@ def main(cfg: argparse.Namespace):
     if cfg.show_observation:
         env = ShowObservation(env);
     if cfg.skip_frames:
-        env = StochasticFrameSkip(env, n=cfg.frame_skip, stickprob=cfg.stick_prob)
+        env = MaxAndSkipEnv(env, n=cfg.frame_skip)
     if cfg.stack_frames:
         env = FrameStack(env, cfg.n_frame_stack)
     if CONFIG[game]["clip_reward"]:
