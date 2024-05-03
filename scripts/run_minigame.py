@@ -47,7 +47,7 @@ def main(cfg: argparse.Namespace):
     if cfg.show_observation:
         env = ShowObservation(env);
     if cfg.skip_frames:
-        env = MaxAndSkipEnv(env, n=cfg.n_skip_frames)
+        env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames)
     if cfg.stack_frames:
         env = FrameStack(env, cfg.n_frame_stack)
     if CONFIG[game]["clip_reward"]:
