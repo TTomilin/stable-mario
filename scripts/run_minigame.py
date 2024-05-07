@@ -62,7 +62,7 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = PPO(policy='CnnPolicy', env=env, device=device, 
+    model = PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                 learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
 
     # Train the model
@@ -121,6 +121,7 @@ if __name__ == '__main__':
     arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
     arg("--discretize", default=False, action='store_true', help="Limit agent's actions as specified in config.")
     arg("--learning_rate", type=float, default=0.0003, help="Set model's learning rate.")
+    arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
