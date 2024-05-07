@@ -3,7 +3,7 @@ CONFIG = {
         'actions': [['UP'], ['DOWN'], ['UP', 'RIGHT'], ['DOWN', 'RIGHT'], ['UP', 'LEFT'], ['DOWN', 'LEFT'], []],
         'game_env': 'broom_zoom-MP',
         'state': 'Level1',
-        'clip_reward': False,
+        'clip_reward': True,
         'resize': (80, 72),
         'timesteps': 1000000,
     },
