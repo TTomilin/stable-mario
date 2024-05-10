@@ -68,9 +68,12 @@ def main(cfg: argparse.Namespace):
     if cfg.model == "PPO":
         model = PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
-    elif cfg.model == "QR-DQN:":
+    elif cfg.model == "QR-DQN":
         model = QRDQN(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+    else:
+        print("No model matching the model argument found. Aborting...")
+        exit()
     
     # Determine number of timesteps
     timesteps = CONFIG[game]["timesteps"]
