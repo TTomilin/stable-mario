@@ -12,6 +12,8 @@ from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
+from sb3_contrib import QRDQN
+
 import stable_retro
 from config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
@@ -62,8 +64,12 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
-                learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+    if cfg.model is "PPO":
+        model = PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
+                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+    elif cfg.model is "QR-DQN:":
+        model = QRDQN(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
+                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
     
     # Determine number of timesteps
     timesteps = CONFIG[game]["timesteps"]
@@ -130,6 +136,7 @@ if __name__ == '__main__':
     arg("--learning_rate", type=float, default=0.0003, help="Set model's learning rate.")
     arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
     arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
+    arg("--model", type=str, default="PPO", help="The specific RL model to be used.")
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
