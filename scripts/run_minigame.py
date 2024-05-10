@@ -67,8 +67,8 @@ def main(cfg: argparse.Namespace):
     
     # Determine number of timesteps
     timesteps = CONFIG[game]["timesteps"]
-    if cfg.time_steps > 0:
-        timesteps = cfg.time_steps
+    if cfg.timesteps > 0:
+        timesteps = cfg.timesteps
         
 
     # Train the model
