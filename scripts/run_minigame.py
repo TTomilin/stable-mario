@@ -64,10 +64,16 @@ def main(cfg: argparse.Namespace):
     # Create the model
     model = PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                 learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+    
+    # Determine number of timesteps
+    timesteps = CONFIG[game]["timesteps"]
+    if cfg.time_steps > 0:
+        timesteps = cfg.time_steps
+        
 
     # Train the model
     try:
-        model.learn(total_timesteps=CONFIG[game]["timesteps"], callback=eval_callback if cfg.store_model else None)
+        model.learn(total_timesteps=timesteps, callback=eval_callback if cfg.store_model else None)
         model.save(f"{log_dir}/{game}")
     except KeyboardInterrupt:
         model.save(f"{log_dir}/{game}-bak")
@@ -123,6 +129,7 @@ if __name__ == '__main__':
     arg("--discretize", default=False, action='store_true', help="Limit agent's actions as specified in config.")
     arg("--learning_rate", type=float, default=0.0003, help="Set model's learning rate.")
     arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
+    arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
 
     # WandB
     arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
