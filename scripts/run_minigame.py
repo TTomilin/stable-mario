@@ -92,6 +92,7 @@ def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
         tags=args.wandb_tags,
         resume=False,
         settings=wandb.Settings(start_method='fork'),
+        reinit=True
     )
 
 
