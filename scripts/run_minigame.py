@@ -86,8 +86,12 @@ def main(cfg: argparse.Namespace):
         model.learn(total_timesteps=timesteps, callback=eval_callback if cfg.store_model else None)
         model.save(f"{log_dir}/{game}")
     except KeyboardInterrupt:
-        model.save(f"{log_dir}/{game}-bak")
+        model.save(f"{log_dir}/{game}-bak.zip")
 
+    # upload best and most recent models to wandb:
+    if cfg.store_model and cfg.with_wandb:
+        wandb.save(f"{log_dir}/checkpoints")
+        wandb.save(f"{log_dir}/{game}*")
 
 def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
     if args.wandb_key:
