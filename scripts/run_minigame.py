@@ -90,7 +90,7 @@ def main(cfg: argparse.Namespace):
 
     # upload best and most recent models to wandb:
     if cfg.store_model and cfg.with_wandb:
-        wandb.save(f"{log_dir}/checkpoints")
+        wandb.save(f"{log_dir}/checkpoints/*")
         wandb.save(f"{log_dir}/{game}*")
 
 def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
