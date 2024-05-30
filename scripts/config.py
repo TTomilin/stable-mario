@@ -38,5 +38,21 @@ CONFIG = {
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000
+    },
+    'match-em': {
+        'actions': [['UP'], ['DOWN'], ['A']],
+        'game_env': 'match-em-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (160, 144),
+        'timesteps': 1000000
+    },
+        'hammergeddon': {
+        'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], ['UP', 'B'], []],
+        'game_env': 'hammergeddon-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (80, 72),
+        'timesteps': 10000000
     }
 }
