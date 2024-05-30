@@ -36,7 +36,7 @@ def main(cfg: argparse.Namespace):
     game = cfg.game
     state = cfg.load_state if cfg.load_state is not None else CONFIG[game]["state"]
     env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
-    if cfg.no_discretizer:
+    if cfg.discretize:
         env = Discretizer(env, CONFIG[game]["actions"])
     if cfg.resize_observation:
         env = ResizeObservation(env, CONFIG[game]["resize"])
