@@ -36,20 +36,20 @@ def main(cfg: argparse.Namespace):
     game = cfg.game
     state = cfg.load_state if cfg.load_state is not None else CONFIG[game]["state"]
     env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
-    if not (cfg.no_discretizer):
+    if cfg.no_discretizer:
         env = Discretizer(env, CONFIG[game]["actions"])
-    if not (cfg.no_resize):
+    if cfg.resize_observation:
         env = ResizeObservation(env, CONFIG[game]["resize"])
-    if not (cfg.no_normalize_observation):
-        env = NormalizeObservation(env)
-    if not (cfg.no_skip_frames):
-        env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames)
     if cfg.rescale:
         env = Rescale(env)
+    if cfg.normalize_observation:
+        env = NormalizeObservation(env)
     if cfg.normalize_reward:
         env = NormalizeReward(env)
     if cfg.show_observation:
         env = ShowObservation(env);
+    if cfg.skip_frames:
+        env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames)
     if cfg.stack_frames:
         env = FrameStack(env, cfg.n_stack_frames)
     if CONFIG[game]["clip_reward"]:
@@ -127,27 +127,27 @@ if __name__ == '__main__':
     arg("--game", type=str, default="broom_zoom", help="Name of the game")
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
-    arg("--record", default=False, action='store_true', help="Whether to record gameplay videos")
+    arg("--record", default=True, action='store_true', help="Whether to record gameplay videos")
     arg("--record_every", type=int, default=150, help="Record gameplay video every n episodes")
     arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--store_every", type=int, default=100, help="Save model every n episodes")
-    arg("--no_skip_frames", default=False, action='store_true', help="Whether to skip frames")
+    arg("--skip_frames", default=True, action='store_true', help="Whether to skip frames")
     arg("--n_skip_frames", type=int, default=4, help="How many frames to skip")
     arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
     arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
     arg("--show_observation", default=False, action='store_true', help="Show AI's observation.")
     arg("--normalize_reward", default=False, action='store_true', help="Normalize agent reward.")
-    arg("--no_normalize_observation", default=False, action='store_true', help="Normalize agent observations.")
-    arg("--no_resize", default=False, action='store_true', help="Resize agent's observation to size specified in config.")
+    arg("--normalize_observation", default=True, action='store_true', help="Normalize agent observations.")
+    arg("--resize_observation", default=True, action='store_true', help="Resize agent's observation to size specified in config.")
     arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
-    arg("--no_discretizer", default=False, action='store_true', help="Limit agent's actions as specified in config.")
+    arg("--discretize", default=True, action='store_true', help="Limit agent's actions as specified in config.")
     arg("--learning_rate", type=float, default=0.00003, help="Set model's learning rate.")
     arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
     arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
     arg("--model", type=str, default="PPO", help="The specific RL model to be used.")
 
     # WandB
-    arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
+    arg('--with_wandb', default=True, action='store_true', help='Enables Weights and Biases')
     arg('--wandb_entity', default='automated-play', type=str, help='WandB username (entity).')
     arg('--wandb_project', default='Mario', type=str, help='WandB "Project"')
     arg('--wandb_group', default=None, type=str, help='WandB "Group". Name of the env by default.')
