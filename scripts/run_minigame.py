@@ -1,5 +1,4 @@
 import argparse
-from .retro_parser import RetroParser
 
 import os
 from copy import copy
