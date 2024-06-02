@@ -1,6 +1,4 @@
 import argparse
-from .retro_parser import RetroParser
-
 import os
 from copy import copy
 from datetime import datetime
@@ -8,7 +6,7 @@ from pathlib import Path
 
 import wandb
 import torch
-from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward, TimeLimit
+from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward
 from stable_baselines3 import PPO
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 from stable_baselines3.common.callbacks import EvalCallback
@@ -23,18 +21,14 @@ from stable_retro.examples.ppo import StochasticFrameSkip
 from wrappers.observation import Rescale
 from wrappers.observation import ShowObservation
 
-FRAME_RATE = 60 # GBA runs at 60fps
 
 def main(cfg: argparse.Namespace):
     experiment_dir = Path(__file__).parent.parent.resolve()
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_dir = f"{experiment_dir}/saves/{cfg.game}/{timestamp}"
+    log_dir = f"{experiment_dir}/trained_footage/{cfg.game}/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
     device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
-
-    if cfg.with_wandb:
-        init_wandb(cfg, log_dir, timestamp)
-
+    
     # Create environment
     game = cfg.game
     state = cfg.load_state if cfg.load_state is not None else CONFIG[game]["state"]
@@ -60,8 +54,6 @@ def main(cfg: argparse.Namespace):
     if cfg.record:
         video_folder = f"{log_dir}/videos"
         env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
-    if cfg.step_limit != None:
-        env = TimeLimit(env=env, max_episode_steps=cfg.step_limit)
 
     # Create a callback to save best model
     eval_env = Monitor(copy(env))
@@ -128,38 +120,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     
-    arg("--device", default="cuda", type=str, choices=["cuda", "cpu"], help="Device to use")
+    arg("--path", type=str, help="Path to model's zip file")
     arg("--game", type=str, default="broom_zoom", help="Name of the game")
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
     arg("--record", default=True, action='store_true', help="Whether to record gameplay videos")
     arg("--record_every", type=int, default=150, help="Record gameplay video every n episodes")
-    arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
-    arg("--store_every", type=int, default=100, help="Save model every n episodes")
-    arg("--skip_frames", default=True, action='store_true', help="Whether to skip frames")
-    arg("--n_skip_frames", type=int, default=4, help="How many frames to skip")
-    arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
-    arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
-    arg("--show_observation", default=False, action='store_true', help="Show AI's observation.")
-    arg("--normalize_reward", default=False, action='store_true', help="Normalize agent reward.")
-    arg("--normalize_observation", default=True, action='store_true', help="Normalize agent observations.")
-    arg("--resize_observation", default=True, action='store_true', help="Resize agent's observation to size specified in config.")
-    arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
-    arg("--discretize", default=True, action='store_true', help="Limit agent's actions as specified in config.")
-    arg("--learning_rate", type=float, default=0.00003, help="Set model's learning rate.")
-    arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
-    arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
-    arg("--model", type=str, default="PPO", help="The specific RL model to be used.")
-    arg("--step_limit", default=None, type=int, help="Number of steps the model is allowed to run before episode is reset.")
-
-    # WandB
-    arg('--with_wandb', default=True, action='store_true', help='Enables Weights and Biases')
-    arg('--wandb_entity', default='automated-play', type=str, help='WandB username (entity).')
-    arg('--wandb_project', default='Mario', type=str, help='WandB "Project"')
-    arg('--wandb_group', default=None, type=str, help='WandB "Group". Name of the env by default.')
-    arg('--wandb_job_type', default=None, type=str, help='WandB job type')
-    arg('--wandb_tags', default=[], type=str, nargs='*', help='Tags can help finding experiments')
-    arg('--wandb_key', default=None, type=str, help='API key for authorizing WandB')
 
     args = parser.parse_args()
     main(args)
