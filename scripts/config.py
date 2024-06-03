@@ -36,7 +36,7 @@ CONFIG = {
         'game_env': 'pest_aside-MP',
         'state': 'Level1',
         'clip_reward': False,
-        'resize': (40, 36),
+        'resize': (80, 72),
         'timesteps': 1000000000
     },
     'match-em': {
