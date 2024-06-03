@@ -138,7 +138,7 @@ if __name__ == '__main__':
     arg("--record_every", type=int, default=150, help="Record gameplay video every n episodes")
     arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--store_every", type=int, default=100, help="Save model every n episodes")
-    arg("--skip_frames", default=True, action='store_true', help="Whether to skip frames")
+    arg("--skip_frames", default=False, action='store_true', help="Whether to skip frames")
     arg("--n_skip_frames", type=int, default=4, help="How many frames to skip")
     arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
     arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
