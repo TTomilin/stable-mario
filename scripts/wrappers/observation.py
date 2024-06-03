@@ -4,10 +4,10 @@ from typing import Any, SupportsFloat
 import gymnasium
 from gymnasium.core import WrapperObsType, WrapperActType
 
-import numpy as np
 import gymnasium as gym
-import pylab as pl;
-
+import pylab as pl
+from torchvision.transforms.functional import center_crop
+import torch
 
 class Rescale(gymnasium.Wrapper):
     """Rescale the observation space to [-1, 1]."""
@@ -25,24 +25,14 @@ class Rescale(gymnasium.Wrapper):
         return state / 255. * 2 - 1, reward, done, truncated, info
     
 class ShowObservation(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
-    """Resize the image observation.
+    """Show image that AI is fed during training.
 
-    This wrapper works on environments with image observations. More generally,
-    the input can either be two-dimensional (AxB, e.g. grayscale images) or
-    three-dimensional (AxBxC, e.g. color images). This resizes the observation
-    to the shape given by the 2-tuple :attr:`shape`.
-    The argument :attr:`shape` may also be an integer, in which case, the
-    observation is scaled to a square of side-length :attr:`shape`.
+    This wrapper works by displaying the image seen by the AI under all previous wrappers applied.
+    Note that order matters: the wrapper will only display the effects of other wrappers that have
+    been applied before it.
 
     Example:
-        >>> import gymnasium as gym
-        >>> from gymnasium.wrappers import ResizeObservation
-        >>> env = gym.make("CarRacing-v2")
-        >>> env.observation_space.shape
-        (96, 96, 3)
-        >>> env = ResizeObservation(env, 64)
-        >>> env.observation_space.shape
-        (64, 64, 3)
+        >>> env = ShowObservation(env)
     """
 
     def __init__(self, env: gym.Env) -> None:
@@ -70,3 +60,41 @@ class ShowObservation(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
         pl.imshow(observations.astype('uint8'))
         pl.pause(10**-6)
         pl.draw()
+
+class CenterCrop(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
+    """Crop image that AI is fed during training.
+
+    This wrapper works by taking a tuple (W1, W2, ...) and showing the AI only
+    the pixel (W1, W2, ...) around the center of its input image, cutting
+    away all other pixels. E.g., if you input (48, 48), then only the 48x48 square
+    around the input's center will be fed to the AI. 
+
+    Example:
+        >>> env = CenterCrop((48,48))
+    """
+
+    def __init__(self, env: gym.Env, dim: tuple[int, int] | int) -> None:
+        """Crops the AIs observations
+
+        Args:
+            env: The environment to apply the wrapper
+            dim: the dimensions of the image left after cropping
+        """
+        gym.utils.RecordConstructorArgs.__init__(self)
+        gym.ObservationWrapper.__init__(self, env)
+        self.__dim = dim
+
+    def observation(self, observation):
+        """Crops current observation to specified dimensions
+
+        Args:
+            None
+
+        Returns:
+            Cropped observations
+        """
+        cropped_tensor = center_crop(torch.from_numpy(observation.transpose()), output_size=self.__dim) # get cropped tensor
+        cropped_array = cropped_tensor.cpu().detach().numpy() # convert tensor to numpy array
+        cropped_array = cropped_array.transpose() # transpose tensor: dimensions of tensor used by torch and gym are reversed
+
+        return cropped_array

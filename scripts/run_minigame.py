@@ -1,6 +1,7 @@
 import argparse
 
 import os
+import numpy as np
 from copy import copy
 from datetime import datetime
 from pathlib import Path
@@ -19,8 +20,7 @@ import stable_retro
 from config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
 from stable_retro.examples.ppo import StochasticFrameSkip
-from wrappers.observation import Rescale
-from wrappers.observation import ShowObservation
+from wrappers.observation import Rescale, ShowObservation, CenterCrop
 
 FRAME_RATE = 60 # GBA runs at 60fps
 
@@ -40,6 +40,9 @@ def main(cfg: argparse.Namespace):
     env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
     if cfg.discretize:
         env = Discretizer(env, CONFIG[game]["actions"])
+    if cfg.crop:
+        dim = np.array([int(num_str) for num_str in cfg.crop_dimension.split("x")])
+        env = CenterCrop(env, dim=dim)
     if cfg.resize_observation:
         env = ResizeObservation(env, CONFIG[game]["resize"])
     if cfg.rescale:
@@ -47,9 +50,9 @@ def main(cfg: argparse.Namespace):
     if cfg.normalize_observation:
         env = NormalizeObservation(env)
     if cfg.normalize_reward:
-        env = NormalizeReward(env)
+        env = NormalizeReward(env)    
     if cfg.show_observation:
-        env = ShowObservation(env);
+        env = ShowObservation(env)
     if cfg.skip_frames:
         env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames)
     if cfg.stack_frames:
@@ -131,7 +134,7 @@ if __name__ == '__main__':
     arg("--game", type=str, default="broom_zoom", help="Name of the game")
     arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
     arg("--load_state", type=str, default=None, help="Path to the game save state to load")
-    arg("--record", default=True, action='store_true', help="Whether to record gameplay videos")
+    arg("--record", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--record_every", type=int, default=150, help="Record gameplay video every n episodes")
     arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
     arg("--store_every", type=int, default=100, help="Save model every n episodes")
@@ -150,9 +153,11 @@ if __name__ == '__main__':
     arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
     arg("--model", type=str, default="PPO", help="The specific RL model to be used.")
     arg("--step_limit", default=None, type=int, help="Number of steps the model is allowed to run before episode is reset.")
+    arg("--crop", default=False, action='store_true', help="Crop the agent's observations (defaults to leaving 80x80) pixels at center")
+    arg("--crop_dimension", type=str, default="256x256", help="The rectangular dimension of the center crop to be applied (e.g. 64x64).")
 
     # WandB
-    arg('--with_wandb', default=True, action='store_true', help='Enables Weights and Biases')
+    arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
     arg('--wandb_entity', default='automated-play', type=str, help='WandB username (entity).')
     arg('--wandb_project', default='Mario', type=str, help='WandB "Project"')
     arg('--wandb_group', default=None, type=str, help='WandB "Group". Name of the env by default.')
