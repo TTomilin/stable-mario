@@ -1,0 +1,48 @@
+import argparse
+
+class RetroParser:
+    def __init__(self):
+        self.__parser = argparse.ArgumentParser()
+
+    def arg(self, *args, **kwargs):
+        self.__parser.add_argument(*args, **kwargs)
+
+    def get_args(self):                
+        self.arg("--device", default="cuda", type=str, choices=["cuda", "cpu"], help="Device to use")
+        self.arg("--game", type=str, default="broom_zoom", help="Name of the game")
+        self.arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
+        self.arg("--load_state", type=str, default=None, help="Path to the game save state to load")
+        self.arg("--record", default=False, action='store_true', help="Whether to record gameplay videos")
+        self.arg("--record_every", type=int, default=150, help="Record gameplay video every n episodes")
+        self.arg("--store_model", default=False, action='store_true', help="Whether to record gameplay videos")
+        self.arg("--store_every", type=int, default=100, help="Save model every n episodes")
+        self.arg("--skip_frames", default=True, action='store_true', help="Whether to skip frames")
+        self.arg("--n_skip_frames", type=int, default=4, help="How many frames to skip")
+        self.arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
+        self.arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
+        self.arg("--show_observation", default=False, action='store_true', help="Show AI's observation.")
+        self.arg("--normalize_reward", default=False, action='store_true', help="Normalize agent reward.")
+        self.arg("--normalize_observation", default=True, action='store_true', help="Normalize agent observations.")
+        self.arg("--resize_observation", default=True, action='store_true', help="Resize agent's observation to size specified in config.")
+        self.arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
+        self.arg("--discretize", default=True, action='store_true', help="Limit agent's actions as specified in config.")
+        self.arg("--learning_rate", type=float, default=0.00003, help="Set model's learning rate.")
+        self.arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
+        self.arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
+        self.arg("--model", type=str, default="PPO", help="The specific RL model to be used.")
+        self.arg("--step_limit", type=int, default=None, help="Max number of steps agent is allowed to take before episode is truncated")
+        self.arg("--crop", default=False, action='store_true', help="Crop the agent's observations (defaults to leaving 80x80) pixels at center")
+        self.arg("--crop_dimension", type=str, default="256x256", help="The rectangular dimension of the center crop to be applied (e.g. 64x64).")
+
+        # WandB
+        self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
+        self.arg('--wandb_entity', default='automated-play', type=str, help='WandB username (entity).')
+        self.arg('--wandb_project', default='Mario', type=str, help='WandB "Project"')
+        self.arg('--wandb_group', default=None, type=str, help='WandB "Group". Name of the env by default.')
+        self.arg('--wandb_job_type', default=None, type=str, help='WandB job type')
+        self.arg('--wandb_tags', default=[], type=str, nargs='*', help='Tags can help finding experiments')
+        self.arg('--wandb_key', default=None, type=str, help='API key for authorizing WandB')
+
+        args = self.__parser.parse_args()
+
+        return args
