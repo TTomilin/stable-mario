@@ -1,7 +1,7 @@
 from utilities.parser import BaseParser
 
 class TrainParser(BaseParser):
-    def get_args(self):                
+    def set_args(self):                
         self.arg("--device", default="cuda", type=str, choices=["cuda", "cpu"], help="Device to use")
         self.arg("--game", type=str, default="broom_zoom", help="Name of the game")
         self.arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
@@ -36,7 +36,3 @@ class TrainParser(BaseParser):
         self.arg('--wandb_job_type', default=None, type=str, help='WandB job type')
         self.arg('--wandb_tags', default=[], type=str, nargs='*', help='Tags can help finding experiments')
         self.arg('--wandb_key', default=None, type=str, help='API key for authorizing WandB')
-
-        args = self._parser.parse_args()
-
-        return args

@@ -1,4 +1,5 @@
 import argparse
+import sys
 from utilities.train_parser import TrainParser
 
 import os
@@ -125,7 +126,7 @@ def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
 
 
 if __name__ == '__main__':
-    parser = TrainParser()
+    parser = TrainParser(arg_source=sys.argv[1:])
 
     args = parser.get_args()
     main(args)

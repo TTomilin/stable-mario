@@ -1,5 +1,6 @@
 import argparse
 from utilities.load_parser import LoadParser
+from utilities.train_parser import TrainParser
 
 import os
 from copy import copy
@@ -25,12 +26,21 @@ from wrappers.observation import ShowObservation
 
 
 def main(cfg: argparse.Namespace):
-    experiment_dir = Path(__file__).parent.parent.resolve()
+    # Create directory to store footage of trained model:
+    load_directory = cfg.directory
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_dir = f"{experiment_dir}/trained_footage/{cfg.game}/{timestamp}"
+    log_dir = f"{load_directory}/trained_footage/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
     device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
     
+    # Load training parameters:
+    train_command = None
+    with open(f"{load_directory}/train_command.txt", 'r') as file:
+        train_command = file.read()
+    argument_list = train_command.split(" ")[:2]
+    train_parser = TrainParser()
+
+
     # Create environment
     game = cfg.game
     state = cfg.load_state if cfg.load_state is not None else CONFIG[game]["state"]
@@ -116,8 +126,7 @@ def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    
-    args = None
+    parser = LoadParser()
+    args = parser.get_args()
 
     main(args)
