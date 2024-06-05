@@ -1,5 +1,5 @@
 import argparse
-from utilities.retro_parser import RetroParser
+from utilities.train_parser import TrainParser
 
 import os
 import numpy as np
@@ -125,7 +125,7 @@ def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
 
 
 if __name__ == '__main__':
-    parser = RetroParser()
+    parser = TrainParser()
 
     args = parser.get_args()
     main(args)

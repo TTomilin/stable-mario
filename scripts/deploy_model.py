@@ -1,4 +1,6 @@
 import argparse
+from utilities.load_parser import LoadParser
+
 import os
 from copy import copy
 from datetime import datetime
@@ -114,18 +116,8 @@ def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
 
 
 if __name__ == '__main__':
-    def arg(*args, **kwargs):
-        parser.add_argument(*args, **kwargs)
-
-
     parser = argparse.ArgumentParser()
     
-    arg("--path", type=str, help="Path to model's zip file")
-    arg("--game", type=str, default="broom_zoom", help="Name of the game")
-    arg("--render_mode", default="rgb_array", choices=["human", "rgb_array"], help="Render mode")
-    arg("--load_state", type=str, default=None, help="Path to the game save state to load")
-    arg("--record", default=True, action='store_true', help="Whether to record gameplay videos")
-    arg("--record_every", type=int, default=150, help="Record gameplay video every n episodes")
+    args = None
 
-    args = parser.parse_args()
     main(args)

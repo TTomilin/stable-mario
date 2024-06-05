@@ -1,12 +1,6 @@
-import argparse
+from utilities.parser import BaseParser
 
-class RetroParser:
-    def __init__(self):
-        self.__parser = argparse.ArgumentParser()
-
-    def arg(self, *args, **kwargs):
-        self.__parser.add_argument(*args, **kwargs)
-
+class TrainParser(BaseParser):
     def get_args(self):                
         self.arg("--device", default="cuda", type=str, choices=["cuda", "cpu"], help="Device to use")
         self.arg("--game", type=str, default="broom_zoom", help="Name of the game")
@@ -43,6 +37,6 @@ class RetroParser:
         self.arg('--wandb_tags', default=[], type=str, nargs='*', help='Tags can help finding experiments')
         self.arg('--wandb_key', default=None, type=str, help='API key for authorizing WandB')
 
-        args = self.__parser.parse_args()
+        args = self._parser.parse_args()
 
         return args
