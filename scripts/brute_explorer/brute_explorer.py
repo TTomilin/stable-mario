@@ -7,7 +7,7 @@ import numpy as np
 import retro
 
 GAME_ENV = 'MarioParty-GbAdvance'
-LOAD_STATE = 'Level1'
+LOAD_STATE = 'brute_explorer_15.state'
 RENDER_MODE = 'none'
 SAVE_STATE = 'example'
 PLAYTIME = 0
@@ -22,7 +22,9 @@ def main():
                             render_mode=RENDER_MODE)  # rendering disabled for enhanced speed.
 
     env.reset()  # set environment to initial state
-    select_pressed = 0
+    start_pressed = 0
+    flip = False
+    obs = {'in_menu': 1}
 
     # start taking random actions:
     while True:
@@ -30,16 +32,23 @@ def main():
             a = env.action_space.sample()
             a = filter_actions(a)
 
-            if select_pressed == 1:
-                print("pressing select again")
-                a[3] = 1 # press select again if already pressed
-                select_pressed = 0
-            elif random.randint(0, 10**4) == 1:
-                print("pressing select")
-                a[3] = 1 # press select
-                select_pressed = 1
+            if obs['in_menu'] == 1:
+                for i in range(0, len(a)):
+                    a[i] = 0
+                if flip:
+                    a[8] = 1 # if we are in main menu, press A immediately to re-enter shroom city
+                flip = not flip
 
-            _, _, _, _, _ = env.step(a)
+            if start_pressed == 1:
+                print("pressing start again")
+                a[3] = 1 # press start again if already pressed
+                start_pressed = 0
+            elif random.randint(0, 10**4) == 1:
+                print("pressing start")
+                a[3] = 1 # press start
+                start_pressed = 1
+
+            _, _, _, _, obs = env.step(a)
         except KeyboardInterrupt:
             content = env.em.get_state()
             with gzip.open(SAVE_STATE, 'wb') as f:
