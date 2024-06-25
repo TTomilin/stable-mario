@@ -5,25 +5,18 @@ from utilities.load_parser import LoadParser
 from utilities.train_parser import TrainParser
 
 import os
-from copy import copy
 from datetime import datetime
-from pathlib import Path
 
 import wandb
-import torch
 from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward
 from stable_baselines3 import PPO
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
-from stable_baselines3.common.callbacks import EvalCallback
-from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.vec_env import DummyVecEnv
 
 from sb3_contrib import QRDQN
 
 import stable_retro
 from config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
-from stable_retro.examples.ppo import StochasticFrameSkip
 from wrappers.observation import Rescale
 from wrappers.observation import ShowObservation
 
