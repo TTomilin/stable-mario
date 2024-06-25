@@ -54,5 +54,13 @@ CONFIG = {
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000
+    },
+        'sort_stack': {
+        'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], []],
+        'game_env': 'sort_stack-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (160, 144),
+        'timesteps': 10000000
     }
 }

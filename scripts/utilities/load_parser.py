@@ -1,5 +1,5 @@
 import argparse
-from parser import BaseParser
+from utilities.parser import BaseParser
 
 class LoadParser(BaseParser):
     def set_args(self):                

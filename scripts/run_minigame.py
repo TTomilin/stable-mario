@@ -127,6 +127,5 @@ def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
 
 if __name__ == '__main__':
     parser = TrainParser(arg_source=sys.argv[1:])
-
     args = parser.get_args()
     main(args)
