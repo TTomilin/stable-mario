@@ -24,7 +24,7 @@ class TrainParser(BaseParser):
         self.arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
         self.arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
         self.arg("--model", type=str, default="PPO", help="The specific RL model to be used.")
-        self.arg("--step_limit", type=int, default=None, help="Max number of steps agent is allowed to take before episode is truncated")
+        self.arg("--time_limit", type=int, default=None, help="Max number of seconds agent is allowed to take before episode is truncated")
         self.arg("--crop", default=False, action='store_true', help="Crop the agent's observations (defaults to leaving 80x80) pixels at center")
         self.arg("--crop_dimension", type=str, default="256x256", help="The rectangular dimension of the center crop to be applied (e.g. 64x64).")
 

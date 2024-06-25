@@ -21,10 +21,11 @@ from sb3_contrib import QRDQN
 import stable_retro
 from config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
-from stable_retro.examples.ppo import StochasticFrameSkip
 from wrappers.observation import Rescale, ShowObservation, CenterCrop
 
 FRAME_RATE = 60 # GBA runs at 60fps
+STEPS_PER_FRAME = 4 # Each GBA frame corresponds to 3 steps taken by the AI
+STEPS_PER_SECOND = FRAME_RATE * STEPS_PER_FRAME
 
 def main(cfg: argparse.Namespace):
     experiment_dir = Path(__file__).parent.parent.resolve()
@@ -56,7 +57,7 @@ def main(cfg: argparse.Namespace):
     if cfg.show_observation:
         env = ShowObservation(env)
     if cfg.skip_frames:
-        env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames)
+        env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames * STEPS_PER_FRAME)
     if cfg.stack_frames:
         env = FrameStack(env, cfg.n_stack_frames)
     if CONFIG[game]["clip_reward"]:
@@ -64,8 +65,8 @@ def main(cfg: argparse.Namespace):
     if cfg.record:
         video_folder = f"{log_dir}/videos"
         env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
-    if cfg.step_limit != None:
-        env = TimeLimit(env=env, max_episode_steps=cfg.step_limit)
+    if cfg.time_limit != None:
+        env = TimeLimit(env=env, max_episode_steps=cfg.time_limit * STEPS_PER_SECOND)
 
     # Create a callback to save best model
     eval_env = Monitor(copy(env))
@@ -88,7 +89,6 @@ def main(cfg: argparse.Namespace):
     timesteps = CONFIG[game]["timesteps"]
     if cfg.timesteps > 0:
         timesteps = cfg.timesteps
-        
 
     # Train the model
     try:
