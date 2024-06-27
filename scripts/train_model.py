@@ -22,6 +22,7 @@ import stable_retro
 from config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
 from wrappers.observation import Rescale, ShowObservation, CenterCrop
+from wrappers.logger import LogVariance, LogRewardSummary
 
 FRAME_RATE = 60 # GBA runs at 60fps
 STEPS_PER_FRAME = 4 # Each GBA frame corresponds to 3 steps taken by the AI
@@ -33,6 +34,9 @@ def main(cfg: argparse.Namespace):
     log_dir = f"{experiment_dir}/saves/{cfg.game}/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
     device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
+
+    with open(f"{log_dir}/train_command.txt", "w") as commandFile:
+        commandFile.write(' '.join(sys.argv[0:])) # save the training command (needed for model re-initialization)
 
     if cfg.with_wandb:
         init_wandb(cfg, log_dir, timestamp)
@@ -67,6 +71,10 @@ def main(cfg: argparse.Namespace):
         env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
     if cfg.time_limit != None:
         env = TimeLimit(env=env, max_episode_steps=cfg.time_limit * STEPS_PER_SECOND)
+    if cfg.log_variance and cfg.with_wandb:
+        env = LogVariance(env, cfg.variance_log_frequency)
+    if cfg.log_reward_summary and cfg.with_wandb:
+        env = LogRewardSummary(env, cfg.log_reward_summary_frequency)
 
     # Create a callback to save best model
     eval_env = Monitor(copy(env))
@@ -103,27 +111,28 @@ def main(cfg: argparse.Namespace):
         wandb.save(f"{log_dir}/{game}*")
 
 def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
-    if args.wandb_key:
-        wandb.login(key=args.wandb_key)
+    if cfg.wandb_key:
+        wandb.login(key=cfg.wandb_key)
     wandb_group = cfg.wandb_group if cfg.wandb_group is not None else cfg.game
     wandb_job_type = cfg.wandb_job_type if cfg.wandb_job_type is not None else "PPO"
     wandb_unique_id = f'{wandb_job_type}_{wandb_group}_{timestamp}'
     wandb.init(
         dir=log_dir,
         monitor_gym=True,
-        project=args.wandb_project,
-        entity=args.wandb_entity,
+        project=cfg.wandb_project,
+        entity=cfg.wandb_entity,
         sync_tensorboard=True,
         id=wandb_unique_id,
         name=wandb_unique_id,
         group=wandb_group,
         job_type=wandb_job_type,
-        tags=args.wandb_tags,
+        tags=cfg.wandb_tags,
         resume=False,
         settings=wandb.Settings(start_method='fork'),
         reinit=True
     )
-
+    wandb.define_metric(name='eval/mean_reward', step_metric='global_step')
+    wandb.define_metric(name='eval/mean_ep_length', step_metric='global_step')
 
 if __name__ == '__main__':
     parser = TrainParser(arg_source=sys.argv[1:])

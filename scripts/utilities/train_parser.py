@@ -36,3 +36,7 @@ class TrainParser(BaseParser):
         self.arg('--wandb_job_type', default=None, type=str, help='WandB job type')
         self.arg('--wandb_tags', default=[], type=str, nargs='*', help='Tags can help finding experiments')
         self.arg('--wandb_key', default=None, type=str, help='API key for authorizing WandB')
+        self.arg('--log_variance', default=False, action='store_true', help="Whether or not to log the variance in the model's reward each n episodes.")
+        self.arg('--variance_log_frequency', type=int, default=5, help="Frequency with which to log variance in episode rewards, measured in episodes.")
+        self.arg('--log_reward_summary', default=False, action='store_true', help="Whether or not to log the smallest episode reward each n episodes.")
+        self.arg('--log_reward_summary_frequency', type=int, default=5, help="Frequency with which to log the smallest episode reward, measured in episodes.")
