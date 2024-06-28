@@ -3,7 +3,7 @@ CONFIG = {
         'actions': [['UP'], ['DOWN'], ['UP', 'RIGHT'], ['DOWN', 'RIGHT'], ['UP', 'LEFT'], ['DOWN', 'LEFT'], []],
         'game_env': 'broom_zoom-MP',
         'state': 'Level1',
-        'clip_reward': True,
+        'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 1000000,
     },
@@ -58,6 +58,14 @@ CONFIG = {
         'sort_stack': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], []],
         'game_env': 'sort_stack-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (160, 144),
+        'timesteps': 10000000
+    },
+        'stompbot_xl': {
+        'actions': [['UP'], ['UP', 'A'], ['LEFT'], ['LEFT', 'A'], ['RIGHT'], ['RIGHT', 'A'], ['A'], ['B'], ['UP', 'RIGHT'], ['UP', 'RIGHT', 'A'], ['UP', 'LEFT'], ['UP', 'LEFT', 'A'], []],
+        'game_env': 'stompbot_xl-MP',
         'state': 'Level1',
         'clip_reward': False,
         'resize': (160, 144),
