@@ -57,7 +57,8 @@ class ShowObservation(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
         return observation
 
     def animate_observations(self, observations):
-        pl.imshow(observations.astype('uint8'))
+        pl.clf()
+        pl.imshow(observations, interpolation="nearest")
         pl.pause(10**-6)
         pl.draw()
 

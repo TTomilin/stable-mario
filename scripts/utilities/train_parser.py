@@ -16,7 +16,7 @@ class TrainParser(BaseParser):
         self.arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
         self.arg("--show_observation", default=False, action='store_true', help="Show AI's observation.")
         self.arg("--normalize_reward", default=False, action='store_true', help="Normalize agent reward.")
-        self.arg("--normalize_observation", default=True, action='store_true', help="Normalize agent observations.")
+        self.arg("--normalize_observation", default=False, action='store_true', help="Normalize agent observations.")
         self.arg("--resize_observation", default=True, action='store_true', help="Resize agent's observation to size specified in config.")
         self.arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
         self.arg("--discretize", default=True, action='store_true', help="Limit agent's actions as specified in config.")
