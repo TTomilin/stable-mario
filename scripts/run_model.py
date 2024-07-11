@@ -70,9 +70,9 @@ def main(cfg: argparse.Namespace):
     # Load the model
     model = None
     if train_args.model == "PPO":
-        model = try_load_model(load_directory, ["model", f"{train_args.game}-bak"], PPO, env)
+        model = try_load_model(load_directory, [train_args.game, f"{train_args.game}-bak"], PPO, env)
     elif train_args.model == "QR-DQN":
-        model = try_load_model(load_directory, ["model", f"{train_args.game}-bak"], QRDQN, env)
+        model = try_load_model(load_directory, [train_args.game, f"{train_args.game}-bak"], QRDQN, env)
     else:
         print("No model matching the model argument found. Aborting...")
         exit()
@@ -97,6 +97,8 @@ def try_load_model(directory, names, model_type, env):
             break
         except FileNotFoundError:
             pass
+    if model == None:
+        print("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
     return model
 
 def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:

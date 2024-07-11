@@ -101,7 +101,7 @@ def main(cfg: argparse.Namespace):
     # Train the model
     try:
         model.learn(total_timesteps=timesteps, callback=eval_callback if cfg.store_model else None)
-        model.save(f"{log_dir}/{game}")
+        model.save(f"{log_dir}/{game}.zip")
     except KeyboardInterrupt:
         model.save(f"{log_dir}/{game}-bak.zip")
 
