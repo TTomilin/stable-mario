@@ -69,7 +69,7 @@ CONFIG = {
         'game_env': 'stompbot_xl-MP',
         'state': 'Level1',
         'clip_reward': False,
-        'resize': (160, 144),
-        'timesteps': 10000000
+        'resize': (80, 72),
+        'timesteps': 1000000000
     }
 }
