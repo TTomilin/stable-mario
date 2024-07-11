@@ -64,7 +64,7 @@ CONFIG = {
         'timesteps': 10000000
     },
         'stompbot_xl': {
-        'actions': [['UP'], ['UP', 'A'], ['LEFT'], ['LEFT', 'A'], ['RIGHT'], ['RIGHT', 'A'], ['A'], ['B'], ['UP', 'RIGHT'], ['UP', 'RIGHT', 'A'], ['UP', 'LEFT'], ['UP', 'LEFT', 'A'], []],
+        'actions': [['UP'], ['UP', 'A'], ['UP', 'B'], ['LEFT'], ['LEFT', 'A'], ['LEFT', 'B'], ['RIGHT'], ['RIGHT', 'A'], ['RIGHT', 'B'], ['A'], ['B'], ['UP', 'RIGHT'], ['UP', 'RIGHT', 'A'], ['UP', 'RIGHT', 'B'], ['UP', 'LEFT'], ['UP', 'LEFT', 'A'], ['UP', 'LEFT', 'B'], []],
         'game_env': 'stompbot_xl-MP',
         'state': 'Level1',
         'clip_reward': False,

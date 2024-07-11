@@ -36,6 +36,10 @@ def main(cfg: argparse.Namespace):
     train_parser = TrainParser(arg_source=argv[1:]) # feed arguments into parser
     train_args = train_parser.get_args()
 
+    # if needed, sync with wandb
+    if cfg.with_wandb:
+        init_wandb(train_args, log_dir, "load_at_" + timestamp)
+
     # Create environment
     game = train_args.game
     state = train_args.load_state if train_args.load_state is not None else CONFIG[game]["state"]
@@ -59,13 +63,16 @@ def main(cfg: argparse.Namespace):
         env = FrameStack(env, train_args.n_stack_frames)
     if CONFIG[game]["clip_reward"]:
         env = ClipRewardEnv(env)
+    if cfg.record:
+        video_folder = log_dir
+        env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
 
     # Load the model
-        model = None
+    model = None
     if train_args.model == "PPO":
-        model = PPO.load(f"{load_directory}/model", env=env)
+        model = try_load_model(load_directory, ["model", f"{train_args.game}-bak"], PPO, env)
     elif train_args.model == "QR-DQN":
-        model = QRDQN.load(f"{load_directory}/model", env=env)
+        model = try_load_model(load_directory, ["model", f"{train_args.game}-bak"], QRDQN, env)
     else:
         print("No model matching the model argument found. Aborting...")
         exit()
@@ -81,23 +88,34 @@ def main(cfg: argparse.Namespace):
         if terminated or truncated:
             obs, _ = env.reset()
 
+def try_load_model(directory, names, model_type, env):
+    model = None
+    for name in names:
+        try:
+            model = model_type.load(f"{directory}/{name}", env=env)
+            print(f"loaded {name}")
+            break
+        except FileNotFoundError:
+            pass
+    return model
+
 def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
-    if args.wandb_key:
-        wandb.login(key=args.wandb_key)
+    if cfg.wandb_key:
+        wandb.login(key=cfg.wandb_key)
     wandb_group = cfg.wandb_group if cfg.wandb_group is not None else cfg.game
     wandb_job_type = cfg.wandb_job_type if cfg.wandb_job_type is not None else "PPO"
     wandb_unique_id = f'{wandb_job_type}_{wandb_group}_{timestamp}'
     wandb.init(
         dir=log_dir,
         monitor_gym=True,
-        project=args.wandb_project,
-        entity=args.wandb_entity,
+        project=cfg.wandb_project,
+        entity=cfg.wandb_entity,
         sync_tensorboard=True,
         id=wandb_unique_id,
         name=wandb_unique_id,
         group=wandb_group,
         job_type=wandb_job_type,
-        tags=args.wandb_tags,
+        tags=cfg.wandb_tags,
         resume=False,
         settings=wandb.Settings(start_method='fork'),
         reinit=True
