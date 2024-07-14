@@ -19,6 +19,7 @@ from config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
 from wrappers.observation import Rescale
 from wrappers.observation import ShowObservation
+from wrappers.logger import LogRewardSummary
 
 
 def main(cfg: argparse.Namespace):
@@ -73,6 +74,8 @@ def main(cfg: argparse.Namespace):
     if cfg.record:
         video_folder = f"{log_dir}/videos"
         env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
+    if cfg.log_reward_summary and cfg.with_wandb:
+        env = LogRewardSummary(env, cfg.log_reward_summary_frequency)
 
     # Load the model
     model = None
