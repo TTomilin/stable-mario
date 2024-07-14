@@ -40,10 +40,17 @@ def main(cfg: argparse.Namespace):
     if cfg.with_wandb:
         init_wandb(train_args, log_dir, "load_at_" + timestamp)
 
+    # set render-mode based on recording:
+    render_mode = None
+    if cfg.record:
+        render_mode = "rgb_array"
+    else:
+        render_mode = "human"
+
     # Create environment
     game = train_args.game
     state = train_args.load_state if train_args.load_state is not None else CONFIG[game]["state"]
-    env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode="human")
+    env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=render_mode)
 
     if train_args.discretize:
         env = Discretizer(env, CONFIG[game]["actions"])
@@ -64,7 +71,7 @@ def main(cfg: argparse.Namespace):
     if CONFIG[game]["clip_reward"]:
         env = ClipRewardEnv(env)
     if cfg.record:
-        video_folder = log_dir
+        video_folder = f"{log_dir}/videos"
         env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
 
     # Load the model
