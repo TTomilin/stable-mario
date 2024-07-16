@@ -65,7 +65,7 @@ CONFIG = {
     },
         'stompbot_xl': {
         #'actions': [['UP'], ['UP', 'A'], ['UP', 'B'], ['LEFT'], ['LEFT', 'A'], ['LEFT', 'B'], ['RIGHT'], ['RIGHT', 'A'], ['RIGHT', 'B'], ['A'], ['B'], ['UP', 'RIGHT'], ['UP', 'RIGHT', 'A'], ['UP', 'RIGHT', 'B'], ['UP', 'LEFT'], ['UP', 'LEFT', 'A'], ['UP', 'LEFT', 'B'], []],
-        'actions': [['UP', 'A'], ['LEFT', 'A'], ['RIGHT', 'A'], ['A'], ['UP', 'RIGHT', 'A'], ['UP', 'LEFT', 'A']],
+        'actions': [['UP', 'A'], ['LEFT', 'A'], ['RIGHT', 'A'], ['UP', 'RIGHT', 'A'], ['UP', 'LEFT', 'A']],
         'game_env': 'stompbot_xl-MP',
         'state': 'Level1',
         'clip_reward': False,
