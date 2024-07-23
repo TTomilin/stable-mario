@@ -3,6 +3,7 @@ import sys
 import stable_retro.data
 from utilities.train_parser import TrainParser
 from utilities.environment_creator import RetroEnvCreator
+from utilities.model_creator import ModelCreator
 from config import CONFIG
 
 import os
@@ -44,16 +45,7 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = None
-    if cfg.model == "PPO":
-        model = PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
-                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
-    elif cfg.model == "QR-DQN":
-        model = QRDQN(policy='CnnPolicy', env=env, device=device,
-                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
-    else:
-        print("No model matching the model argument found. Aborting...")
-        exit()
+    model = ModelCreator.CreateModel(cfg, env, device, log_dir)
     
     # Determine number of timesteps
     timesteps = CONFIG[game]["timesteps"]
@@ -62,15 +54,15 @@ def main(cfg: argparse.Namespace):
 
     # Train the model
     try:
-        model.learn(total_timesteps=timesteps, callback=eval_callback if cfg.store_model else None)
+        model.learn(total_timesteps=timesteps)
         model.save(f"{log_dir}/{game}.zip")
     except KeyboardInterrupt:
         model.save(f"{log_dir}/{game}-bak.zip")
 
     # upload best and most recent models to wandb:
-    if cfg.store_model and cfg.with_wandb:
-        wandb.save(f"{log_dir}/checkpoints/*")
-        wandb.save(f"{log_dir}/{game}*")
+    if cfg.with_wandb:
+        wandb.save(f"{log_dir}/models/{game}-bak.zip")
+
 
 def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
     if cfg.wandb_key:
