@@ -2,6 +2,8 @@ import argparse
 import sys
 import stable_retro.data
 from utilities.train_parser import TrainParser
+from utilities.environment_creator import RetroEnvCreator
+from config import CONFIG
 
 import os
 import numpy as np
@@ -19,22 +21,13 @@ from stable_baselines3.common.monitor import Monitor
 
 from sb3_contrib import QRDQN
 
-import stable_retro
-from config import CONFIG
-from stable_retro.examples.discretizer import Discretizer
-from wrappers.observation import Rescale, ShowObservation, CenterCrop
-from wrappers.logger import LogVariance, LogRewardSummary
-
-FRAME_RATE = 60 # GBA runs at 60fps
-STEPS_PER_FRAME = 4 # Each GBA frame corresponds to 3 steps taken by the AI
-STEPS_PER_SECOND = FRAME_RATE * STEPS_PER_FRAME
-
 def main(cfg: argparse.Namespace):
     experiment_dir = Path(__file__).parent.parent.resolve()
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_dir = f"{experiment_dir}/saves/{cfg.game}/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
     device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
+    game = cfg.game
 
     with open(f"{log_dir}/train_command.txt", "w") as commandFile:
         commandFile.write(' '.join(sys.argv[0:])) # save the training command (needed for model re-initialization)
@@ -42,40 +35,8 @@ def main(cfg: argparse.Namespace):
     if cfg.with_wandb:
         init_wandb(cfg, log_dir, timestamp)
 
-    # Create environment
-    game = cfg.game
-    state = cfg.load_state if cfg.load_state is not None else CONFIG[game]["state"]
-    env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=cfg.render_mode)
-    if cfg.discretize:
-        env = Discretizer(env, CONFIG[game]["actions"])
-    if cfg.crop:
-        dim = np.array([int(num_str) for num_str in cfg.crop_dimension.split("x")])
-        env = CenterCrop(env, dim=dim)
-    if cfg.resize_observation:
-        env = ResizeObservation(env, CONFIG[game]["resize"])
-    if cfg.rescale:
-        env = Rescale(env)
-    if cfg.normalize_observation:
-        env = NormalizeObservation(env)
-    if cfg.normalize_reward:
-        env = NormalizeReward(env)    
-    if cfg.show_observation:
-        env = ShowObservation(env)
-    if cfg.skip_frames:
-        env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames * STEPS_PER_FRAME)
-    if cfg.stack_frames:
-        env = FrameStack(env, cfg.n_stack_frames)
-    if CONFIG[game]["clip_reward"]:
-        env = ClipRewardEnv(env)
-    if cfg.record:
-        video_folder = f"{log_dir}/videos"
-        env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
-    if cfg.time_limit != None:
-        env = TimeLimit(env=env, max_episode_steps=cfg.time_limit * STEPS_PER_SECOND)
-    if cfg.log_variance and cfg.with_wandb:
-        env = LogVariance(env, cfg.variance_log_frequency)
-    if cfg.log_reward_summary and cfg.with_wandb:
-        env = LogRewardSummary(env, cfg.log_reward_summary_frequency)
+    # create environment:
+    env = RetroEnvCreator.create(cfg, log_dir, CONFIG)
 
     # Create a callback to save best model
     eval_env = Monitor(copy(env))

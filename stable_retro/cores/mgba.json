@@ -1,7 +1,5 @@
 {
     "GbAdvance": {
-        "framerate": 60,
-        "steps_per_frame": 4,
         "lib": "mgba",
         "ext": ["gba"],
         "keybinds": ["Z", null, "TAB", "ENTER", "UP", "DOWN", "LEFT", "RIGHT", "X", null, "A", "S"],
