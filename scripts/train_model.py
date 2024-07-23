@@ -1,40 +1,38 @@
 import argparse
 import sys
-import stable_retro.data
 from utilities.train_parser import TrainParser
 from utilities.environment_creator import RetroEnvCreator
 from utilities.model_creator import ModelCreator
+from utilities.wandb_manager import WandbManager
 from config import CONFIG
 
 import os
-import numpy as np
 from copy import copy
 from datetime import datetime
 from pathlib import Path
 
 import wandb
 import torch
-from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward, TimeLimit
-from stable_baselines3 import PPO
-from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
 
-from sb3_contrib import QRDQN
-
 def main(cfg: argparse.Namespace):
+    # create logging directory:
     experiment_dir = Path(__file__).parent.parent.resolve()
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_dir = f"{experiment_dir}/saves/{cfg.game}/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
+    
+    # select optimal training hardware:
     device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
-    game = cfg.game
 
+    # save the exact training command to a textfile in the logging directory:
     with open(f"{log_dir}/train_command.txt", "w") as commandFile:
         commandFile.write(' '.join(sys.argv[0:])) # save the training command (needed for model re-initialization)
 
+    # initialize wandb run:
     if cfg.with_wandb:
-        init_wandb(cfg, log_dir, timestamp)
+        WandbManager.InitializeWandb(cfg, log_dir, timestamp)
 
     # create environment:
     env = RetroEnvCreator.create(cfg, log_dir, CONFIG)
@@ -48,45 +46,22 @@ def main(cfg: argparse.Namespace):
     model = ModelCreator.CreateModel(cfg, env, device, log_dir)
     
     # Determine number of timesteps
-    timesteps = CONFIG[game]["timesteps"]
+    timesteps = CONFIG[cfg.game]["timesteps"]
     if cfg.timesteps > 0:
         timesteps = cfg.timesteps
 
     # Train the model
     try:
         model.learn(total_timesteps=timesteps)
-        model.save(f"{log_dir}/{game}.zip")
+        model.save(f"{log_dir}/{cfg.game}.zip")
+        # if training completes, upload last model to wandb.
+        if cfg.with_wandb:
+            wandb.save(f"{log_dir}/{cfg.game}.zip")
     except KeyboardInterrupt:
-        model.save(f"{log_dir}/{game}-bak.zip")
-
-    # upload best and most recent models to wandb:
-    if cfg.with_wandb:
-        wandb.save(f"{log_dir}/models/{game}-bak.zip")
-
-
-def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
-    if cfg.wandb_key:
-        wandb.login(key=cfg.wandb_key)
-    wandb_group = cfg.wandb_group if cfg.wandb_group is not None else cfg.game
-    wandb_job_type = cfg.wandb_job_type if cfg.wandb_job_type is not None else "PPO"
-    wandb_unique_id = f'{wandb_job_type}_{wandb_group}_{timestamp}'
-    wandb.init(
-        dir=log_dir,
-        monitor_gym=True,
-        project=cfg.wandb_project,
-        entity=cfg.wandb_entity,
-        sync_tensorboard=True,
-        id=wandb_unique_id,
-        name=wandb_unique_id,
-        group=wandb_group,
-        job_type=wandb_job_type,
-        tags=cfg.wandb_tags,
-        resume=False,
-        settings=wandb.Settings(start_method='fork'),
-        reinit=True
-    )
-    wandb.define_metric(name='eval/mean_reward', step_metric='global_step')
-    wandb.define_metric(name='eval/mean_ep_length', step_metric='global_step')
+        model.save(f"{log_dir}/{cfg.game}-bak.zip")
+        # upload last model to wandb:
+        if cfg.with_wandb:
+            wandb.save(f"{log_dir}/{cfg.game}-bak.zip")
 
 if __name__ == '__main__':
     parser = TrainParser(arg_source=sys.argv[1:])

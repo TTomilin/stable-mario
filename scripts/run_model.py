@@ -3,23 +3,18 @@ import sys
 import argparse
 from utilities.load_parser import LoadParser
 from utilities.train_parser import TrainParser
+from utilities.environment_creator import RetroEnvCreator
+from utilities.wandb_manager import WandbManager
 
 import os
 from datetime import datetime
 
 import wandb
-from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward
 from stable_baselines3 import PPO
-from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 
 from sb3_contrib import QRDQN
 
-import stable_retro
 from config import CONFIG
-from stable_retro.examples.discretizer import Discretizer
-from wrappers.observation import Rescale
-from wrappers.observation import ShowObservation
-from wrappers.logger import LogRewardSummary
 
 
 def main(cfg: argparse.Namespace):
@@ -35,54 +30,35 @@ def main(cfg: argparse.Namespace):
         train_command = file.read()
     argv = train_command.split(" ") # convert arguments to list
     train_parser = TrainParser(arg_source=argv[1:]) # feed arguments into parser
-    train_args = train_parser.get_args()
+    reinit_env_args = train_parser.get_args()
+    reinit_env_args_dict = vars(reinit_env_args)
 
     # if needed, sync with wandb
     if cfg.with_wandb:
-        init_wandb(train_args, log_dir, "load_at_" + timestamp)
+        WandbManager.InitializeWandb(reinit_env_args, log_dir + "load_at_", timestamp)
 
-    # set render-mode based on recording:
+    # set render-mode based and some environment arguments based on args passed over cli:
     render_mode = None
     if cfg.record:
-        render_mode = "rgb_array"
+        reinit_env_args_dict['render_mode'] = "rgb_array"
+        reinit_env_args_dict['record'] = True
+        reinit_env_args_dict['record_every'] = cfg.record_every
     else:
-        render_mode = "human"
+        reinit_env_args_dict['record'] = False
+        reinit_env_args_dict['render_mode'] = "human"
+
+    # disable time limit:
+    reinit_env_args_dict["time_limit"] = None
 
     # Create environment
-    game = train_args.game
-    state = train_args.load_state if train_args.load_state is not None else CONFIG[game]["state"]
-    env = stable_retro.make(game=CONFIG[game]['game_env'], state=state, render_mode=render_mode)
-
-    if train_args.discretize:
-        env = Discretizer(env, CONFIG[game]["actions"])
-    if train_args.resize_observation:
-        env = ResizeObservation(env, CONFIG[game]["resize"])
-    if train_args.rescale:
-        env = Rescale(env)
-    if train_args.normalize_observation:
-        env = NormalizeObservation(env)
-    if train_args.normalize_reward:
-        env = NormalizeReward(env)
-    if train_args.show_observation:
-        env = ShowObservation(env);
-    if train_args.skip_frames:
-        env = MaxAndSkipEnv(env, skip=train_args.n_skip_frames)
-    if train_args.stack_frames:
-        env = FrameStack(env, train_args.n_stack_frames)
-    if CONFIG[game]["clip_reward"]:
-        env = ClipRewardEnv(env)
-    if cfg.record:
-        video_folder = f"{log_dir}/videos"
-        env = RecordVideo(env=env, video_folder=video_folder, episode_trigger=lambda x: x % cfg.record_every == 0)
-    if cfg.log_reward_summary and cfg.with_wandb:
-        env = LogRewardSummary(env, cfg.log_reward_summary_frequency)
+    env = RetroEnvCreator.create(reinit_env_args, log_dir, CONFIG)
 
     # Load the model
     model = None
-    if train_args.model == "PPO":
-        model = try_load_model(load_directory, [train_args.game, f"{train_args.game}-bak"], PPO, env)
-    elif train_args.model == "QR-DQN":
-        model = try_load_model(load_directory, [train_args.game, f"{train_args.game}-bak"], QRDQN, env)
+    if reinit_env_args.model == "PPO":
+        model = try_load_model(load_directory, [reinit_env_args.game, f"{reinit_env_args.game}-bak"], PPO, env)
+    elif reinit_env_args.model == "QR-DQN":
+        model = try_load_model(load_directory, [reinit_env_args.game, f"{reinit_env_args.game}-bak"], QRDQN, env)
     else:
         print("No model matching the model argument found. Aborting...")
         exit()
@@ -91,7 +67,7 @@ def main(cfg: argparse.Namespace):
     obs, _ = env.reset()
     while True:
         env.render()
-        if train_args.discretize:
+        if reinit_env_args.discretize:
             action = model.predict(obs)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
         obs, reward, terminated, truncated, info = env.step(action)
 
@@ -110,29 +86,6 @@ def try_load_model(directory, names, model_type, env):
     if model == None:
         print("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
     return model
-
-def init_wandb(cfg: argparse.Namespace, log_dir: str, timestamp: str) -> None:
-    if cfg.wandb_key:
-        wandb.login(key=cfg.wandb_key)
-    wandb_group = cfg.wandb_group if cfg.wandb_group is not None else cfg.game
-    wandb_job_type = cfg.wandb_job_type if cfg.wandb_job_type is not None else "PPO"
-    wandb_unique_id = f'{wandb_job_type}_{wandb_group}_{timestamp}'
-    wandb.init(
-        dir=log_dir,
-        monitor_gym=True,
-        project=cfg.wandb_project,
-        entity=cfg.wandb_entity,
-        sync_tensorboard=True,
-        id=wandb_unique_id,
-        name=wandb_unique_id,
-        group=wandb_group,
-        job_type=wandb_job_type,
-        tags=cfg.wandb_tags,
-        resume=False,
-        settings=wandb.Settings(start_method='fork'),
-        reinit=True
-    )
-
 
 if __name__ == '__main__':
     parser = LoadParser(arg_source=sys.argv[1:])
