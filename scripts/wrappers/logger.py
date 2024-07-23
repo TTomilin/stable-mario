@@ -79,3 +79,32 @@ class LogRewardSummary(BaseRewardLogger):
             self._episode_count = 0 # reset episode counter
             
         return observation, reward, terminated, truncated, info
+    
+class ResumeLogger(gymnasium.Wrapper):
+    """
+    Logs the episode reward mean and episode length mean for resumed runs.
+    """
+
+    def __init__(self, env: gymnasium.Env, episode_limit: int) -> None:
+        super().__init__(env, episode_limit)
+
+    def step(self, action):
+        """Take environment step, but also tracks minimum and maximum reward"""
+        observation, reward, terminated, truncated, info = self.env.step(action)
+
+        self._updateEpisodeRewards(reward, terminated, truncated) # update episode rewards
+
+        if self._episode_count >= self._episode_limit:
+            print(self._episode_rewards)
+            reward_arr = np.array(self._episode_rewards)
+            minReward = reward_arr.min() # retrieve smallest reward
+            maxReward = reward_arr.max() # retrieve largest reward
+            avgReward = reward_arr.mean() # retrieve average reward
+            print(f"smallest reward past {str(self._episode_limit)} episodes: {minReward}")
+            print(f"average reward past {str(self._episode_limit)} episodes: {avgReward}")
+            print(f"largest reward past {str(self._episode_limit)} episodes: {maxReward}")
+            wandb.log({"Minimum Reward": minReward, "Average Reward": avgReward, "Maximum Reward": maxReward}) # log values
+            self._episode_rewards = [] # empty list of episode rewards
+            self._episode_count = 0 # reset episode counter
+            
+        return observation, reward, terminated, truncated, info
