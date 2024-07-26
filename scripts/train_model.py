@@ -2,7 +2,7 @@ import argparse
 import sys
 from utilities.train_parser import TrainParser
 from utilities.environment_creator import RetroEnvCreator
-from utilities.model_creator import ModelCreator
+from utilities.model_manager import ModelManager
 from utilities.wandb_manager import WandbManager
 from config import CONFIG
 
@@ -43,7 +43,7 @@ def main(cfg: argparse.Namespace):
                                  eval_freq=cfg.store_every, deterministic=True, render=False)
 
     # Create the model
-    model = ModelCreator.CreateModel(cfg, env, device, log_dir)
+    model = ModelManager.create_model(cfg, env, device, log_dir)
     
     # Determine number of timesteps
     timesteps = CONFIG[cfg.game]["timesteps"]

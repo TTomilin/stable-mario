@@ -24,11 +24,11 @@ CONFIG = {
         'timesteps': 1000000,
     },
     'bunny_belt': {
-        'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], []],
+        'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A']],
         'game_env': 'bunny_belt-MP',
         'state': 'Level1',
         'clip_reward': False,
-        'resize': (160, 144),
+        'resize': (40, 36),
         'timesteps': 1000000
     },
     'pest_aside': {

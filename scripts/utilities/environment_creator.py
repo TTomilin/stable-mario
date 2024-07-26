@@ -11,7 +11,7 @@ import stable_retro
 import stable_retro.data
 from stable_retro.examples.discretizer import Discretizer
 from wrappers.observation import Rescale, ShowObservation, CenterCrop
-from wrappers.logger import LogVariance, LogRewardSummary
+from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
 
 STEPS_PER_FRAME = 4
 FRAMERATE = 60
@@ -53,6 +53,8 @@ class RetroEnvCreator:
             env = LogVariance(env, cfg.variance_log_frequency)
         if cfg.log_reward_summary and cfg.with_wandb:
             env = LogRewardSummary(env, cfg.log_reward_summary_frequency)
+        if cfg.log_step_rewards:
+            env = StepRewardLogger(env, log_dir)
 
         return env
 

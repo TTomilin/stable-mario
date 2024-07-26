@@ -5,7 +5,7 @@ import pathlib
 from utilities.train_parser import TrainParser
 from utilities.load_parser import LoadParser
 from utilities.environment_creator import RetroEnvCreator
-from utilities.model_creator import ModelCreator
+from utilities.model_manager import ModelManager
 from utilities.wandb_manager import WandbManager
 from config import CONFIG
 
@@ -45,8 +45,8 @@ def main(cfg: argparse.Namespace):
     eval_callback = EvalCallback(eval_env, best_model_save_path=f"{cfg.directory}/checkpoints", log_path=f"{cfg.directory}/logs",
                                  eval_freq=train_args.store_every, deterministic=True, render=False)
 
-    # Create the model
-    model = ModelCreator.CreateModel(train_args, env, device, cfg.directory)
+    # Load the model:
+    model = ModelManager.load_model(train_args.model, train_args.game, cfg.directory, env)
     
     # Determine number of timesteps
     timesteps = CONFIG[train_args.game]["timesteps"]
