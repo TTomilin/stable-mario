@@ -55,7 +55,7 @@ def main(cfg: argparse.Namespace):
 
     # Train the model
     try:
-        model.learn(total_timesteps=timesteps)
+        model.learn(total_timesteps=timesteps, reset_num_timesteps=False)
         model.save(f"{cfg.directory}/{train_args.game}.zip")
         # if training completes, upload last model to wandb.
         if cfg.with_wandb:

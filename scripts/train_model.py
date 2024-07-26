@@ -1,5 +1,6 @@
 import argparse
 import sys
+
 from utilities.train_parser import TrainParser
 from utilities.environment_creator import RetroEnvCreator
 from utilities.model_manager import ModelManager

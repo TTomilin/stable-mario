@@ -1,6 +1,8 @@
 import argparse
 
-from stable_baselines3 import PPO
+from policy_arguments.feature_extractors import BatchNorm
+
+from stable_baselines3 import PPO, DQN
 from stable_baselines3.common.type_aliases import GymEnv
 from sb3_contrib import QRDQN
 from torch import device
@@ -22,8 +24,17 @@ class ModelManager:
 
     @staticmethod
     def __create_QRDQN(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str):
+
+        policy_args = dict()
+
+        if cfg.batch_norm:
+            policy_args.update(features_extractor_class = BatchNorm)
+        else:
+            policy_args = None # if no value added, set it to default 'None'
+
         return QRDQN(policy='CnnPolicy', env=env, device=device,
-                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/")
+                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
+                    policy_kwargs=policy_args) # outperforms DQN, see https://arxiv.org/pdf/1710.10044
                     
     @staticmethod
     def load_model(model_type: str, game: str, load_directory: str, env):

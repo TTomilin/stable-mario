@@ -112,10 +112,9 @@ class ResumeLogger(gymnasium.Wrapper):
 class StepRewardLogger(gymnasium.Wrapper):
     """Wrapper that writes the rewards accumulated over each timestep to a text file"""
 
-    def __init__(self, env: gymnasium.Env, log_dir: str) -> None:
+    def __init__(self, env: gymnasium.Env, log_dir: str, step_limit: int = 1000) -> None:
         super().__init__(env)
-        self.line_count = 0
-        self.line_limit = 7200
+        self.line_limit = step_limit # default step limit corresponds to about 50 seconds of play
         self.reward_buffer = []
         self.log_dir = log_dir
 
@@ -123,9 +122,7 @@ class StepRewardLogger(gymnasium.Wrapper):
         observation, reward, terminated, truncated, info = self.env.step(action)
 
         self.reward_buffer.append(reward) # append step's reward
-        self.line_count += 1 # update line count
-
-        if len(self.reward_buffer) > self.line_limit: # if sufficient rewards collected....
+        if len(self.reward_buffer) >= self.line_limit: # if sufficient rewards collected....
             with open(f"{self.log_dir}/step_rewards.txt", 'w', encoding='utf-8') as file:
                 for reward in self.reward_buffer:
                     file.write(f"{reward}\n") # write them to file

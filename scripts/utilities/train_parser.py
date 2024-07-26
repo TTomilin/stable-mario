@@ -27,6 +27,7 @@ class TrainParser(BaseParser):
         self.arg("--crop", default=False, action='store_true', help="Crop the agent's observations (defaults to leaving 80x80) pixels at center")
         self.arg("--crop_dimension", type=str, default="256x256", help="The rectangular dimension of the center crop to be applied (e.g. 64x64).")
         self.arg("--log_step_rewards", action='store_true', help="Records step rewards in a textfile found at the root of the log directory")
+        self.arg("--batch_norm", action="store_true", help="Normalizes inputs over each batch. Only available for QRDQN and DQN.")
 
         # WandB
         self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
