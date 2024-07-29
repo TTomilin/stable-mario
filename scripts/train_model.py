@@ -6,16 +6,15 @@ from utilities.environment_creator import RetroEnvCreator
 from utilities.model_manager import ModelManager
 from utilities.wandb_manager import WandbManager
 from config import CONFIG
+from callbacks import CustomEvalCallback
 
 import os
-from copy import copy
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 
 import wandb
 import torch
-from stable_baselines3.common.callbacks import EvalCallback
-from stable_baselines3.common.monitor import Monitor
 
 def main(cfg: argparse.Namespace):
     # create logging directory:
@@ -39,9 +38,13 @@ def main(cfg: argparse.Namespace):
     env = RetroEnvCreator.create(cfg, log_dir, CONFIG)
 
     # Create a callback to save best model
-    eval_env = Monitor(copy(env))
-    eval_callback = EvalCallback(eval_env, best_model_save_path=f"{log_dir}/checkpoints", log_path=f"{log_dir}/logs",
-                                 eval_freq=cfg.store_every, deterministic=True, render=False)
+    callback = None
+    if cfg.save_best:
+        callback = CustomEvalCallback(cfg=cfg, eval_env=env, 
+                                                save_path=f"{log_dir}/best_model/",
+                                                system_file_name=f"{cfg.game}_best",
+                                                wandb_file_name=f"{cfg.game}_best",
+                                                eval_freq=cfg.eval_freq)
 
     # Create the model
     model = ModelManager.create_model(cfg, env, device, log_dir)
@@ -53,7 +56,7 @@ def main(cfg: argparse.Namespace):
 
     # Train the model
     try:
-        model.learn(total_timesteps=timesteps)
+        model.learn(total_timesteps=timesteps, callback=callback)
         model.save(f"{log_dir}/{cfg.game}.zip")
         # if training completes, upload last model to wandb.
         if cfg.with_wandb:
@@ -67,4 +70,6 @@ def main(cfg: argparse.Namespace):
 if __name__ == '__main__':
     parser = TrainParser(arg_source=sys.argv[1:])
     args = parser.get_args()
+    parser.validate_args(args)
+    
     main(args)

@@ -1,6 +1,15 @@
+from colorist import Color
+import argparse
+
 from utilities.parser import BaseParser
 
 class TrainParser(BaseParser):
+
+    @staticmethod
+    def validate_args(cfg: argparse.Namespace):
+        if [cfg.pi, cfg.vf].count(None) == 1:
+            raise ValueError(f"{Color.RED}Invalid input. Specify either both cfg.pi and cfg.vf or neither. Aborting...{Color.OFF}")
+
     def set_args(self):                
         self.arg("--device", default="cuda", type=str, choices=["cuda", "cpu"], help="Device to use")
         self.arg("--game", type=str, default="broom_zoom", help="Name of the game")
@@ -20,7 +29,7 @@ class TrainParser(BaseParser):
         self.arg("--rescale", default=False, action='store_true', help="Allow a modular transformation of the step and reset methods.")
         self.arg("--discretize", default=True, action='store_true', help="Limit agent's actions as specified in config.")
         self.arg("--learning_rate", type=float, default=0.00003, help="Set model's learning rate.")
-        self.arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient")
+        self.arg("--ent_coeff", type=float, default=0.05, help="Set entropy coefficient. Defaults to 0.05.")
         self.arg("--timesteps", type=int, default=0, help="Number of timesteps the agent should train for.")
         self.arg("--model", type=str, default="PPO", help="The specific RL model to be used.")
         self.arg("--time_limit", type=int, default=None, help="Max number of seconds agent is allowed to take before episode is truncated")
@@ -28,6 +37,11 @@ class TrainParser(BaseParser):
         self.arg("--crop_dimension", type=str, default="256x256", help="The rectangular dimension of the center crop to be applied (e.g. 64x64).")
         self.arg("--log_step_rewards", action='store_true', help="Records step rewards in a textfile found at the root of the log directory")
         self.arg("--batch_norm", action="store_true", help="Normalizes inputs over each batch. Only available for QRDQN and DQN.")
+        self.arg("--pi", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's actor. PPO default is 64,64")
+        self.arg("--vf", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's critic. PPO default is 64,64")
+        self.arg("--gray_scale", action="store_true", help="transforms model's observations to grayscale.")
+        self.arg("--save_best", action="store_true", default=True, help="Evaluates model each eval_freq episodes and stores best performing one.")
+        self.arg("--eval_freq", type=int, default=300, help="How often to measure and potentially save the model, measured in number of episodes.")
 
         # WandB
         self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')

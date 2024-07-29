@@ -5,6 +5,7 @@ import numpy as np
 import json
 
 from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward, TimeLimit
+from gymnasium.wrappers.gray_scale_observation import GrayScaleObservation
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 
 import stable_retro
@@ -36,8 +37,6 @@ class RetroEnvCreator:
             env = NormalizeObservation(env)
         if cfg.normalize_reward:
             env = NormalizeReward(env)    
-        if cfg.show_observation:
-            env = ShowObservation(env)
         if cfg.skip_frames:
             env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames * STEPS_PER_FRAME)
         if cfg.stack_frames:
@@ -55,6 +54,10 @@ class RetroEnvCreator:
             env = LogRewardSummary(env, cfg.log_reward_summary_frequency)
         if cfg.log_step_rewards:
             env = StepRewardLogger(env, log_dir)
+        if cfg.gray_scale:
+            env = GrayScaleObservation(env=env, keep_dim=True)
+        if cfg.show_observation:
+            env = ShowObservation(env)    
 
         return env
 
