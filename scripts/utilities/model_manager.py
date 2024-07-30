@@ -12,12 +12,12 @@ from torch import device
 class ModelManager:
     @staticmethod
     def create_model(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str):
-        policy_args = ModelManager.__get_shared_policy_args(cfg)
+        shared_policy_args = ModelManager.__get_shared_policy_args(cfg)
 
         if cfg.model == "PPO":
-            return ModelManager.__create_PPO(cfg, env, device, log_dir, policy_args)
+            return ModelManager.__create_PPO(cfg, env, device, log_dir, shared_policy_args)
         elif cfg.model == "QRDQN":
-            return ModelManager.__create_QRDQN(cfg, env, device, log_dir, policy_args)
+            return ModelManager.__create_QRDQN(cfg, env, device, log_dir, shared_policy_args)
         else:
             return ValueError("No model matching the model argument found.")
 
