@@ -13,7 +13,7 @@ class CustomEvalCallback(BaseCallback):
     :param verbose: Verbosity level: 0 for no output, 1 for info messages, 2 for debug messages
     """
     def __init__(self, cfg: argparse.Namespace, eval_env: gymnasium.Env, save_path: str, system_file_name: str, 
-                 wandb_file_name: str, eval_freq: int = 300, n_eval_episodes: int = 1, deterministic: bool = False, verbose: int = 0):
+                 wandb_file_name: str, eval_freq: int = 300, n_eval_episodes: int = 1, deterministic: bool = True, verbose: int = 0):
         super().__init__(verbose)
         self.__previous_best_total_reward = float('-inf')
         self.__n_eval_episodes = n_eval_episodes
