@@ -52,11 +52,13 @@ class LogRewardSummary(BaseRewardLogger):
     Logs the minimum and maximum, and mean reward over n past episodes to wandb in a separate graph
     """
 
-    def __init__(self, env: gymnasium.Env, episode_limit: int) -> None:
+    def __init__(self, env: gymnasium.Env, episode_limit: int, with_wandb: bool) -> None:
         super().__init__(env, episode_limit)
-        wandb.define_metric(name="Minimum Reward", step_metric="global_step")
-        wandb.define_metric(name="Maximum Reward", step_metric="global_step")
-        wandb.define_metric(name="Average Reward", step_metric="global_step")
+        self.with_wandb = with_wandb
+        if self.with_wandb:
+            wandb.define_metric(name="Minimum Reward", step_metric="global_step")
+            wandb.define_metric(name="Maximum Reward", step_metric="global_step")
+            wandb.define_metric(name="Average Reward", step_metric="global_step")
 
 
     def step(self, action):
@@ -64,7 +66,6 @@ class LogRewardSummary(BaseRewardLogger):
         observation, reward, terminated, truncated, info = self.env.step(action)
 
         self._updateEpisodeRewards(reward, terminated, truncated) # update episode rewards
-
         if self._episode_count >= self._episode_limit:
             print(self._episode_rewards)
             reward_arr = np.array(self._episode_rewards)
@@ -74,7 +75,8 @@ class LogRewardSummary(BaseRewardLogger):
             print(f"smallest reward past {str(self._episode_limit)} episodes: {minReward}")
             print(f"average reward past {str(self._episode_limit)} episodes: {avgReward}")
             print(f"largest reward past {str(self._episode_limit)} episodes: {maxReward}")
-            wandb.log({"Minimum Reward": minReward, "Average Reward": avgReward, "Maximum Reward": maxReward}) # log values
+            if self.with_wandb:
+                wandb.log({"Minimum Reward": minReward, "Average Reward": avgReward, "Maximum Reward": maxReward}) # log values
             self._episode_rewards = [] # empty list of episode rewards
             self._episode_count = 0 # reset episode counter
             

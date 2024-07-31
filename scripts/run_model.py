@@ -63,12 +63,19 @@ def main(cfg: argparse.Namespace):
         print("No model matching the model argument found. Aborting...")
         exit()
 
+    # Get determinism setting:
+    deterministic = cfg.deterministic
+
     # Show the model
     obs, _ = env.reset()
     while True:
         env.render()
+        
         if reinit_env_args.discretize:
-            action = model.predict(obs)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
+            action = model.predict(obs, deterministic=deterministic)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
+        else:
+            action = model.predict(obs, deterministic)
+
         obs, reward, terminated, truncated, info = env.step(action)
 
         if terminated or truncated:

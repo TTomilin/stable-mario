@@ -8,4 +8,5 @@ class LoadParser(BaseParser):
         self.arg("--record_every", type=int, default=1, help="Record trained model every n episodes")
         self.arg("--with_wandb", default=False, action='store_true', help="Whether to sync logs to wandb.")
         self.arg("--log_reward_summary", default=False, action='store_true', help="Whether to log the min, mean, max reward each n episodes.")
-        self.arg('--log_reward_summary_frequency', type=int, default=5, help="Frequency with which to log the smallest episode reward, measured in episodes.")
+        self.arg("--log_reward_summary_frequency", type=int, default=5, help="Frequency with which to log the smallest episode reward, measured in episodes.")
+        self.arg("--deterministic", action='store_true', default=False, help="Whether the agent should act deterministically, i.e. always pick action that maximizes pmf.")
