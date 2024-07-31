@@ -40,7 +40,7 @@ class TrainParser(BaseParser):
         self.arg("--pi", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's actor. PPO default is 64,64")
         self.arg("--vf", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's critic. PPO default is 64,64")
         self.arg("--gray_scale", action="store_true", help="transforms model's observations to grayscale.")
-        self.arg("--save_best", action="store_true", default=True, help="Evaluates model each eval_freq episodes and stores best performing one.")
+        self.arg("--save_best", action="store_true", default=False, help="Evaluates model each eval_freq episodes and stores best performing one.")
         self.arg("--eval_freq", type=int, default=300, help="How often to measure and potentially save the model, measured in number of episodes.")
 
         # WandB
