@@ -50,7 +50,7 @@ class RetroEnvCreator:
             env = TimeLimit(env=env, max_episode_steps=cfg.time_limit * STEPS_PER_FRAME * FRAMERATE)
         if cfg.log_variance and cfg.with_wandb:
             env = LogVariance(env, cfg.variance_log_frequency)
-        if cfg.log_reward_summary and cfg.with_wandb:
+        if cfg.log_reward_summary:
             env = LogRewardSummary(env, cfg.log_reward_summary_frequency, cfg.with_wandb)
         if cfg.log_step_rewards:
             env = StepRewardLogger(env, log_dir)
