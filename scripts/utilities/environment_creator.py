@@ -51,7 +51,7 @@ class RetroEnvCreator:
         if cfg.log_variance and cfg.with_wandb:
             env = LogVariance(env, cfg.variance_log_frequency)
         if cfg.log_reward_summary and cfg.with_wandb:
-            env = LogRewardSummary(env, cfg.log_reward_summary_frequency)
+            env = LogRewardSummary(env, cfg.log_reward_summary_frequency, cfg.with_wandb)
         if cfg.log_step_rewards:
             env = StepRewardLogger(env, log_dir)
         if cfg.gray_scale:
