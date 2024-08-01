@@ -7,6 +7,7 @@ from utilities.load_parser import LoadParser
 from utilities.environment_creator import RetroEnvCreator
 from utilities.model_manager import ModelManager
 from utilities.wandb_manager import WandbManager
+from callbacks import CustomEvalCallback
 from config import CONFIG
 
 import os
@@ -40,10 +41,15 @@ def main(cfg: argparse.Namespace):
     # create environment:
     env = RetroEnvCreator.create(train_args, cfg.directory, CONFIG)
 
-    # Create a callback to save best model
-    eval_env = Monitor(copy(env))
-    eval_callback = EvalCallback(eval_env, best_model_save_path=f"{cfg.directory}/checkpoints", log_path=f"{cfg.directory}/logs",
-                                 eval_freq=train_args.store_every, deterministic=True, render=False)
+    # Create callback:
+    callback = None
+    if train_args.save_best:
+        callback = CustomEvalCallback(cfg=train_args, eval_env=env, 
+                                                save_path=f"{cfg.directory}/best_model/",
+                                                system_file_name=f"{train_args.game}_best",
+                                                wandb_file_name=f"{train_args.game}_best",
+                                                eval_freq=train_args.eval_freq)
+
 
     # Load the model:
     model = ModelManager.load_model(train_args.model, train_args.game, cfg.directory, env)
