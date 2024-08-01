@@ -41,7 +41,8 @@ def main(cfg: argparse.Namespace):
     callback = None
     if cfg.save_best:
         callback = CustomEvalCallback(cfg=cfg, eval_env=env, 
-                                                save_path=f"{log_dir}/best_model/",
+                                                log_dir=log_dir,
+                                                device=device,
                                                 system_file_name=f"{cfg.game}_best",
                                                 wandb_file_name=f"{cfg.game}_best",
                                                 eval_freq=cfg.eval_freq)
