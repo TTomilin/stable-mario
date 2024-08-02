@@ -21,7 +21,7 @@ CONFIG = {
         'state': 'Level1',
         'clip_reward': False,
         'resize': (80, 72),
-        'timesteps': 1000000,
+        'timesteps': 100000000000,
     },
     'amplifried': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],
