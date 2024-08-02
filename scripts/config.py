@@ -15,6 +15,14 @@ CONFIG = {
         'resize': (80, 72),
         'timesteps': 1000000,
     },
+    'flippin_out': {
+        'actions': [['UP', 'A'], ['DOWN', 'A'], ['LEFT', 'A'], ['RIGHT', 'A'], ['RIGHT', 'UP', 'A'], ['RIGHT', 'DOWN', 'A'], ['LEFT', 'UP', 'A'], ['LEFT', 'DOWN', 'A'], []],
+        'game_env': 'flippin_out-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (80, 72),
+        'timesteps': 1000000,
+    },
     'amplifried': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],
         'game_env': 'amplifried-MP',

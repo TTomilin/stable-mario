@@ -59,6 +59,7 @@ class CustomEvalCallback(BaseCallback):
 
         if self.__ep_completed_since_update >= self.__eval_freq:
             mean_reward = self.__get_average_reward()
+            print(f"{Color.RED}mean evaluation reward: {mean_reward}{Color.OFF}")
 
             if mean_reward > self.__previous_best_total_reward:
                 self.__previous_best_total_reward = mean_reward
