@@ -41,7 +41,7 @@ class TrainParser(BaseParser):
         self.arg("--vf", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's critic. PPO default is 64,64")
         self.arg("--gray_scale", action="store_true", help="transf orms model's observations to grayscale.")
         self.arg("--save_best", action="store_true", default=False, help="Evaluates model each eval_freq episodes and stores best performing one.")
-        self.arg("--eval_freq", type=int, default=300, help="How often to measure and potentially save the model, measured in number of episodes.")
+        self.arg("--eval_freq", type=int, default=100, help="How often to measure and potentially save the model, measured in number of episodes.")
 
         # WandB
         self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
