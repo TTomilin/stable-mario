@@ -3,7 +3,7 @@ import sys
 import pathlib
 
 from utilities.train_parser import TrainParser
-from utilities.load_parser import LoadParser
+from utilities.resume_parser import ResumeParser
 from utilities.environment_creator import RetroEnvCreator
 from utilities.model_manager import ModelManager
 from utilities.wandb_manager import WandbManager
@@ -74,6 +74,6 @@ def main(cfg: argparse.Namespace):
             wandb.save(f"{cfg.directory}/{train_args.game}-bak.zip")
 
 if __name__ == '__main__':
-    parser = LoadParser(arg_source=sys.argv[1:])
+    parser = ResumeParser(arg_source=sys.argv[1:])
     args = parser.get_args()
     main(args)
