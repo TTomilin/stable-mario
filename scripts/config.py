@@ -78,6 +78,6 @@ CONFIG = {
         'state': 'Level1',
         'clip_reward': False,
         'resize': (80, 72),
-        'timesteps': 1000000000
+        'timesteps': 10000000000
     }
 }
