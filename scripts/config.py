@@ -24,12 +24,12 @@ CONFIG = {
         'timesteps': 100000000000,
     },
     'amplifried': {
-        'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],
+        'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['UP', 'RIGHT'], ['UP', 'LEFT'], ['DOWN', 'RIGHT'], ['DOWN', 'LEFT'], []],
         'game_env': 'amplifried-MP',
         'state': 'Level1',
         'clip_reward': False,
-        'resize': (160, 144),
-        'timesteps': 1000000,
+        'resize': (80, 72),
+        'timesteps': 1000000000,
     },
     'bunny_belt': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A']],
