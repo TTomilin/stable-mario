@@ -31,6 +31,14 @@ CONFIG = {
         'resize': (80, 72),
         'timesteps': 1000000000,
     },
+    'bill_bounce': {
+        'actions': [['LEFT'], ['RIGHT'], ['LEFT', 'A'], ['RIGHT', 'A'], ['A'], []],
+        'game_env': 'bill_bounce-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (80, 72),
+        'timesteps': 1000000000
+    },
     'bunny_belt': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A']],
         'game_env': 'bunny_belt-MP',
