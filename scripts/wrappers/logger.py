@@ -66,7 +66,7 @@ class LogRewardSummary(BaseRewardLogger):
         observation, reward, terminated, truncated, info = self.env.step(action)
 
         self._updateEpisodeRewards(reward, terminated, truncated) # update episode rewards
-        if self._episode_count >= self._episode_limit:
+        if (self._episode_count >= self._episode_limit) and (wandb.run != None):
             print(self._episode_rewards)
             reward_arr = np.array(self._episode_rewards)
             minReward = reward_arr.min() # retrieve smallest reward
