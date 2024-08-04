@@ -55,7 +55,7 @@ class LogRewardSummary(BaseRewardLogger):
     def __init__(self, env: gymnasium.Env, episode_limit: int, with_wandb: bool) -> None:
         super().__init__(env, episode_limit)
         self.with_wandb = with_wandb
-        if self.with_wandb:
+        if (self.with_wandb) and (wandb.run != None):
             wandb.define_metric(name="Minimum Reward", step_metric="global_step")
             wandb.define_metric(name="Maximum Reward", step_metric="global_step")
             wandb.define_metric(name="Average Reward", step_metric="global_step")

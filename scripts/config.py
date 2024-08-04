@@ -23,6 +23,14 @@ CONFIG = {
         'resize': (80, 72),
         'timesteps': 100000000000,
     },
+    'on_the_spot': {
+        'actions': [['LEFT'], ['RIGHT'], ['UP'], ['DOWN']],
+        'game_env': 'on_the_spot-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (80, 72),
+        'timesteps': 100000000000,
+    },
     'amplifried': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['UP', 'RIGHT'], ['UP', 'LEFT'], ['DOWN', 'RIGHT'], ['DOWN', 'LEFT'], []],
         'game_env': 'amplifried-MP',
