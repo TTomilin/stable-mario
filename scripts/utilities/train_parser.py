@@ -18,7 +18,7 @@ class TrainParser(BaseParser):
         self.arg("--record", default=False, action='store_true', help="Whether to record gameplay videos")
         self.arg("--record_every", type=int, default=150, help="Record gameplay video every n episodes")
         self.arg("--store_every", type=int, default=100, help="Save model every n episodes")
-        self.arg("--skip_frames", default=True, action='store_true', help="Whether to skip frames")
+        self.arg("--skip_frames", default=False, action='store_true', help="Whether to skip frames")
         self.arg("--n_skip_frames", type=int, default=4, help="How many frames to skip")
         self.arg("--stack_frames", default=False, action='store_true', help="Whether to stack frames")
         self.arg("--n_stack_frames", type=int, default=4, help="How many frames to stack")
