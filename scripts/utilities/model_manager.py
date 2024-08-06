@@ -6,7 +6,7 @@ from policy_arguments.feature_extractors import BatchNorm
 
 from stable_baselines3 import PPO
 from stable_baselines3.common.type_aliases import GymEnv
-from sb3_contrib import QRDQN
+from sb3_contrib import QRDQN, RecurrentPPO
 from torch import device
 
 class ModelManager:
@@ -18,6 +18,8 @@ class ModelManager:
             return ModelManager.__create_PPO(cfg, env, device, log_dir, shared_policy_args)
         elif cfg.model == "QRDQN":
             return ModelManager.__create_QRDQN(cfg, env, device, log_dir, shared_policy_args)
+        elif cfg.model == "recurrent_PPO":
+            return ModelManager.__create_recurrent_PPO(cfg, env, device, log_dir, shared_policy_args)
         else:
             return ValueError("No model matching the model argument found.")
 
@@ -28,6 +30,16 @@ class ModelManager:
             policy_args.update(net_arch = ModelManager.__get_net_arch(cfg))
 
         return PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
+                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
+                    policy_kwargs=policy_args)
+    
+    @staticmethod
+    def __create_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
+
+        if cfg.pi != None and cfg.vf != None and policy_args != None:
+            policy_args.update(net_arch = ModelManager.__get_net_arch(cfg))
+
+        return RecurrentPPO(policy='CnnLstmPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
                     policy_kwargs=policy_args)
 
