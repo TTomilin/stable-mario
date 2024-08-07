@@ -25,7 +25,7 @@ def main(cfg: argparse.Namespace):
     
     # select optimal training hardware:
     device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
-
+    
     # save the exact training command to a textfile in the logging directory:
     with open(f"{log_dir}/train_command.txt", "w") as commandFile:
         commandFile.write(' '.join(sys.argv[0:])) # save the training command (needed for model re-initialization)
