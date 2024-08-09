@@ -90,6 +90,8 @@ class RNN(nn.Module):
         self.past_critic_hidden = th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size)
         self.idx_store_actor = 0
         self.idx_retrieve_actor = 0
+        self.idx_store_critic = 0
+        self.idx_retrieve_critic = 0
 
         if th.cuda.is_available(): # if cuda device is available...
             self.actor_hidden = self.actor_hidden.cuda() # ensure they are on cuda device by invoking 'cuda'
@@ -125,38 +127,46 @@ class RNN(nn.Module):
     """
 
     def forward_actor(self, features) -> th.Tensor: # note: shape of features changes from 1x17280 to 64 x 17280
-        if features.shape[0] > 1 and self.idx_retrieve_actor < self.n_rollout_steps:
-            self.actor_hidden = self.past_actor_hidden[self.idx_retrieve_actor // self.buffer_size, (self.idx_retrieve_actor % self.buffer_size) // self.batch_size]
-            self.idx_retrieve_actor += 64
+        if features.shape[0] > 1 and self.idx_retrieve_actor < self.n_rollout_steps: # if multiple observations are passed and not all states have been retrieved
+            self.actor_hidden = self.past_actor_hidden[self.idx_retrieve_actor // self.buffer_size, (self.idx_retrieve_actor % self.buffer_size) // self.batch_size] # retrieve a batch of states
+            self.idx_retrieve_actor += self.batch_size # increment number of states retrieved
 
         self.actor_hidden = F.tanh(self.policy_net[0](features) + self.policy_net[1](self.actor_hidden)) # sum linear outputs, apply element-wise tanh
         output = self.policy_net[2](self.actor_hidden) # apply linear layer
         output = self.policy_net[3](output) # apply activation function
-        self.actor_hidden = self.actor_hidden.detach()
+        self.actor_hidden = self.actor_hidden.detach() # detach hidden state from computational graph
 
-        if features.shape[0] <= 1 and self.idx_store_actor < self.n_rollout_steps:
-            self.past_actor_hidden[self.idx_store_actor // self.buffer_size, (self.idx_store_actor % self.buffer_size) // self.batch_size, self.idx_store_actor % self.hidden_size] = self.actor_hidden
-            self.idx_store_actor += 1
-        if features.shape[0] <= 1 and self.idx_store_actor >= self.n_rollout_steps:
-            self.idx_store_actor = 0
-        if features.shape[0] > 1 and self.idx_retrieve_actor >= self.n_rollout_steps:
-            self.actor_hidden = self.past_actor_hidden[self.past_actor_hidden.shape[0] - 1, self.past_actor_hidden.shape[1] - 1, self.past_actor_hidden.shape[2] - 1]
-            self.past_actor_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.hidden_size).cuda()
-            self.idx_retrieve_actor = 0
+        if features.shape[0] <= 1 and self.idx_store_actor < self.n_rollout_steps: # if one observation is passed an not all states have been stored
+            self.past_actor_hidden[self.idx_store_actor // self.buffer_size, (self.idx_store_actor % self.buffer_size) // self.batch_size, self.idx_store_actor % self.hidden_size] = self.actor_hidden # store hidden state
+            self.idx_store_actor += 1 # increment number of stored states
+        if features.shape[0] <= 1 and self.idx_store_actor >= self.n_rollout_steps: # if one observation is passed and all states have now been stored
+            self.idx_store_actor = 0 # reset store index
+        if features.shape[0] > 1 and self.idx_retrieve_actor >= self.n_rollout_steps: # if multiple observations are passed and all states have been retrieved...
+            self.actor_hidden = self.past_actor_hidden[self.past_actor_hidden.shape[0] - 1, self.past_actor_hidden.shape[1] - 1, self.past_actor_hidden.shape[2] - 1] # restore hidden state to most recent state
+            self.past_actor_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.hidden_size).cuda() # flush hidden state memory
+            self.idx_retrieve_actor = 0 # reset retrieval index
 
         return output
     
     def forward_critic(self, features) -> th.Tensor:
-        if features.shape[0] > 1:
-            self.critic_hidden = self.critic_hidden.repeat(features.shape[0], 1)
+        if features.shape[0] > 1 and self.idx_retrieve_critic < self.n_rollout_steps: # if multiple observations are passed and not all states have been retrieved
+            self.critic_hidden = self.past_critic_hidden[self.idx_retrieve_critic // self.buffer_size, (self.idx_retrieve_critic % self.buffer_size) // self.batch_size] # retrieve a batch of states
+            self.idx_retrieve_critic += self.batch_size # increment number of states retrieved
 
-        self.critic_hidden = F.tanh(self.value_net[0](features) + self.value_net[1](self.critic_hidden))
-        output = self.value_net[2](self.critic_hidden)
-        output = self.value_net[3](output)
-        
-        self.critic_hidden = self.critic_hidden.detach()
-        if features.shape[0] > 1:
-            self.critic_hidden = self.critic_hidden[0]
+        self.critic_hidden = F.tanh(self.value_net[0](features) + self.value_net[1](self.critic_hidden)) # sum linear outputs, apply element-wise tanh
+        output = self.value_net[2](self.critic_hidden) # apply linear layer
+        output = self.value_net[3](output) # apply activation function
+        self.critic_hidden = self.critic_hidden.detach() # detach hidden state from computational graph
+
+        if features.shape[0] <= 1 and self.idx_store_critic < self.n_rollout_steps: # if one observation is passed an not all states have been stored
+            self.past_critic_hidden[self.idx_store_critic // self.buffer_size, (self.idx_store_critic % self.buffer_size) // self.batch_size, self.idx_store_critic % self.hidden_size] = self.critic_hidden # store hidden state
+            self.idx_store_critic += 1 # increment number of stored states
+        if features.shape[0] <= 1 and self.idx_store_critic >= self.n_rollout_steps: # if one observation is passed and all states have now been stored
+            self.idx_store_critic = 0 # reset store index
+        if features.shape[0] > 1 and self.idx_retrieve_critic >= self.n_rollout_steps: # if multiple observations are passed and all states have been retrieved...
+            self.critic_hidden = self.past_critic_hidden[self.past_critic_hidden.shape[0] - 1, self.past_critic_hidden.shape[1] - 1, self.past_critic_hidden.shape[2] - 1] # restore hidden state to most recent state
+            self.past_critic_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.hidden_size).cuda() # flush hidden state memory
+            self.idx_retrieve_critic = 0 # reset retrieval index
 
         return output
 
