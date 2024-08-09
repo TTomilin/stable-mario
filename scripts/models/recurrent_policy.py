@@ -64,9 +64,12 @@ class RNN(nn.Module):
             self,
             feature_dim: int,
             device: Union[th.device, str],
-            hidden_size: int = 64
+            hidden_size: int = 64,
+            n_rollout_steps: int = 64
     ):
         super(RNN, self).__init__() # run constructor of parent
+
+        # note: memory_size = n_epochs * buffer_size... -> n_rollout_steps wordt memory_size
 
         # save output dimensions, used to create distributions:
         self.latent_dim_pi = hidden_size
@@ -76,10 +79,19 @@ class RNN(nn.Module):
         # set actor and critic's hidden values to 0 initially...
         self.actor_hidden = th.zeros(1, hidden_size) 
         self.critic_hidden = th.zeros(1, hidden_size)
+        
+        # enable collection of hidden states...
+        self.n_rollout_steps = n_rollout_steps
+        self.past_actor_hidden = th.zeros(n_rollout_steps, hidden_size) 
+        self.past_critic_hidden = th.zeros(n_rollout_steps, hidden_size)
+        self.elapsed_rollout_steps_actor = 0
+        self.elapsed_rollout_steps_critic = 0
 
         if th.cuda.is_available(): # if cuda device is available...
             self.actor_hidden = self.actor_hidden.cuda() # ensure they are on cuda device by invoking 'cuda'
             self.critic_hidden = self.critic_hidden.cuda()
+            self.past_actor_hidden = self.past_actor_hidden.cuda()
+            self.past_critic_hidden = self.past_critic_hidden.cuda()
 
         self.policy_net = nn.Sequential( # create policy network...
             nn.Linear(feature_dim, hidden_size), # add linear layer
@@ -95,9 +107,25 @@ class RNN(nn.Module):
             nn.LogSoftmax(dim=1) # add softmax activation before returning outputs
         ).to(device)
 
+        self.count = 0
+
+    """
+    Note to self:
+    in principle, the hidden state for each observation should be collected during rollout collection (see 'on_policy_algorithm').
+    This will likely require an additional property added to 'RolloutBuffer'.
+    Then, they should be passed in together with the observations to 'evaluate_actions', so that each observation can be evaluated
+    together with its actual hidden state instead of just the current hidden state.
+
+    Right now, you evaluate each action with the current hidden state instead of the hidden state that was present at the time
+    the action was taken. This seems wrong on an intuitive level. Hence, implementing the recurrent policy will require a new
+    version of PPO and a new rollout buffer type added to PPO. We can add the rollout buffer type in the same .py file...
+    """
+
     def forward_actor(self, features) -> th.Tensor: # note: shape of features changes from 1x17280 to 64 x 17280
         if features.shape[0] > 1: # if multiple observations are passed simultaneously (as in evaluate action)
-            self.actor_hidden = self.actor_hidden.repeat(features.shape[0], 1) # Then, repeat hidden state for each observation
+            print(self.count)
+            self.count += 1
+            self.actor_hidden = self.past_actor_hidden
 
         self.actor_hidden = F.tanh(self.policy_net[0](features) + self.policy_net[1](self.actor_hidden)) # sum linear outputs, apply element-wise tanh
         output = self.policy_net[2](self.actor_hidden) # apply linear layer
@@ -105,7 +133,12 @@ class RNN(nn.Module):
 
         self.actor_hidden = self.actor_hidden.detach()
         if features.shape[0] > 1: # if multiple observations were passed...
-            self.actor_hidden = self.actor_hidden[0] # remove hidden state copies.
+            self.actor_hidden = self.actor_hidden[self.actor_hidden.shape[0] - 1] # remove recalled hidden states...
+            self.past_actor_hidden = th.zeros(self.n_rollout_steps, self.hidden_size).cuda() # flush memory
+            self.elapsed_rollout_steps_actor = 0 # reset elapsed
+        else:
+            self.past_actor_hidden[self.elapsed_rollout_steps_actor % self.n_rollout_steps] = self.actor_hidden # store this hidden state
+            self.elapsed_rollout_steps_actor += 1 # increment elapsed hidden states
 
         return output
     
@@ -125,10 +158,6 @@ class RNN(nn.Module):
 
     def forward(self, features: th.Tensor) -> Tuple[th.Tensor, th.Tensor]:
         return self.forward_actor(features), self.forward_critic(features)
-
-    def repackage_hidden(self, h):
-        """Wraps hidden states in new Variables, to detach them from their history."""
-        return Variable(h.data)
     
 class RecurrentPolicy(ActorCriticPolicy):
     '''
