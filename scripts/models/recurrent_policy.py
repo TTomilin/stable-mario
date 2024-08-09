@@ -65,27 +65,31 @@ class RNN(nn.Module):
             feature_dim: int,
             device: Union[th.device, str],
             hidden_size: int = 64,
-            n_rollout_steps: int = 64
+            batch_size: int = 64,
+            n_epochs: int = 10,
+            buffer_size: int = 2048
     ):
         super(RNN, self).__init__() # run constructor of parent
 
-        # note: memory_size = n_epochs * buffer_size... -> n_rollout_steps wordt memory_size
+        self.buffer_size = buffer_size
+        self.n_epochs = n_epochs
+        self.n_rollout_steps = n_epochs * buffer_size
 
         # save output dimensions, used to create distributions:
         self.latent_dim_pi = hidden_size
         self.latent_dim_vf = hidden_size
         self.hidden_size = hidden_size
+        self.batch_size = batch_size
 
         # set actor and critic's hidden values to 0 initially...
         self.actor_hidden = th.zeros(1, hidden_size) 
         self.critic_hidden = th.zeros(1, hidden_size)
         
         # enable collection of hidden states...
-        self.n_rollout_steps = n_rollout_steps
-        self.past_actor_hidden = th.zeros(n_rollout_steps, hidden_size) 
-        self.past_critic_hidden = th.zeros(n_rollout_steps, hidden_size)
-        self.elapsed_rollout_steps_actor = 0
-        self.elapsed_rollout_steps_critic = 0
+        self.past_actor_hidden = th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size) 
+        self.past_critic_hidden = th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size)
+        self.idx_store_actor = 0
+        self.idx_retrieve_actor = 0
 
         if th.cuda.is_available(): # if cuda device is available...
             self.actor_hidden = self.actor_hidden.cuda() # ensure they are on cuda device by invoking 'cuda'
@@ -107,7 +111,6 @@ class RNN(nn.Module):
             nn.LogSoftmax(dim=1) # add softmax activation before returning outputs
         ).to(device)
 
-        self.count = 0
 
     """
     Note to self:
@@ -122,23 +125,24 @@ class RNN(nn.Module):
     """
 
     def forward_actor(self, features) -> th.Tensor: # note: shape of features changes from 1x17280 to 64 x 17280
-        if features.shape[0] > 1: # if multiple observations are passed simultaneously (as in evaluate action)
-            print(self.count)
-            self.count += 1
-            self.actor_hidden = self.past_actor_hidden
+        if features.shape[0] > 1 and self.idx_retrieve_actor < self.n_rollout_steps:
+            self.actor_hidden = self.past_actor_hidden[self.idx_retrieve_actor // self.buffer_size, (self.idx_retrieve_actor % self.buffer_size) // self.batch_size]
+            self.idx_retrieve_actor += 64
 
         self.actor_hidden = F.tanh(self.policy_net[0](features) + self.policy_net[1](self.actor_hidden)) # sum linear outputs, apply element-wise tanh
         output = self.policy_net[2](self.actor_hidden) # apply linear layer
         output = self.policy_net[3](output) # apply activation function
-
         self.actor_hidden = self.actor_hidden.detach()
-        if features.shape[0] > 1: # if multiple observations were passed...
-            self.actor_hidden = self.actor_hidden[self.actor_hidden.shape[0] - 1] # remove recalled hidden states...
-            self.past_actor_hidden = th.zeros(self.n_rollout_steps, self.hidden_size).cuda() # flush memory
-            self.elapsed_rollout_steps_actor = 0 # reset elapsed
-        else:
-            self.past_actor_hidden[self.elapsed_rollout_steps_actor % self.n_rollout_steps] = self.actor_hidden # store this hidden state
-            self.elapsed_rollout_steps_actor += 1 # increment elapsed hidden states
+
+        if features.shape[0] <= 1 and self.idx_store_actor < self.n_rollout_steps:
+            self.past_actor_hidden[self.idx_store_actor // self.buffer_size, (self.idx_store_actor % self.buffer_size) // self.batch_size, self.idx_store_actor % self.hidden_size] = self.actor_hidden
+            self.idx_store_actor += 1
+        if features.shape[0] <= 1 and self.idx_store_actor >= self.n_rollout_steps:
+            self.idx_store_actor = 0
+        if features.shape[0] > 1 and self.idx_retrieve_actor >= self.n_rollout_steps:
+            self.actor_hidden = self.past_actor_hidden[self.past_actor_hidden.shape[0] - 1, self.past_actor_hidden.shape[1] - 1, self.past_actor_hidden.shape[2] - 1]
+            self.past_actor_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.hidden_size).cuda()
+            self.idx_retrieve_actor = 0
 
         return output
     
