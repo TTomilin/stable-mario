@@ -183,6 +183,10 @@ class RecurrentPolicy(ActorCriticPolicy):
     Based on https://stable-baselines3.readthedocs.io/en/v1.0/guide/custom_policy.html
     '''
 
+    batch_size = None
+    buffer_size = None
+    n_epochs = None
+
     def __init__(
             self,
             observation_space: gym.spaces.Space,
@@ -207,4 +211,8 @@ class RecurrentPolicy(ActorCriticPolicy):
 
     # override the creation of the policy and value networks:
     def _build_mlp_extractor(self) -> None:
-        self.mlp_extractor = RNN(self.features_dim, self.device)
+        if RecurrentPolicy.batch_size == None or RecurrentPolicy.n_epochs == None or RecurrentPolicy.buffer_size == None:
+            print("Please initialize RecurrentPolicy's batch_size, n_epochs, and buffer_size class variables appropriately before instantiating.")
+            raise RuntimeError
+
+        self.mlp_extractor = RNN(self.features_dim, self.device, batch_size=RecurrentPolicy.batch_size, buffer_size=RecurrentPolicy.buffer_size, n_epochs=RecurrentPolicy.n_epochs)

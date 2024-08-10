@@ -34,7 +34,7 @@ class ModelManager:
 
         return PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
-                    policy_kwargs=policy_args)
+                    policy_kwargs=policy_args, n_epochs=cfg.n_epochs, batch_size=cfg.batch_size, n_steps=cfg.n_steps)
     
     @staticmethod
     def __create_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
@@ -44,13 +44,17 @@ class ModelManager:
 
         return RecurrentPPO(policy='CnnLstmPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
-                    policy_kwargs=policy_args)
+                    policy_kwargs=policy_args, n_epochs=cfg.n_epochs, batch_size=cfg.batch_size, n_steps=cfg.n_steps)
     
     @staticmethod
     def __create_custom_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
 
         if cfg.pi != None and cfg.vf != None and policy_args != None:
             policy_args.update(net_arch = ModelManager.__get_net_arch(cfg))
+
+        RecurrentPolicy.batch_size = cfg.batch_size
+        RecurrentPolicy.n_epochs = cfg.n_epochs
+        RecurrentPolicy.buffer_size = cfg.n_steps # note, in PPO: buffer_size = n_envs * n_steps
 
         return PPO(policy=RecurrentPolicy, env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
@@ -64,7 +68,7 @@ class ModelManager:
 
         return QRDQN(policy='CnnPolicy', env=env, device=device,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
-                    policy_kwargs=policy_args) # outperforms DQN, see https://arxiv.org/pdf/1710.10044
+                    policy_kwargs=policy_args, batch_size=cfg.batch_size) # outperforms DQN, see https://arxiv.org/pdf/1710.10044
                     
     @staticmethod
     def load_model(model_type: str, game: str, load_directory: str, env):

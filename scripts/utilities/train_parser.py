@@ -42,6 +42,10 @@ class TrainParser(BaseParser):
         self.arg("--gray_scale", action="store_true", help="transf orms model's observations to grayscale.")
         self.arg("--save_best", action="store_true", default=False, help="Evaluates model each eval_freq episodes and stores best performing one.")
         self.arg("--eval_freq", type=int, default=100, help="How often to measure and potentially save the model, measured in number of episodes.")
+        self.arg("--n_epochs", type=int, default=10, help="number of epochs per rollout (update)")
+        self.arg("--n_steps", type=int, default=2048, help="number of timesteps per epoch")
+        self.arg("--batch_size", type=int, default=64, help="size of the mini batches in which the rollout buffers are processed")
+
 
         # WandB
         self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
