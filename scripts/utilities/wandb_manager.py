@@ -1,5 +1,6 @@
 import wandb
 import argparse
+import os
 
 class WandbManager():
     @staticmethod 
@@ -24,6 +25,7 @@ class WandbManager():
             settings=wandb.Settings(start_method='fork'),
             reinit=True
         )
+        wandb.save(f"os.getcwd()/*/train_parser.py") # save default settings (could be useful for running model if defaults change)
         wandb.define_metric(name='eval/mean_reward', step_metric='global_step')
         wandb.define_metric(name='eval/mean_ep_length', step_metric='global_step')
 
