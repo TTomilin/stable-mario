@@ -88,6 +88,11 @@ class RNN(nn.Module):
         # enable collection of hidden states...
         self.past_actor_hidden = th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size) 
         self.past_critic_hidden = th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size)
+        # first axis: epochs, i.e. n.o. buffers collected;
+        # second axis: batch in current buffer;
+        # third axis: number of hidden states in current batch;
+        # fourth axis: the numbers in the current hidden state.
+
         self.idx_store_actor = 0
         self.idx_retrieve_actor = 0
         self.idx_store_critic = 0
