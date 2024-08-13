@@ -75,7 +75,6 @@ def main(cfg: argparse.Namespace):
             action = model.predict(obs, deterministic=deterministic)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
         else:
             action = model.predict(obs, deterministic)
-
         obs, reward, terminated, truncated, info = env.step(action)
 
         if terminated or truncated:

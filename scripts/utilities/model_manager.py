@@ -24,7 +24,7 @@ class ModelManager:
         elif cfg.model == "custom_recurrent_PPO":
             return ModelManager.__create_custom_recurrent_PPO(cfg, env, device, log_dir, shared_policy_args)
         else:
-            return ValueError("No model matching the model argument found.")
+            raise ValueError("No model matching the model argument found.")
 
     @staticmethod
     def __create_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
