@@ -49,7 +49,6 @@ def main(cfg: argparse.Namespace):
 
     # Create the model
     model = ModelManager.create_model(cfg, env, device, log_dir)
-    print(model.policy.mlp_extractor.value_net)
 
     # Determine number of timesteps
     timesteps = CONFIG[cfg.game]["timesteps"]

@@ -77,7 +77,6 @@ class NatureRNN(BaseFeaturesExtractor):
         self.linear = nn.Sequential(nn.Linear(n_lstm, features_dim), nn.ReLU())
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
-        print(self.cnn(observations).shape)
         out, _ = self.lstm(self.cnn(observations))
         return self.linear(out)
 
