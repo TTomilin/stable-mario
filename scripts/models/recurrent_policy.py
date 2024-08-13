@@ -208,7 +208,7 @@ class RecurrentPolicy(ActorCriticPolicy):
         )
         # Disable orthogonal initialization:
         self.ortho_init = False
-
+        
     # override the creation of the policy and value networks:
     def _build_mlp_extractor(self) -> None:
         if RecurrentPolicy.batch_size == None or RecurrentPolicy.n_epochs == None or RecurrentPolicy.buffer_size == None:

@@ -37,15 +37,17 @@ class TrainParser(BaseParser):
         self.arg("--crop_dimension", type=str, default="256x256", help="The rectangular dimension of the center crop to be applied (e.g. 64x64).")
         self.arg("--log_step_rewards", action='store_true', help="Records step rewards in a textfile found at the root of the log directory")
         self.arg("--batch_norm", action="store_true", help="Normalizes inputs over each batch. Only available for QRDQN and DQN.")
-        self.arg("--pi", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's actor. PPO default is 64,64")
-        self.arg("--vf", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's critic. PPO default is 64,64")
+        self.arg("--pi", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's actor. PPO default is 256,256")
+        self.arg("--vf", type=str, default=None, help="Comma-separated numbers of units per HIDDEN layer of the model's critic. PPO default is 256,256")
         self.arg("--gray_scale", action="store_true", help="transf orms model's observations to grayscale.")
         self.arg("--save_best", action="store_true", default=False, help="Evaluates model each eval_freq episodes and stores best performing one.")
         self.arg("--eval_freq", type=int, default=100, help="How often to measure and potentially save the model, measured in number of episodes.")
         self.arg("--n_epochs", type=int, default=10, help="number of epochs per rollout (update)")
         self.arg("--n_steps", type=int, default=2048, help="number of timesteps per epoch")
         self.arg("--batch_size", type=int, default=64, help="size of the mini batches in which the rollout buffers are processed")
-
+        self.arg("--features_extractor", type=str, default="NatureCNN", help="The type of feature extractor used by the model. Defaults to NatureCNN.")
+        self.arg("--features_extractor_dim", type=int, default=None, help="Number of features to be extracted by the features extractor class.")
+        self.arg("--activation_function", type=str, default="tanh", help="Which activation function to include between hidden layers, defaults to tanh.")
 
         # WandB
         self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')

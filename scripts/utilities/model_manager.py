@@ -1,14 +1,14 @@
 import argparse
-
 import numpy as np
 
-from policy_arguments.feature_extractors import BatchNorm
+from policy_arguments.feature_extractors import BatchNorm, NatureRNN
 
 from stable_baselines3 import PPO
 from stable_baselines3.common.type_aliases import GymEnv
+from stable_baselines3.common.torch_layers import NatureCNN, FlattenExtractor
 from sb3_contrib import QRDQN, RecurrentPPO
 from models.recurrent_policy import RecurrentPolicy
-from torch import device
+from torch import device, nn
 
 class ModelManager:
     @staticmethod
@@ -29,8 +29,7 @@ class ModelManager:
     @staticmethod
     def __create_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
 
-        if cfg.pi != None and cfg.vf != None and policy_args != None:
-            policy_args.update(net_arch = ModelManager.__get_net_arch(cfg))
+        ModelManager.__get_net_arch(cfg, policy_args)
 
         return PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
@@ -39,8 +38,7 @@ class ModelManager:
     @staticmethod
     def __create_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
 
-        if cfg.pi != None and cfg.vf != None and policy_args != None:
-            policy_args.update(net_arch = ModelManager.__get_net_arch(cfg))
+        ModelManager.__get_net_arch(cfg, policy_args)
 
         return RecurrentPPO(policy='CnnLstmPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
                     learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
@@ -49,8 +47,7 @@ class ModelManager:
     @staticmethod
     def __create_custom_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
 
-        if cfg.pi != None and cfg.vf != None and policy_args != None:
-            policy_args.update(net_arch = ModelManager.__get_net_arch(cfg))
+        ModelManager.__get_net_arch(cfg, policy_args)
 
         RecurrentPolicy.batch_size = cfg.batch_size
         RecurrentPolicy.n_epochs = cfg.n_epochs
@@ -97,21 +94,50 @@ class ModelManager:
         return model
     
     @staticmethod
-    def __get_net_arch(cfg: argparse.Namespace):
-        inputted_net_arch = dict()
+    def __get_net_arch(cfg: argparse.Namespace, policy_args: dict):
+        if cfg.pi == None or cfg.vf == None:
+            default_net_arch = dict()
 
-        inputted_pi = np.array([int(num_str) for num_str in cfg.pi.split(",")])
-        inputted_vf = np.array([int(num_str) for num_str in cfg.vf.split(",")])
-        inputted_net_arch.update(pi = inputted_pi)
-        inputted_net_arch.update(vf = inputted_vf)
+            default_pi = [256, 256]
+            default_vf = [256, 256]
+            default_net_arch.update(pi = default_pi)
+            default_net_arch.update(vf = default_vf)
 
-        return inputted_net_arch
+            policy_args.update(net_arch = default_net_arch)
+        else:
+            inputted_net_arch = dict()
+
+            inputted_pi = np.array([int(num_str) for num_str in cfg.pi.split(",")])
+            inputted_vf = np.array([int(num_str) for num_str in cfg.vf.split(",")])
+            inputted_net_arch.update(pi = inputted_pi)
+            inputted_net_arch.update(vf = inputted_vf)
+
+            policy_args.update(net_arch = inputted_net_arch)
     
     @staticmethod
     def __get_shared_policy_args(cfg: argparse.Namespace):
         policy_args = dict()
 
-        # ...
+        if cfg.activation_function == "tanh":
+            policy_args.update(activation_fn=nn.Tanh)
+        elif cfg.activation_function == "relu":
+            policy_args.update(activation_fn=nn.ReLU)
+        elif cfg.activation_function == "leaky_relu":
+            policy_args.update(activation_fn=nn.LeakyReLU)
+        else:
+            raise ValueError("Invalid activation function specified.")
+
+        if cfg.features_extractor == "NatureCNN":
+            policy_args.update(features_extractor_class=NatureCNN)
+        elif cfg.features_extractor == "NatureRNN":
+            policy_args.update(features_extractor_class=NatureRNN)
+        elif cfg.features_extractor == "Flatten":
+            policy_args.update(features_extractor_class=FlattenExtractor)
+        else:
+            raise ValueError("Invalid feature extractor specified.")
+
+        if cfg.features_extractor_dim != None:
+            policy_args.update(features_extractor_kwargs=dict(features_dim=cfg.features_extractor_dim))
 
         if bool(policy_args) == False: # if dict left empty...
             policy_args = None # set to default None 
