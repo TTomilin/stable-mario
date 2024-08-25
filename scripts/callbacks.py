@@ -22,7 +22,8 @@ class CustomEvalCallback(BaseCallback):
     A custom callback that evaluates the agent and saves the model if it was better than the previous agent.
     """
     def __init__(self, cfg: argparse.Namespace, eval_env: gymnasium.Env, log_dir: str, device: device, system_file_name: str, 
-                 wandb_file_name: str, eval_freq: int = 300, n_eval_episodes: int = 1, deterministic: bool = True, verbose: int = 0):
+                 wandb_file_name: str, eval_freq: int = 300, n_eval_episodes: int = 1, deterministic: bool = True, verbose: int = 0,
+                 eval_metric: str = None):
         super().__init__(verbose)
         self.__n_eval_episodes = n_eval_episodes
         self.__eval_env = eval_env
@@ -34,6 +35,7 @@ class CustomEvalCallback(BaseCallback):
         self.__eval_freq = eval_freq
         self.__deterministic = deterministic
         self.__ep_completed_since_update = 0
+        self.__eval_metric = eval_metric
 
         # create local copy of model:
         self.__local_model = ModelManager.create_model(cfg=self.__cfg, env=self.__eval_env, 
@@ -58,7 +60,10 @@ class CustomEvalCallback(BaseCallback):
         # interesting note: directly accessing 'self.model.ep_info_buffer' in this function will result in constant rewards each episode
 
         if self.__ep_completed_since_update >= self.__eval_freq:
-            mean_reward = self.__get_average_reward()
+            if self.__eval_metric == None:
+                mean_reward = self.__get_average_reward()
+            else:
+                mean_reward = self.__get_average_RAM_value(self.__eval_metric)
             print(f"{Color.RED}mean evaluation reward: {mean_reward}{Color.OFF}")
 
             if mean_reward > self.__previous_best_total_reward:
@@ -101,3 +106,39 @@ class CustomEvalCallback(BaseCallback):
 
         mean_reward = statistics.fmean(total_episode_rewards)
         return mean_reward
+    
+    def __get_average_RAM_value(self, ram_id):
+        episode_ram_values = []
+        actor_params = self.model.policy.state_dict()
+        self.__local_model.policy.load_state_dict(actor_params)
+
+        if self.__deterministic:
+            obs, _ = self.__eval_env.reset()
+            while True:
+                if self.__cfg.discretize:
+                    action = self.__local_model.predict(obs, deterministic=True)[0]
+                else:
+                    action = self.__local_model.predict(obs, deterministic=True)
+                obs, reward, terminated, truncated, info = self.__eval_env.step(action)
+
+                if terminated or truncated:
+                    episode_ram_values.append(info[ram_id])
+                    obs, _ = self.__eval_env.reset()
+                    action = self.__local_model.predict(obs, deterministic=False) # reset determinism
+                    break
+        else:
+            obs, _ = self.__eval_env.reset()
+            i = 0
+            while i < self.__n_eval_episodes:
+                if self.__cfg.discretize:
+                    action = self.__local_model.predict(obs, deterministic=False)[0]
+                else:
+                    action = self.__local_model.predict(obs, deterministic=False)
+                obs, reward, terminated, truncated, info = self.__eval_env.step(action)
+
+                if terminated or truncated:
+                    episode_ram_values.append(info[ram_id])
+                    i += 1
+                    obs, _ = self.__eval_env.reset()
+
+        return statistics.fmean(episode_ram_values)

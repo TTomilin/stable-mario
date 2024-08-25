@@ -45,7 +45,8 @@ def main(cfg: argparse.Namespace):
                                                 device=device,
                                                 system_file_name=f"{cfg.game}_best",
                                                 wandb_file_name=f"{cfg.game}_best",
-                                                eval_freq=cfg.eval_freq)
+                                                eval_freq=cfg.eval_freq,
+                                                eval_metric=cfg.eval_metric)
 
     # Create the model
     model = ModelManager.create_model(cfg, env, device, log_dir)
