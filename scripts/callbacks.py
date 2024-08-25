@@ -124,7 +124,7 @@ class CustomEvalCallback(BaseCallback):
                 if terminated or truncated:
                     episode_ram_values.append(info[ram_id])
                     obs, _ = self.__eval_env.reset()
-                    action = self.__local_model.predict(obs, deterministic=False) # reset determinism
+                    action = self.__local_model.predict(obs, deterministic=False) # reset determinism. Perhaps this would not be needed if we set 'eval_env' to an environment the same as 'env' instead of to 'env' itself
                     break
         else:
             obs, _ = self.__eval_env.reset()
