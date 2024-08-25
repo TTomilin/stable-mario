@@ -8,6 +8,7 @@ import gymnasium as gym
 import pylab as pl
 from torchvision.transforms.functional import center_crop
 import torch
+import numpy as np
 
 class Rescale(gymnasium.Wrapper):
     """Rescale the observation space to [-1, 1]."""
@@ -57,8 +58,9 @@ class ShowObservation(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
         return observation
 
     def animate_observations(self, observations):
+        display = (observations - np.ones(shape=observations.shape) * np.min(observations)) * (1/(np.max(observations) - np.min(observations)))
         pl.clf()
-        pl.imshow(observations, interpolation="nearest")
+        pl.imshow(X=display, interpolation="nearest")
         pl.pause(10**-6)
         pl.draw()
 

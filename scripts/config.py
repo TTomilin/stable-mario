@@ -95,5 +95,13 @@ CONFIG = {
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000000
+    },
+        'fling_shot': {
+        'actions': [['B'], ['A'], ['UP', 'RIGHT'], ['UP', 'LEFT'], ['DOWN', 'RIGHT'], ['DOWN', 'LEFT'], ['UP'], ['DOWN'], ['LEFT'], ['RIGHT']],
+        'game_env': 'fling_shot-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (80, 72),
+        'timesteps': 10000000000
     }
 }
