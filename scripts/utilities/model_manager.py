@@ -74,8 +74,10 @@ class ModelManager:
             model = ModelManager.__try_load_model(load_directory, [game, f"{game}-bak"], PPO, env)
         elif model_type == "QR-DQN":
             model = ModelManager.__try_load_model(load_directory, [game, f"{game}-bak"], QRDQN, env)
+        elif model_type == "recurrent_PPO":
+            model = ModelManager.__try_load_model(load_directory, [game, f"{game}-bak"], RecurrentPPO, env)
         else:
-            return ValueError("No model matching the model argument found. Aborting...")
+            raise ValueError("No model matching the model argument found. Aborting...")
         
         return model
 
