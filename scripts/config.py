@@ -103,5 +103,13 @@ CONFIG = {
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000000
+    },
+        'big_popper': {
+        'actions': [['A'], ['LEFT'], ['RIGHT'], ['LEFT', 'A'], ['RIGHT', 'A']],
+        'game_env': 'big_popper-MP',
+        'state': 'Level1',
+        'clip_reward': False,
+        'resize': (80, 72),
+        'timesteps': 10000000000
     }
 }
