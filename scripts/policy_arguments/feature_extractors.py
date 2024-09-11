@@ -37,7 +37,12 @@ class NatureRNN(BaseFeaturesExtractor):
         self,
         observation_space: gym.Space,
         features_dim: int = 512,
+        lstm_size: int = 512,
         normalized_image: bool = False,
+        hidden_size: int = 64,
+        batch_size: int = 64,
+        n_epochs: int = 10,
+        buffer_size: int = 2048
     ) -> None:
         assert isinstance(observation_space, spaces.Box), (
             "NatureCNN must be used with a gym.spaces.Box ",
@@ -68,17 +73,78 @@ class NatureRNN(BaseFeaturesExtractor):
             nn.Flatten(),
         )
 
+        # required for bookkeeping:
+        self.buffer_size = buffer_size
+        self.n_epochs = n_epochs
+        self.n_rollout_steps = n_epochs * buffer_size
+
+        # save output dimensions, used to create distributions:
+        self.latent_dim_pi = hidden_size
+        self.latent_dim_vf = hidden_size
+        self.hidden_size = hidden_size
+        self.batch_size = batch_size
+        self.lstm_size = lstm_size
+
+        # set actor and critic's hidden values to 0 initially...
+        self.actor_hidden = [th.zeros(1, lstm_size), th.zeros(1, lstm_size)]
+        
+        # enable collection of hidden states...
+        self.past_actor_hidden = th.zeros(n_epochs, (buffer_size // batch_size), batch_size, lstm_size) #th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size) 
+        self.past_critic_hidden = th.zeros(n_epochs, (buffer_size // batch_size), batch_size, lstm_size) #th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size)
+        # first axis: epochs, i.e. n.o. buffers collected;
+        # second axis: batch in current buffer;
+        # third axis: number of hidden states in current batch;
+        # fourth axis: the numbers in the current hidden state.
+
+        self.idx_store_actor = 0
+        self.idx_retrieve_actor = 0
+        self.idx_store_critic = 0
+        self.idx_retrieve_critic = 0
+
+        if th.cuda.is_available(): # if cuda device is available...
+            self.actor_hidden[0] = self.actor_hidden[0].cuda() # ensure they are on cuda device by invoking 'cuda'
+            self.actor_hidden[1] = self.actor_hidden[1].cuda() # ensure they are on cuda device by invoking 'cuda'
+            #self.critic_hidden = self.critic_hidden.cuda()
+            self.past_actor_hidden = self.past_actor_hidden.cuda()
+            self.past_critic_hidden = self.past_critic_hidden.cuda()
+
         self.lstm = nn.LSTM(input_size=1920, hidden_size=512)
 
-        # Compute shape by doing one forward pass
-        with th.no_grad():
-            n_lstm = self.lstm.hidden_size
+    @staticmethod
+    def get_list(a, b, c, d):
+        lst = [[[ [ ['', ''] for col in range (a) ] for col in range (b) ] for col in range (c)] for col in range (d)]
 
-        self.linear = nn.Sequential(nn.Linear(n_lstm, features_dim), nn.ReLU())
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
-        out, _ = self.lstm(self.cnn(observations))
-        return self.linear(out)
+        
+        if observations.shape[0] > 1 and self.idx_retrieve_actor < self.n_rollout_steps: # if multiple observations are passed and not all states have been retrieved
+            hidden_batch_actor = self.past_actor_hidden[self.idx_retrieve_actor // self.buffer_size, (self.idx_retrieve_actor % self.buffer_size) // self.batch_size]
+            hidden_batch_critic = self.past_critic_hidden[self.idx_retrieve_actor // self.buffer_size, (self.idx_retrieve_actor % self.buffer_size) // self.batch_size] # retrieve a batch of states
+            self.idx_retrieve_actor += self.batch_size # increment number of states retrieved
+            
+            output = th.zeros(64, 1, self.lstm_size).cuda() # create something to store the outputs
+            for i in range(self.batch_size):
+                single_observation = observations[i].unsqueeze(0) # get i-th row of batch observations
+                hidden_state = hidden_batch_actor[i].unsqueeze(0) # get hidden state
+                cell_state = hidden_batch_critic[i].unsqueeze(0) # get cell state
+                output[i], _ = self.lstm(self.cnn(single_observation), (hidden_state, cell_state))
+        else:
+            output, self.actor_hidden = self.lstm(self.cnn(observations), self.actor_hidden)
+        
+        if observations.shape[0] <= 1 and self.idx_store_actor < self.n_rollout_steps: # if one observation is passed an not all states have been stored
+            self.past_actor_hidden[self.idx_store_actor // self.buffer_size, (self.idx_store_actor % self.buffer_size) // self.batch_size, self.idx_store_actor % self.hidden_size] = self.actor_hidden[0] # store hidden state
+            self.past_critic_hidden[self.idx_store_actor // self.buffer_size, (self.idx_store_actor % self.buffer_size) // self.batch_size, self.idx_store_actor % self.hidden_size] = self.actor_hidden[1]
+            self.idx_store_actor += 1 # increment number of stored states
+        if observations.shape[0] <= 1 and self.idx_store_actor >= self.n_rollout_steps: # if one observation is passed and all states have now been stored
+            self.idx_store_actor = 0 # reset store index
+        if observations.shape[0] > 1 and self.idx_retrieve_actor >= self.n_rollout_steps: # if multiple observations are passed and all states have been retrieved...
+            self.actor_hidden = (self.past_actor_hidden[self.past_actor_hidden.shape[0] - 1, self.past_actor_hidden.shape[1] - 1, self.past_actor_hidden.shape[2] - 1].unsqueeze(0), 
+                                self.past_critic_hidden[self.past_actor_hidden.shape[0] - 1, self.past_actor_hidden.shape[1] - 1, self.past_actor_hidden.shape[2] - 1].unsqueeze(0)) # restore hidden state to most recent state
+            self.past_actor_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.lstm_size).cuda() # flush hidden state memory
+            self.past_critic_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.lstm_size).cuda() # flush hidden state memory
+            self.idx_retrieve_actor = 0 # reset retrieval index
+
+        return output
 
 
 def create_mlp(
