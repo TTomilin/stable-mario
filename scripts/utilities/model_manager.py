@@ -92,7 +92,7 @@ class ModelManager:
             except FileNotFoundError:
                 pass
         if model == None:
-            print("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
+            raise FileNotFoundError("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
         return model
     
     @staticmethod
