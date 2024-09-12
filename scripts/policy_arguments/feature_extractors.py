@@ -86,27 +86,24 @@ class NatureRNN(BaseFeaturesExtractor):
         self.lstm_size = lstm_size
 
         # set actor and critic's hidden values to 0 initially...
-        self.actor_hidden = [th.zeros(1, lstm_size), th.zeros(1, lstm_size)]
+        self.current_h_c = [th.zeros(1, lstm_size), th.zeros(1, lstm_size)]
         
         # enable collection of hidden states...
-        self.past_actor_hidden = th.zeros(n_epochs, (buffer_size // batch_size), batch_size, lstm_size) #th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size) 
-        self.past_critic_hidden = th.zeros(n_epochs, (buffer_size // batch_size), batch_size, lstm_size) #th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size)
+        self.past_hidden_states = th.zeros(n_epochs, (buffer_size // batch_size), batch_size, lstm_size) #th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size) 
+        self.past_cell_states = th.zeros(n_epochs, (buffer_size // batch_size), batch_size, lstm_size) #th.zeros(n_epochs, buffer_size // batch_size, batch_size, hidden_size)
         # first axis: epochs, i.e. n.o. buffers collected;
         # second axis: batch in current buffer;
         # third axis: number of hidden states in current batch;
-        # fourth axis: the numbers in the current hidden state.
+        # fourth axis: the numbers in the current hidden state/cell state.
 
-        self.idx_store_actor = 0
-        self.idx_retrieve_actor = 0
-        self.idx_store_critic = 0
-        self.idx_retrieve_critic = 0
+        self.idx_store = 0
+        self.idx_retrieve = 0
 
         if th.cuda.is_available(): # if cuda device is available...
-            self.actor_hidden[0] = self.actor_hidden[0].cuda() # ensure they are on cuda device by invoking 'cuda'
-            self.actor_hidden[1] = self.actor_hidden[1].cuda() # ensure they are on cuda device by invoking 'cuda'
-            #self.critic_hidden = self.critic_hidden.cuda()
-            self.past_actor_hidden = self.past_actor_hidden.cuda()
-            self.past_critic_hidden = self.past_critic_hidden.cuda()
+            self.current_h_c[0] = self.current_h_c[0].cuda() # ensure they are on cuda device by invoking 'cuda'
+            self.current_h_c[1] = self.current_h_c[1].cuda() # ensure they are on cuda device by invoking 'cuda'
+            self.past_hidden_states = self.past_hidden_states.cuda()
+            self.past_cell_states = self.past_cell_states.cuda()
 
         self.lstm = nn.LSTM(input_size=1920, hidden_size=512)
 
@@ -117,32 +114,39 @@ class NatureRNN(BaseFeaturesExtractor):
 
     def forward(self, observations: th.Tensor) -> th.Tensor:
         
-        if observations.shape[0] > 1 and self.idx_retrieve_actor < self.n_rollout_steps: # if multiple observations are passed and not all states have been retrieved
-            hidden_batch_actor = self.past_actor_hidden[self.idx_retrieve_actor // self.buffer_size, (self.idx_retrieve_actor % self.buffer_size) // self.batch_size]
-            hidden_batch_critic = self.past_critic_hidden[self.idx_retrieve_actor // self.buffer_size, (self.idx_retrieve_actor % self.buffer_size) // self.batch_size] # retrieve a batch of states
-            self.idx_retrieve_actor += self.batch_size # increment number of states retrieved
+        if observations.shape[0] > 1 and self.idx_retrieve < self.n_rollout_steps: # if multiple observations are passed and not all states have been retrieved
+            batch_hidden_states = self.past_hidden_states[self.idx_retrieve // self.buffer_size, (self.idx_retrieve % self.buffer_size) // self.batch_size]
+            batch_cell_states = self.past_cell_states[self.idx_retrieve // self.buffer_size, (self.idx_retrieve % self.buffer_size) // self.batch_size] # retrieve a batch of states
+            self.idx_retrieve += self.batch_size # increment number of states retrieved
             
-            output = th.zeros(64, 1, self.lstm_size).cuda() # create something to store the outputs
+            output = th.zeros(64, 1, self.lstm_size) # create something to store the outputs
+            if th.cuda.is_available(): # move tensors to cuda device if needed
+                output = output.cuda()
+
             for i in range(self.batch_size):
                 single_observation = observations[i].unsqueeze(0) # get i-th row of batch observations
-                hidden_state = hidden_batch_actor[i].unsqueeze(0) # get hidden state
-                cell_state = hidden_batch_critic[i].unsqueeze(0) # get cell state
+                hidden_state = batch_hidden_states[i].unsqueeze(0) # get hidden state
+                cell_state = batch_cell_states[i].unsqueeze(0) # get cell state
                 output[i], _ = self.lstm(self.cnn(single_observation), (hidden_state, cell_state))
         else:
-            output, self.actor_hidden = self.lstm(self.cnn(observations), self.actor_hidden)
+            output, self.current_h_c = self.lstm(self.cnn(observations), self.current_h_c)
         
-        if observations.shape[0] <= 1 and self.idx_store_actor < self.n_rollout_steps: # if one observation is passed an not all states have been stored
-            self.past_actor_hidden[self.idx_store_actor // self.buffer_size, (self.idx_store_actor % self.buffer_size) // self.batch_size, self.idx_store_actor % self.hidden_size] = self.actor_hidden[0] # store hidden state
-            self.past_critic_hidden[self.idx_store_actor // self.buffer_size, (self.idx_store_actor % self.buffer_size) // self.batch_size, self.idx_store_actor % self.hidden_size] = self.actor_hidden[1]
-            self.idx_store_actor += 1 # increment number of stored states
-        if observations.shape[0] <= 1 and self.idx_store_actor >= self.n_rollout_steps: # if one observation is passed and all states have now been stored
-            self.idx_store_actor = 0 # reset store index
-        if observations.shape[0] > 1 and self.idx_retrieve_actor >= self.n_rollout_steps: # if multiple observations are passed and all states have been retrieved...
-            self.actor_hidden = (self.past_actor_hidden[self.past_actor_hidden.shape[0] - 1, self.past_actor_hidden.shape[1] - 1, self.past_actor_hidden.shape[2] - 1].unsqueeze(0), 
-                                self.past_critic_hidden[self.past_actor_hidden.shape[0] - 1, self.past_actor_hidden.shape[1] - 1, self.past_actor_hidden.shape[2] - 1].unsqueeze(0)) # restore hidden state to most recent state
-            self.past_actor_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.lstm_size).cuda() # flush hidden state memory
-            self.past_critic_hidden = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.lstm_size).cuda() # flush hidden state memory
-            self.idx_retrieve_actor = 0 # reset retrieval index
+        if observations.shape[0] <= 1 and self.idx_store < self.n_rollout_steps: # if one observation is passed an not all states have been stored
+            self.past_hidden_states[self.idx_store // self.buffer_size, (self.idx_store % self.buffer_size) // self.batch_size, self.idx_store % self.hidden_size] = self.current_h_c[0] # store hidden state
+            self.past_cell_states[self.idx_store // self.buffer_size, (self.idx_store % self.buffer_size) // self.batch_size, self.idx_store % self.hidden_size] = self.current_h_c[1]
+            self.idx_store += 1 # increment number of stored states
+        if observations.shape[0] <= 1 and self.idx_store >= self.n_rollout_steps: # if one observation is passed and all states have now been stored
+            self.idx_store = 0 # reset store index
+        if observations.shape[0] > 1 and self.idx_retrieve >= self.n_rollout_steps: # if multiple observations are passed and all states have been retrieved...
+            self.current_h_c = (self.past_hidden_states[self.past_hidden_states.shape[0] - 1, self.past_hidden_states.shape[1] - 1, self.past_hidden_states.shape[2] - 1].unsqueeze(0), 
+                                self.past_cell_states[self.past_hidden_states.shape[0] - 1, self.past_hidden_states.shape[1] - 1, self.past_hidden_states.shape[2] - 1].unsqueeze(0)) # restore hidden state to most recent state
+            
+            self.past_hidden_states = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.lstm_size) # flush hidden state memory
+            self.past_cell_states = th.zeros(self.n_epochs, self.buffer_size // self.batch_size, self.batch_size, self.lstm_size) # flush hidden state memory
+            if th.cuda.is_available(): # move tensors to cuda device if needed
+                self.past_hidden_states = self.past_hidden_states.cuda()
+                self.past_cell_states = self.past_cell_states.cuda()
+            self.idx_retrieve = 0 # reset retrieval index
 
         return output
 
