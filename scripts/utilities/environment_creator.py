@@ -12,6 +12,7 @@ import stable_retro
 import stable_retro.data
 from stable_retro.examples.discretizer import Discretizer
 from wrappers.observation import Rescale, ShowObservation, CenterCrop
+from wrappers.on_the_spot import OnTheSpotWrapper
 from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
 
 STEPS_PER_FRAME = 4
@@ -58,6 +59,11 @@ class RetroEnvCreator:
             env = GrayScaleObservation(env=env, keep_dim=True)
         if cfg.show_observation:
             env = ShowObservation(env)    
+        if cfg.on_the_spot_wrapper:
+            if cfg.skip_frames:
+                env = OnTheSpotWrapper(env, cfg.n_skip_frames)
+            else:
+                env = OnTheSpotWrapper(env, 1/4)
 
         return env
 

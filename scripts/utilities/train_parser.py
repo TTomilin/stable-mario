@@ -49,6 +49,7 @@ class TrainParser(BaseParser):
         self.arg("--features_extractor_dim", type=int, default=None, help="Number of features to be extracted by the features extractor class.")
         self.arg("--activation_function", type=str, default="tanh", help="Which activation function to include between hidden layers, defaults to tanh.")
         self.arg("--eval_metric", type=str, default=None, help="Which RAM-value (name as specified in data.json) to use as evaluation metric for deciding on best model. Uses value in RAM at end of episode as metric. If none specified, the reward is used.")
+        self.arg("--on_the_spot_wrapper", action="store_true", default=False, help="Wrapper designed to train on_the_spot.")
 
         # WandB
         self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
