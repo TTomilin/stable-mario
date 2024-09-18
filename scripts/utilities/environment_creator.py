@@ -1,8 +1,7 @@
 import argparse
-import pathlib
 
 import numpy as np
-import json
+import math
 
 from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward, TimeLimit
 from gymnasium.wrappers.gray_scale_observation import GrayScaleObservation
@@ -12,7 +11,8 @@ import stable_retro
 import stable_retro.data
 from stable_retro.examples.discretizer import Discretizer
 from wrappers.observation import Rescale, ShowObservation, CenterCrop
-from wrappers.on_the_spot import OnTheSpotWrapper
+from wrappers.timing import Delay
+from wrappers.on_the_spot import OnTheSpotWrapper, FindAndStoreColorWrapper
 from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
 
 STEPS_PER_FRAME = 4
@@ -25,6 +25,8 @@ class RetroEnvCreator:
         state = cfg.load_state if cfg.load_state is not None else config[game]["state"]
         env = stable_retro.make(game=config[game]['game_env'], state=state, render_mode=cfg.render_mode)
 
+        if cfg.delay:
+            env = Delay(env, delay=cfg.delay_time)
         if cfg.discretize:
             env = Discretizer(env, config[game]["actions"])
         if cfg.crop:
@@ -61,9 +63,15 @@ class RetroEnvCreator:
             env = ShowObservation(env)    
         if cfg.on_the_spot_wrapper:
             if cfg.skip_frames:
-                env = OnTheSpotWrapper(env, cfg.n_skip_frames)
+                env = FindAndStoreColorWrapper(env, 
+                                               color=[26 * 8, 29 * 8, 16 * 8],
+                                               memory_depth=5,
+                                               cooldown=math.ceil(8 / cfg.n_skip_frames))
             else:
-                env = OnTheSpotWrapper(env, 1/4)
+                env = FindAndStoreColorWrapper(env, 
+                                               color=[26 * 8, 29 * 8, 16 * 8],
+                                               memory_depth=5,
+                                               cooldown=25)
 
         return env
 

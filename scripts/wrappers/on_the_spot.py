@@ -1,12 +1,93 @@
 from __future__ import annotations
-from typing import Any, SupportsFloat
 
-import gymnasium
-from gymnasium.core import WrapperObsType, WrapperActType
 
 import gymnasium as gym
-import math
+from gymnasium.wrappers.frame_stack import LazyFrames
+from gymnasium.spaces import Box
+from collections import deque
+import numpy as np
 from utilities.imaging import ImageUtilities
+
+class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
+    def __init__(
+        self,
+        env: gym.Env,
+        color: np.ndarray, 
+        memory_depth: int, 
+        cooldown: int
+    ):
+        """Observation wrapper that stacks the observations in a rolling manner.
+
+        Args:
+            env (Env): The environment to apply the wrapper
+            num_stack (int): The number of frames to stack
+            lz4_compress (bool): Use lz4 to compress the frames internally
+        """
+        gym.utils.RecordConstructorArgs.__init__(
+            self, num_stack=memory_depth + 1, lz4_compress=False
+        )
+        gym.ObservationWrapper.__init__(self, env)
+
+        self.stack_depth = memory_depth
+        self.frames = deque(maxlen=self.stack_depth)
+        self.ret_frames = deque(maxlen =self.stack_depth + 1)
+        self.color = color
+        self.counter = 0
+        self.step_cooldown = cooldown
+
+        low = np.repeat(self.observation_space.low[np.newaxis, ...], self.stack_depth+1, axis=0)
+        high = np.repeat(
+            self.observation_space.high[np.newaxis, ...], self.stack_depth+1, axis=0
+        )
+        self.observation_space = Box(
+            low=low, high=high, dtype=self.observation_space.dtype
+        )
+
+    def observation(self, observation):
+        """Converts the wrappers current frames to lazy frames.
+
+        Args:
+            observation: Ignored
+
+        Returns:
+            :class:`LazyFrames` object for the wrapper's frame buffer,  :attr:`self.frames`
+        """
+        assert len(self.frames) == self.stack_depth, (len(self.frames), self.stack_depth)
+        self.ret_frames.extendleft(self.frames)
+        self.ret_frames.append(observation)
+        return LazyFrames(list(self.ret_frames))
+
+    def step(self, action):
+        observation, reward, terminated, truncated, info = self.env.step(action)
+
+        # detect presence of color:
+        color_found = ImageUtilities.find_color(self.color, observation)
+
+        # store color if cooldown elapsed:
+        if color_found and self.counter > self.step_cooldown:
+            self.frames.append(observation)
+            self.counter = 0
+            print("Frame added.")
+        elif color_found:
+            pass
+        self.counter += 1
+
+        return self.observation(observation), reward, terminated, truncated, info
+
+    def reset(self, **kwargs):
+        """Reset the environment with kwargs.
+
+        Args:
+            **kwargs: The kwargs for the environment reset
+
+        Returns:
+            The stacked observations
+        """
+        obs, info = self.env.reset(**kwargs)
+
+        [self.frames.append(obs) for _ in range(self.stack_depth)]
+
+        return self.observation(obs), info
 
 class OnTheSpotWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
     """Show image that AI is fed during training.
@@ -19,23 +100,37 @@ class OnTheSpotWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
         >>> env = ShowObservation(env)
     """
 
-    def __init__(self, env: gym.Env, n_skip_frames) -> None:
+    def __init__(self, env: gym.Env, n_skip_frames, color: np.ndarray, observation_shape: tuple, memory_depth: int, cooldown: int) -> None:
         """Shows a graphical representation of the AIs observations
 
         Args:
             env: The environment to apply the wrapper
         """
-        gym.utils.RecordConstructorArgs.__init__(self)
+        gym.utils.RecordConstructorArgs.__init__(self, num_stack=memory_depth + 1)
         gym.ObservationWrapper.__init__(self, env)
 
-        self.color = [26 * 8, 29 * 8, 16 * 8]
-        self.step_cooldown = math.ceil(25 / n_skip_frames * 4)
-        self.temp_counter = 0
+        self.color = color
+        self.step_cooldown = cooldown
+        self.observation_dimension = observation_shape
+        print(observation_shape)
+        self.memory_depth = memory_depth
+        self.memory = np.zeros((self.memory_depth,) + self.observation_dimension)
+        self.counter = 0
 
     def observation(self, observation):
-        
-        if ImageUtilities.find_color(self.color, observation) != None:
-            print(self.temp_counter)
-            self.temp_counter += 1
+        # detect presence of color:
+        color_found = ImageUtilities.find_color(self.color, observation)
 
-        return observation
+        # store color if cooldown elapsed:
+        if color_found and self.counter > self.step_cooldown:
+            self.memory = np.roll(a=self.memory, shift=1, axis=0)
+            self.memory[0] = observation
+            self.counter = 0
+            print("Frame added.")
+        elif color_found:
+            pass
+
+        # let returned observation be the memory, with the current frame added to it
+        return_observation = np.concatenate((np.expand_dims(observation, axis=0), self.memory), axis=0)
+
+        return return_observation

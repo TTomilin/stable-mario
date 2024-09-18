@@ -141,6 +141,9 @@ class ModelManager:
         if cfg.features_extractor_dim != None:
             policy_args.update(features_extractor_kwargs=dict(features_dim=cfg.features_extractor_dim))
 
+        if cfg.on_the_spot_wrapper:
+            policy_args.update(normalize_images=False)
+
         if bool(policy_args) == False: # if dict left empty...
             policy_args = None # set to default None 
 
