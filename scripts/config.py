@@ -28,7 +28,7 @@ CONFIG = {
         'game_env': 'on_the_spot-MP',
         'state': 'Level1',
         'clip_reward': False,
-        'resize': (80, 72),
+        'resize': (40, 36),
         'timesteps': 100000000000,
     },
     'amplifried': {
