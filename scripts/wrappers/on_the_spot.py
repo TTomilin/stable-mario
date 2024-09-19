@@ -35,30 +35,28 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         self.counter = 0
         self.step_cooldown = cooldown
 
-        low = np.repeat(self.observation_space.low[np.newaxis, ...], self.stack_depth+1, axis=0)
-        high = np.repeat(
-            self.observation_space.high[np.newaxis, ...], self.stack_depth+1, axis=0
-        )
+        low = np.tile(self.observation_space.low, (6,1,1))
+        high = np.tile(self.observation_space.high, (6,1,1))
         self.observation_space = Box(
             low=low, high=high, dtype=self.observation_space.dtype
         )
 
     def observation(self, observation):
-        """Converts the wrappers current frames to lazy frames.
-
-        Args:
-            observation: Ignored
-
-        Returns:
-            :class:`LazyFrames` object for the wrapper's frame buffer,  :attr:`self.frames`
-        """
+        # verify memory depth and n.o. elts in queue:
         assert len(self.frames) == self.stack_depth, (len(self.frames), self.stack_depth)
+        
+        # add the memories to ret_frames:
         self.ret_frames.extendleft(self.frames)
+        # append current observations to ret_frames:
         self.ret_frames.append(observation)
-        return LazyFrames(list(self.ret_frames))
+
+        # convert the queue ret_frames to a single matrix and return:
+        return np.concatenate(self.ret_frames, axis=0)
+        # there is some (avoidable) overhead here, but there is a similar amount of overhead in VecFrameStack.
 
     def step(self, action):
         observation, reward, terminated, truncated, info = self.env.step(action)
+        # note: we receive 'observation' as a single (colored) image
 
         # detect presence of color:
         color_found = ImageUtilities.find_color(self.color, observation)
@@ -67,7 +65,6 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         if color_found and self.counter > self.step_cooldown:
             self.frames.append(observation)
             self.counter = 0
-            print("Frame added.")
         elif color_found:
             pass
         self.counter += 1
@@ -75,17 +72,10 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         return self.observation(observation), reward, terminated, truncated, info
 
     def reset(self, **kwargs):
-        """Reset the environment with kwargs.
-
-        Args:
-            **kwargs: The kwargs for the environment reset
-
-        Returns:
-            The stacked observations
-        """
         obs, info = self.env.reset(**kwargs)
 
-        [self.frames.append(obs) for _ in range(self.stack_depth)]
+        # at first, we duplicate the first observation stack_depth times into memory to avoid mismatch in observation size
+        [self.frames.append(obs) for _ in range(self.stack_depth)] 
 
         return self.observation(obs), info
 
