@@ -4,7 +4,7 @@ CONFIG = {
         'game_env': 'broom_zoom-MP',
         'state': 'Level1',
         'clip_reward': False,
-        'resize': (80, 72),
+        'resize': (40, 36),
         'timesteps': 1000000,
     },
     'spook_spike': {

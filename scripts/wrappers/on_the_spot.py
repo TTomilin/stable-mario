@@ -6,6 +6,7 @@ from gymnasium.wrappers.frame_stack import LazyFrames
 from gymnasium.spaces import Box
 from collections import deque
 import numpy as np
+import imageio
 from utilities.imaging import ImageUtilities
 
 class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
@@ -49,6 +50,9 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         self.ret_frames.extendleft(self.frames)
         # append current observations to ret_frames:
         self.ret_frames.append(observation)
+        if len(self.ret_frames) >= 5:
+            for frame in self.ret_frames
+                imageio.imsave(uri='test.png', im=frame, format="png")
 
         # convert the queue ret_frames to a single matrix and return:
         return np.concatenate(self.ret_frames, axis=0)
@@ -59,12 +63,13 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         # note: we receive 'observation' as a single (colored) image
 
         # detect presence of color:
-        color_found = ImageUtilities.find_color(self.color, observation)
+        color_found = (ImageUtilities.find_color(self.color, observation) != None)
 
         # store color if cooldown elapsed:
         if color_found and self.counter > self.step_cooldown:
             self.frames.append(observation)
             self.counter = 0
+            print("Frame stored.")
         elif color_found:
             pass
         self.counter += 1

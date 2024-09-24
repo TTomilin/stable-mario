@@ -66,7 +66,7 @@ class RetroEnvCreator:
                 env = FindAndStoreColorWrapper(env, 
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
-                                               cooldown=math.ceil(8 / cfg.n_skip_frames))
+                                               cooldown=25)
             else:
                 env = FindAndStoreColorWrapper(env, 
                                                color=[26 * 8, 29 * 8, 16 * 8],
