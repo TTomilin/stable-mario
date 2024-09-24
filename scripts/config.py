@@ -111,5 +111,20 @@ CONFIG = {
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000000
-    }
+    },
+        'melon_folly': {
+        'actions': [['B', 'LEFT'], ['UP', 'B'], ['RIGHT', 'B'], ['DOWN', 'B']],
+        'game_env': 'melon_folly-MP',
+        'state': '',
+        'clip_reward': False,
+        'timesteps': 10000000000
+    },
+        'cloud_climb': {
+        'actions': [['A'], ['LEFT'], ['RIGHT'], ['LEFT', 'A'], ['RIGHT', 'A']],
+        'game_env': 'cloud_climb-MP',
+        'state': 'cloud_climb',
+        'clip_reward': False,
+        'resize': (240,160),
+        'timesteps': 10000000000
+        }
 }

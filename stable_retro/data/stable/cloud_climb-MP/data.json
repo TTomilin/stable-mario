@@ -1,0 +1,16 @@
+{
+  "info": {
+    "height": {
+      "address": 33657581,
+      "type": "=u2"
+    },
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "x-coordinate": {
+      "address": 33649665,
+      "type": "=u2"
+    }
+  }
+}
