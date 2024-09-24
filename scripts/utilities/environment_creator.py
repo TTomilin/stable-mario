@@ -66,12 +66,12 @@ class RetroEnvCreator:
                 env = FindAndStoreColorWrapper(env, 
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
-                                               cooldown=25)
+                                               cooldown=10)
             else:
                 env = FindAndStoreColorWrapper(env, 
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
-                                               cooldown=25)
+                                               cooldown=10)
 
         return env
 

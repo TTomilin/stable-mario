@@ -35,6 +35,7 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         self.color = color
         self.counter = 0
         self.step_cooldown = cooldown
+        self.ret_counter = 0
 
         low = np.tile(self.observation_space.low, (6,1,1))
         high = np.tile(self.observation_space.high, (6,1,1))
@@ -50,9 +51,9 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         self.ret_frames.extendleft(self.frames)
         # append current observations to ret_frames:
         self.ret_frames.append(observation)
-        if len(self.ret_frames) >= 5:
-            for frame in self.ret_frames:
-                imageio.imsave(uri='/home/ctrl/AP_self/temp/test.png', im=frame, format="png")
+
+        #for i in range(len(self.frames)):
+        #    imageio.imsave(uri=f"/home/ctrl/AP_self/temp/test_{i}.png", im=self.frames[i])
 
         # convert the queue ret_frames to a single matrix and return:
         return np.concatenate(self.ret_frames, axis=0)
@@ -69,7 +70,8 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         if color_found and self.counter > self.step_cooldown:
             self.frames.append(observation)
             self.counter = 0
-            print("Frame stored.")
+            #print(f"Frame stored: {self.ret_counter}")
+            #self.ret_counter = self.ret_counter + 1
         elif color_found:
             pass
         self.counter += 1
