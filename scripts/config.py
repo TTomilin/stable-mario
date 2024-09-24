@@ -5,7 +5,7 @@ CONFIG = {
         'state': 'Level1',
         'clip_reward': False,
         'resize': (40, 36),
-        'timesteps': 1000000,
+        'timesteps': 100000000000,
     },
     'spook_spike': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],

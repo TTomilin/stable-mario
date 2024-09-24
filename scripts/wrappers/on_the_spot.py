@@ -51,8 +51,8 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         # append current observations to ret_frames:
         self.ret_frames.append(observation)
         if len(self.ret_frames) >= 5:
-            for frame in self.ret_frames
-                imageio.imsave(uri='test.png', im=frame, format="png")
+            for frame in self.ret_frames:
+                imageio.imsave(uri='/home/ctrl/AP_self/temp/test.png', im=frame, format="png")
 
         # convert the queue ret_frames to a single matrix and return:
         return np.concatenate(self.ret_frames, axis=0)
