@@ -52,7 +52,7 @@ class TrainParser(BaseParser):
         self.arg("--on_the_spot_wrapper", action="store_true", default=False, help="Wrapper designed to train on_the_spot.")
         self.arg("--delay", action="store_true", default=False, help="Slow down model to more clearly see the actions.")
         self.arg("--delay_time", type=int, default=500, help="Amount of time to delay each timestep if --delay is used, measured in ms.")
-
+        self.arg("--filter_colors", type=str, default=None, help="Comma seperated list of colors to see. i.e. '4H3,4JD' corresponds to only seeing the colors (4, 17, 3) and (4, 19, 13) in 15-bit RGB")
         # WandB
         self.arg('--with_wandb', default=False, action='store_true', help='Enables Weights and Biases')
         self.arg('--wandb_entity', default='automated-play', type=str, help='WandB username (entity).')

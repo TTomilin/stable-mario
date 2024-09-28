@@ -10,7 +10,7 @@ from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 import stable_retro
 import stable_retro.data
 from stable_retro.examples.discretizer import Discretizer
-from wrappers.observation import Rescale, ShowObservation, CenterCrop
+from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors
 from wrappers.timing import Delay
 from wrappers.on_the_spot import OnTheSpotWrapper, FindAndStoreColorWrapper
 from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
@@ -36,6 +36,8 @@ class RetroEnvCreator:
             env = ResizeObservation(env, config[game]["resize"])
         if cfg.rescale:
             env = Rescale(env)
+        if cfg.filter_colors:
+            env = FilterColors(env, [x for x in cfg.filter_colors.split(",")])
         if cfg.normalize_observation:
             env = NormalizeObservation(env)
         if cfg.normalize_reward:

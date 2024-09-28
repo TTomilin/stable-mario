@@ -101,3 +101,50 @@ class CenterCrop(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
         cropped_array = cropped_array.transpose() # transpose tensor: dimensions of tensor used by torch and gym are reversed
 
         return cropped_array
+
+class FilterColors(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
+    """
+    """
+    def __init__(self, env: gym.Env, colors: list[str]) -> None:
+        """
+        Removes all colors but the ones specified in a comma seperated list of extended hex.
+        
+        Arguments:
+        env: the env
+        colors: list of e-hex colors
+        """
+        gym.utils.RecordConstructorArgs.__init__(self)
+        gym.ObservationWrapper.__init__(self, env)
+        colorlist = []
+        for color in colors:
+            c = []
+            for a in color:
+                if a.isnumeric():
+                    c.append(int(a)*8)
+                else:
+                    c.append((int(ord(a))-55)*8)
+            colorlist.append(c)
+        print(f"Showing {colorlist}")
+        self.__colors = colorlist
+        
+    def observation(self, observation):
+        for i in range(len(observation)):
+            for j in range(len(observation[0])):
+                for color in self.__colors:
+                    if observation[i, j, 0] == color[0] and observation[i, j, 1] == color[1] and observation[i, j, 2] == color[2]:
+                        break
+                else:
+                    observation[i,j] = [0, 0, 0]
+        return observation
+    
+    # def convertcolors(colors):
+    #     colorlist = []
+    #     for color in colors:
+    #         c = []
+    #         for a in color:
+    #             if a.isnumeric():
+    #                 c.append(int(a)*8)
+    #             else:
+    #                 c.append((int(ord(a))-31)*8)
+    #         colorlist.append(c)
+    #     return colorlist
