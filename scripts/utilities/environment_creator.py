@@ -10,7 +10,7 @@ from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 import stable_retro
 import stable_retro.data
 from stable_retro.examples.discretizer import Discretizer
-from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors
+from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit
 from wrappers.timing import Delay
 from wrappers.on_the_spot import OnTheSpotWrapper, FindAndStoreColorWrapper
 from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
@@ -61,8 +61,10 @@ class RetroEnvCreator:
             env = StepRewardLogger(env, log_dir)
         if cfg.gray_scale:
             env = GrayScaleObservation(env=env, keep_dim=True)
+        if cfg.grabbit:
+            env = Grabbit(env, [x for x in cfg.grabbit.split(",")])   
         if cfg.show_observation:
-            env = ShowObservation(env)    
+            env = ShowObservation(env)     
         if cfg.on_the_spot_wrapper:
             if cfg.skip_frames:
                 env = FindAndStoreColorWrapper(env, 

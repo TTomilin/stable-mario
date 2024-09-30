@@ -126,5 +126,13 @@ CONFIG = {
         'clip_reward': False,
         'resize': (240,160),
         'timesteps': 10000000000
+    },
+        'grabbit': {
+        'actions': [['B', 'LEFT'], ['B', 'A', 'LEFT'], ['B', 'RIGHT'], ['RIGHT', 'A', 'B'], ['B', 'UP'], ['UP', 'A', 'B'], ['B', 'DOWN'], ['DOWN', 'A', 'B'], ['B', 'LEFT', 'UP'], ['B', 'A', 'LEFT', 'UP'], ['B', 'RIGHT', 'UP'], ['RIGHT', 'A', 'B', 'UP'], ['B', 'LEFT', 'DOWN'], ['B', 'A', 'LEFT', 'DOWN'], ['B', 'RIGHT', 'DOWN'], ['RIGHT', 'A', 'B', 'DOWN']],
+        'game_env': 'grabbit-MP',
+        'state': 'grabbit',
+        'clip_reward': False,
+        'resize': (160,240),
+        'timesteps': 10000000000
         }
 }

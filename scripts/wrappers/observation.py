@@ -137,14 +137,41 @@ class FilterColors(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
                     observation[i,j] = [0, 0, 0]
         return observation
     
-    # def convertcolors(colors):
-    #     colorlist = []
-    #     for color in colors:
-    #         c = []
-    #         for a in color:
-    #             if a.isnumeric():
-    #                 c.append(int(a)*8)
-    #             else:
-    #                 c.append((int(ord(a))-31)*8)
-    #         colorlist.append(c)
-    #     return colorlist
+class Grabbit(gymnasium.Wrapper):
+    """
+    """
+    def __init__(self, env: gym.Env, colors: list[str]) -> None:
+        """
+        Removes all colors but the ones specified in a comma seperated list of extended hex.
+        
+        Arguments:
+        env: the env
+        colors: list of e-hex colors
+        """
+        gymnasium.Wrapper.__init__(self, env)
+        colorlist = []
+        for color in colors:
+            c = []
+            for a in color:
+                if a.isnumeric():
+                    c.append(int(a)*8)
+                else:
+                    c.append((int(ord(a))-55)*8)
+            colorlist.append(c)
+        print(f"Showing {colorlist}")
+        self.__colors = colorlist
+        
+    def step(self, action: WrapperActType) -> tuple[WrapperObsType, SupportsFloat, bool, bool, dict[str, Any]]:
+        state, reward, done, truncated, info = self.env.step(action)
+        for i in range(len(state)):
+            for j in range(len(state[0])):
+                for color in self.__colors:
+                    if state[i, j, 0] == color[0] and state[i, j, 1] == color[1] and state[i, j, 2] == color[2]:
+                        if i >= 30 or j >= 50:
+                            if set(color) == {248}:
+                                if abs(i-90)+abs(j-120)>15:
+                                    reward += ((i-90)**2+(j-120)**2)**-2
+                            break
+                else:
+                    state[i,j] = [0, 0, 0]
+        return state, reward, done, truncated, info
