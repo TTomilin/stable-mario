@@ -124,7 +124,7 @@ CONFIG = {
         'game_env': 'cloud_climb-MP',
         'state': 'cloud_climb',
         'clip_reward': False,
-        'resize': (240,160),
+        'resize': (60,40),
         'timesteps': 10000000000
     },
         'grabbit': {
