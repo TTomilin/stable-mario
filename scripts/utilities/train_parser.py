@@ -50,6 +50,7 @@ class TrainParser(BaseParser):
         self.arg("--activation_function", type=str, default="tanh", help="Which activation function to include between hidden layers, defaults to tanh.")
         self.arg("--eval_metric", type=str, default=None, help="Which RAM-value (name as specified in data.json) to use as evaluation metric for deciding on best model. Uses value in RAM at end of episode as metric. If none specified, the reward is used.")
         self.arg("--on_the_spot_wrapper", action="store_true", default=False, help="Wrapper designed to train on_the_spot.")
+        self.arg("--on_the_spot_hack", action="store_true", default=False, help="Wrapper designed to train on_the_spot.")
         self.arg("--delay", action="store_true", default=False, help="Slow down model to more clearly see the actions.")
         self.arg("--delay_time", type=int, default=500, help="Amount of time to delay each timestep if --delay is used, measured in ms.")
 

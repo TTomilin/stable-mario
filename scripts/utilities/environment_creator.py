@@ -12,7 +12,7 @@ import stable_retro.data
 from stable_retro.examples.discretizer import Discretizer
 from wrappers.observation import Rescale, ShowObservation, CenterCrop
 from wrappers.timing import Delay
-from wrappers.on_the_spot import OnTheSpotWrapper, FindAndStoreColorWrapper
+from wrappers.on_the_spot import HackOnTheSpotWrapper, FindAndStoreColorWrapper
 from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
 
 STEPS_PER_FRAME = 4
@@ -25,6 +25,21 @@ class RetroEnvCreator:
         state = cfg.load_state if cfg.load_state is not None else config[game]["state"]
         env = stable_retro.make(game=config[game]['game_env'], state=state, render_mode=cfg.render_mode)
 
+        if cfg.on_the_spot_hack:
+            env = HackOnTheSpotWrapper(env,
+                                       memory_depth=5,
+                                       cooldown=25)
+        if cfg.on_the_spot_wrapper:
+            if cfg.skip_frames:
+                env = FindAndStoreColorWrapper(env, 
+                                               color=[26 * 8, 29 * 8, 16 * 8],
+                                               memory_depth=5,
+                                               cooldown=10)
+            else:
+                env = FindAndStoreColorWrapper(env, 
+                                               color=[26 * 8, 29 * 8, 16 * 8],
+                                               memory_depth=5,
+                                               cooldown=10)
         if cfg.delay:
             env = Delay(env, delay=cfg.delay_time)
         if cfg.discretize:
@@ -61,17 +76,6 @@ class RetroEnvCreator:
             env = GrayScaleObservation(env=env, keep_dim=True)
         if cfg.show_observation:
             env = ShowObservation(env)    
-        if cfg.on_the_spot_wrapper:
-            if cfg.skip_frames:
-                env = FindAndStoreColorWrapper(env, 
-                                               color=[26 * 8, 29 * 8, 16 * 8],
-                                               memory_depth=5,
-                                               cooldown=10)
-            else:
-                env = FindAndStoreColorWrapper(env, 
-                                               color=[26 * 8, 29 * 8, 16 * 8],
-                                               memory_depth=5,
-                                               cooldown=10)
 
         return env
 
