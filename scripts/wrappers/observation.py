@@ -143,7 +143,7 @@ class Grabbit(gymnasium.Wrapper):
     def __init__(self, env: gym.Env, colors: list[str]) -> None:
         """
         Removes all colors but the ones specified in a comma seperated list of extended hex.
-        
+        Wrapper designed for Grabbit
         Arguments:
         env: the env
         colors: list of e-hex colors
