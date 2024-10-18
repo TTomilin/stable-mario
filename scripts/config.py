@@ -120,11 +120,35 @@ CONFIG = {
         'timesteps': 10000000000
     },
         'cloud_climb': {
-        'actions': [['A'], ['LEFT'], ['RIGHT'], ['LEFT', 'A'], ['RIGHT', 'A']],
+        'actions': [['A'], ['LEFT'], ['RIGHT'], ['LEFT', 'A'], ['RIGHT', 'A'], []],
         'game_env': 'cloud_climb-MP',
         'state': 'cloud_climb',
         'clip_reward': False,
-        'resize': (240,160),
+        'resize': (60,40),
         'timesteps': 10000000000
+    },
+        'grabbit': {
+        'actions': [['B', 'LEFT'], ['B', 'A', 'LEFT'], ['B', 'RIGHT'], ['RIGHT', 'A', 'B'], ['B', 'UP'], ['UP', 'A', 'B'], ['B', 'DOWN'], ['DOWN', 'A', 'B'], ['B', 'LEFT', 'UP'], ['B', 'A', 'LEFT', 'UP'], ['B', 'RIGHT', 'UP'], ['RIGHT', 'A', 'B', 'UP'], ['B', 'LEFT', 'DOWN'], ['B', 'A', 'LEFT', 'DOWN'], ['B', 'RIGHT', 'DOWN'], ['RIGHT', 'A', 'B', 'DOWN']],
+        'game_env': 'grabbit-MP',
+        'state': 'grabbit',
+        'clip_reward': False,
+        'resize': (160,240),
+        'timesteps': 10000000000
+        },
+        'forest_jump': {
+            'actions': [[], ['A'], ['DOWN'],['LEFT'], ['RIGHT'], ['A','RIGHT'], ['A', 'LEFT']],
+            'game_env': 'forest_jump-MP',
+            'state': 'forest_jump',
+            'clip_reward': False,
+            'resize': (80, 120),
+            'timesteps': 1927420971
+        },
+        'drop_em': {
+            'actions': [[], ['A']],
+            'game_env': 'drop_em-MP',
+            'state': 'drop_em',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
         }
 }

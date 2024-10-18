@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import gymnasium as gym
-from torchvision.transforms.functional import center_crop
 import time
+
+import gymnasium as gym
+
 
 class Delay(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
     """Show image that AI is fed during training.

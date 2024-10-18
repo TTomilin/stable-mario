@@ -1,12 +1,9 @@
-from stable_baselines3.common.callbacks import BaseCallback
-from stable_baselines3.common.evaluation import evaluate_policy
-from utilities.model_manager import ModelManager
-from colorist import Color
-from torch import device
-
-import os
-import sys
+import argparse
 import json
+import os
+import statistics
+import sys
+
 import gymnasium
 import wandb
 import statistics
@@ -18,12 +15,16 @@ REWARD_KEY = 'mean_reward'
 N_EPISODES_KEY = 'number_of_eval_episodes'
 DETERMINISTIC_KEY = 'deterministic'
 
+
 class CustomEvalCallback(BaseCallback):
     """
     A custom callback that evaluates the agent and saves the model if it was better than the previous agent.
     """
-    def __init__(self, cfg: argparse.Namespace, eval_env: gymnasium.Env, log_dir: str, device: device, system_file_name: str, 
-                 wandb_file_name: str, eval_freq: int = 300, n_eval_episodes: int = 1, deterministic: bool = True, verbose: int = 0,
+
+    def __init__(self, cfg: argparse.Namespace, eval_env: gymnasium.Env, log_dir: str, device: device,
+                 system_file_name: str,
+                 wandb_file_name: str, eval_freq: int = 300, n_eval_episodes: int = 1, deterministic: bool = True,
+                 verbose: int = 0,
                  eval_metric: str = None):
         super().__init__(verbose)
         self.__n_eval_episodes = n_eval_episodes
@@ -39,12 +40,12 @@ class CustomEvalCallback(BaseCallback):
         self.__eval_metric = eval_metric
 
         # create local copy of model:
-        self.__local_model = ModelManager.create_model(cfg=self.__cfg, env=self.__eval_env, 
+        self.__local_model = ModelManager.create_model(cfg=self.__cfg, env=self.__eval_env,
                                                        device=self.__device, log_dir=self.__log_dir)
-        
+
         # initialize the previous best reward:
         self.__previous_best_total_reward = float('-inf')
-        
+
         if os.path.isfile(f"{log_dir}/best_model/{system_file_name}_info.json"):
             with open(f"{log_dir}/best_model/{system_file_name}_info.json", 'r') as json_file:
                 save_dict = json.load(json_file)
@@ -53,7 +54,8 @@ class CustomEvalCallback(BaseCallback):
                 except KeyError:
                     pass
         if self.__previous_best_total_reward == float('-inf') and sys.argv[0] == RESUME_COMMAND:
-            print(f"{Color.RED}WARNING: could not find valid json file for best model.\nSetting best previous evaluation reward to default -infinity.{Color.OFF}")
+            print(
+                f"{Color.RED}WARNING: could not find valid json file for best model.\nSetting best previous evaluation reward to default -infinity.{Color.OFF}")
 
     def _on_step(self) -> bool:
         if self.locals["dones"][0]:
@@ -74,17 +76,17 @@ class CustomEvalCallback(BaseCallback):
 
             self.__ep_completed_since_update = 0
 
-        return True # always continue training        
+        return True  # always continue training
 
     def __save_new_best_model(self, mean_reward):
         self.model.save(f"{self.__log_dir}/best_model/{self.__system_file_name}.zip")
 
-        save_dict = {REWARD_KEY: mean_reward, 
+        save_dict = {REWARD_KEY: mean_reward,
                      DETERMINISTIC_KEY: self.__deterministic,
                      N_EPISODES_KEY: self.__n_eval_episodes}
         with open(f"{self.__log_dir}/best_model/{self.__system_file_name}_info.json", 'w') as json_file:
             json.dump(save_dict, json_file)
-            
+
         if self.__cfg.with_wandb:
             wandb.save(f"{self.__log_dir}/best_model/{self.__wandb_file_name}.zip")
             wandb.save(f"{self.__log_dir}/best_model/{self.__wandb_file_name}_info.json")
@@ -105,20 +107,20 @@ class CustomEvalCallback(BaseCallback):
             actor_params = self.model.policy.state_dict()
             self.__local_model.policy.load_state_dict(actor_params)
             total_episode_rewards, total_episode_lengths = evaluate_policy(model=self.__local_model,
-                                                                            env=self.__eval_env,
-                                                                            n_eval_episodes=1,
-                                                                            deterministic=True,
-                                                                            return_episode_rewards=True)
+                                                                           env=self.__eval_env,
+                                                                           n_eval_episodes=1,
+                                                                           deterministic=True,
+                                                                           return_episode_rewards=True)
         else:
             total_episode_rewards, total_episode_lengths = evaluate_policy(model=self.model,
-                                                                            env=self.__eval_env,
-                                                                            n_eval_episodes=self.__n_eval_episodes,
-                                                                            deterministic=False,
-                                                                            return_episode_rewards=True)
+                                                                           env=self.__eval_env,
+                                                                           n_eval_episodes=self.__n_eval_episodes,
+                                                                           deterministic=False,
+                                                                           return_episode_rewards=True)
 
         mean_reward = statistics.fmean(total_episode_rewards)
         return mean_reward
-    
+
     def __get_average_RAM_value(self, ram_id):
         episode_ram_values = []
         actor_params = self.model.policy.state_dict()
@@ -136,7 +138,8 @@ class CustomEvalCallback(BaseCallback):
                 if terminated or truncated:
                     episode_ram_values.append(info[ram_id])
                     obs, _ = self.__eval_env.reset()
-                    action = self.__local_model.predict(obs, deterministic=False) # reset determinism. Perhaps this would not be needed if we set 'eval_env' to an environment the same as 'env' instead of to 'env' itself
+                    action = self.__local_model.predict(obs,
+                                                        deterministic=False)  # reset determinism. Perhaps this would not be needed if we set 'eval_env' to an environment the same as 'env' instead of to 'env' itself
                     break
         else:
             obs, _ = self.__eval_env.reset()

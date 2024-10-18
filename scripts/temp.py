@@ -1,21 +1,16 @@
-import sys
-import numpy as np
-
 import argparse
-from utilities.load_parser import LoadParser
-from utilities.train_parser import TrainParser
-from utilities.environment_creator import RetroEnvCreator
-from utilities.wandb_manager import WandbManager
-
 import os
+import sys
 from datetime import datetime
 
-import wandb
+from sb3_contrib import QRDQN
 from stable_baselines3 import PPO
 
-from sb3_contrib import QRDQN
-
 from config import CONFIG
+from utilities.environment_creator import RetroEnvCreator
+from utilities.load_parser import LoadParser
+from utilities.train_parser import TrainParser
+from utilities.wandb_manager import WandbManager
 
 
 def main(cfg: argparse.Namespace):
@@ -24,13 +19,13 @@ def main(cfg: argparse.Namespace):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_dir = f"{load_directory}/trained_footage/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
-    
+
     # Load training parameters:
     train_command = None
     with open(f"{load_directory}/train_command.txt", 'r') as file:
         train_command = file.read()
-    argv = train_command.split(" ") # convert arguments to list
-    train_parser = TrainParser(arg_source=argv[1:]) # feed arguments into parser
+    argv = train_command.split(" ")  # convert arguments to list
+    train_parser = TrainParser(arg_source=argv[1:])  # feed arguments into parser
     reinit_env_args = train_parser.get_args()
     reinit_env_args_dict = vars(reinit_env_args)
 
@@ -73,14 +68,15 @@ def main(cfg: argparse.Namespace):
     action_arr_1 = []
     while True:
         env.render()
-        
+
         obs_arr_1.append(obs)
 
         if reinit_env_args.discretize:
-            action = model.predict(obs, deterministic=deterministic)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
+            action = model.predict(obs, deterministic=deterministic)[
+                0]  # Model's action are returned as tuple with one element. Corresponds to discretized action.
         else:
             action = model.predict(obs, deterministic)
-        
+
         action_arr_1.append(action)
 
         obs, reward, terminated, truncated, info = env.step(action)
@@ -93,14 +89,15 @@ def main(cfg: argparse.Namespace):
     action_arr_2 = []
     while True:
         env.render()
-        
+
         obs_arr_2.append(obs)
 
         if reinit_env_args.discretize:
-            action = model.predict(obs, deterministic=deterministic)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
+            action = model.predict(obs, deterministic=deterministic)[
+                0]  # Model's action are returned as tuple with one element. Corresponds to discretized action.
         else:
             action = model.predict(obs, deterministic)
-        
+
         action_arr_2.append(action)
 
         obs, reward, terminated, truncated, info = env.step(action)
@@ -117,14 +114,15 @@ def main(cfg: argparse.Namespace):
     action_arr_3 = []
     while True:
         env.render()
-        
+
         obs_arr_3.append(obs)
 
         if reinit_env_args.discretize:
-            action = model.predict(obs, deterministic=deterministic)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
+            action = model.predict(obs, deterministic=deterministic)[
+                0]  # Model's action are returned as tuple with one element. Corresponds to discretized action.
         else:
             action = model.predict(obs, deterministic)
-        
+
         action_arr_3.append(action)
 
         obs, reward, terminated, truncated, info = env.step(action)
@@ -142,14 +140,15 @@ def main(cfg: argparse.Namespace):
 
     while True:
         env.render()
-        
+
         obs_arr_4.append(obs)
 
         if reinit_env_args.discretize:
-            action = model.predict(obs, deterministic=deterministic)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
+            action = model.predict(obs, deterministic=deterministic)[
+                0]  # Model's action are returned as tuple with one element. Corresponds to discretized action.
         else:
             action = model.predict(obs, deterministic)
-        
+
         action_arr_4.append(action)
 
         obs, reward, terminated, truncated, info = env.step(action)
@@ -161,6 +160,7 @@ def main(cfg: argparse.Namespace):
         print(f"{i}-th obs equal: {(obs_arr_3[i] == obs_arr_4[i]).all()}")
         print(f"{i}-th acts equal: {(action_arr_3[i] == action_arr_4[i]).all()}")
 
+
 def try_load_model(directory, names, model_type, env):
     model = None
     for name in names:
@@ -171,8 +171,10 @@ def try_load_model(directory, names, model_type, env):
         except FileNotFoundError:
             pass
     if model == None:
-        print("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
+        print(
+            "Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
     return model
+
 
 if __name__ == '__main__':
     parser = LoadParser(arg_source=sys.argv[1:])
