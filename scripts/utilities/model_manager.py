@@ -1,14 +1,15 @@
 import argparse
+
 import numpy as np
-
-from policy_arguments.feature_extractors import BatchNorm, NatureRNN
-
-from stable_baselines3 import PPO
-from stable_baselines3.common.type_aliases import GymEnv
-from stable_baselines3.common.torch_layers import NatureCNN, FlattenExtractor
 from sb3_contrib import QRDQN, RecurrentPPO
-from models.recurrent_policy import RecurrentPolicy
+from stable_baselines3 import PPO
+from stable_baselines3.common.torch_layers import NatureCNN, FlattenExtractor
+from stable_baselines3.common.type_aliases import GymEnv
 from torch import device, nn
+
+from scripts.models.recurrent_policy import RecurrentPolicy
+from scripts.policy_arguments.feature_extractors import BatchNorm, NatureRNN
+
 
 class ModelManager:
     @staticmethod
@@ -32,41 +33,44 @@ class ModelManager:
         ModelManager.__get_net_arch(cfg, policy_args)
 
         return PPO(policy='CnnPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
-                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
-                    policy_kwargs=policy_args, n_epochs=cfg.n_epochs, batch_size=cfg.batch_size, n_steps=cfg.n_steps)
-    
+                   learning_rate=cfg.learning_rate, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
+                   policy_kwargs=policy_args, n_epochs=cfg.n_epochs, batch_size=cfg.batch_size, n_steps=cfg.n_steps)
+
     @staticmethod
     def __create_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
 
         ModelManager.__get_net_arch(cfg, policy_args)
 
         return RecurrentPPO(policy='CnnLstmPolicy', env=env, device=device, ent_coef=cfg.ent_coeff,
-                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
-                    policy_kwargs=policy_args, n_epochs=cfg.n_epochs, batch_size=cfg.batch_size, n_steps=cfg.n_steps)
-    
+                            learning_rate=cfg.learning_rate, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
+                            policy_kwargs=policy_args, n_epochs=cfg.n_epochs, batch_size=cfg.batch_size,
+                            n_steps=cfg.n_steps)
+
     @staticmethod
-    def __create_custom_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
+    def __create_custom_recurrent_PPO(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str,
+                                      policy_args: dict):
 
         ModelManager.__get_net_arch(cfg, policy_args)
 
         RecurrentPolicy.batch_size = cfg.batch_size
         RecurrentPolicy.n_epochs = cfg.n_epochs
-        RecurrentPolicy.buffer_size = cfg.n_steps # note, in PPO: buffer_size = n_envs * n_steps
+        RecurrentPolicy.buffer_size = cfg.n_steps  # note, in PPO: buffer_size = n_envs * n_steps
 
         return PPO(policy=RecurrentPolicy, env=env, device=device, ent_coef=cfg.ent_coeff,
-                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
-                    policy_kwargs=policy_args)
+                   learning_rate=cfg.learning_rate, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
+                   policy_kwargs=policy_args)
 
     @staticmethod
     def __create_QRDQN(cfg: argparse.Namespace, env: GymEnv, device: device, log_dir: str, policy_args: dict):
-        
+
         if cfg.batch_norm and policy_args != None:
-            policy_args.update(features_extractor_class = BatchNorm)
+            policy_args.update(features_extractor_class=BatchNorm)
 
         return QRDQN(policy='CnnPolicy', env=env, device=device,
-                    learning_rate=cfg.learning_rate,verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
-                    policy_kwargs=policy_args, batch_size=cfg.batch_size) # outperforms DQN, see https://arxiv.org/pdf/1710.10044
-                    
+                     learning_rate=cfg.learning_rate, verbose=True, tensorboard_log=f"{log_dir}/tensorboard/",
+                     policy_kwargs=policy_args,
+                     batch_size=cfg.batch_size)  # outperforms DQN, see https://arxiv.org/pdf/1710.10044
+
     @staticmethod
     def load_model(model_type: str, game: str, load_directory: str, env):
         model = None
@@ -78,7 +82,7 @@ class ModelManager:
             model = ModelManager.__try_load_model(load_directory, [game, f"{game}-bak"], RecurrentPPO, env)
         else:
             raise ValueError("No model matching the model argument found. Aborting...")
-        
+
         return model
 
     @staticmethod
@@ -92,9 +96,10 @@ class ModelManager:
             except FileNotFoundError:
                 pass
         if model == None:
-            raise FileNotFoundError("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
+            raise FileNotFoundError(
+                "Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
         return model
-    
+
     @staticmethod
     def __get_net_arch(cfg: argparse.Namespace, policy_args: dict):
         if cfg.pi == None or cfg.vf == None:
@@ -102,20 +107,20 @@ class ModelManager:
 
             default_pi = [256, 256]
             default_vf = [256, 256]
-            default_net_arch.update(pi = default_pi)
-            default_net_arch.update(vf = default_vf)
+            default_net_arch.update(pi=default_pi)
+            default_net_arch.update(vf=default_vf)
 
-            policy_args.update(net_arch = default_net_arch)
+            policy_args.update(net_arch=default_net_arch)
         else:
             inputted_net_arch = dict()
 
             inputted_pi = np.array([int(num_str) for num_str in cfg.pi.split(",")])
             inputted_vf = np.array([int(num_str) for num_str in cfg.vf.split(",")])
-            inputted_net_arch.update(pi = inputted_pi)
-            inputted_net_arch.update(vf = inputted_vf)
+            inputted_net_arch.update(pi=inputted_pi)
+            inputted_net_arch.update(vf=inputted_vf)
 
-            policy_args.update(net_arch = inputted_net_arch)
-    
+            policy_args.update(net_arch=inputted_net_arch)
+
     @staticmethod
     def __get_shared_policy_args(cfg: argparse.Namespace):
         policy_args = dict()
@@ -144,7 +149,7 @@ class ModelManager:
         if cfg.on_the_spot_wrapper:
             policy_args.update(normalize_images=False)
 
-        if bool(policy_args) == False: # if dict left empty...
-            policy_args = None # set to default None 
+        if bool(policy_args) == False:  # if dict left empty...
+            policy_args = None  # set to default None
 
         return policy_args

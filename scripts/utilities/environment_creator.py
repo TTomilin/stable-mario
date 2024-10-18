@@ -1,22 +1,22 @@
 import argparse
 
 import numpy as np
-import math
-
-from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward, TimeLimit
+from gymnasium.wrappers import ResizeObservation, NormalizeObservation, RecordVideo, FrameStack, NormalizeReward, \
+    TimeLimit
 from gymnasium.wrappers.gray_scale_observation import GrayScaleObservation
 from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 
 import stable_retro
 import stable_retro.data
+from scripts.wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
+from scripts.wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit
+from scripts.wrappers.on_the_spot import FindAndStoreColorWrapper
+from scripts.wrappers.timing import Delay
 from stable_retro.examples.discretizer import Discretizer
-from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit
-from wrappers.timing import Delay
-from wrappers.on_the_spot import OnTheSpotWrapper, FindAndStoreColorWrapper
-from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
 
 STEPS_PER_FRAME = 4
 FRAMERATE = 60
+
 
 class RetroEnvCreator:
     @staticmethod
@@ -41,7 +41,7 @@ class RetroEnvCreator:
         if cfg.normalize_observation:
             env = NormalizeObservation(env)
         if cfg.normalize_reward:
-            env = NormalizeReward(env)    
+            env = NormalizeReward(env)
         if cfg.skip_frames:
             env = MaxAndSkipEnv(env, skip=cfg.n_skip_frames * STEPS_PER_FRAME)
         if cfg.stack_frames:
@@ -62,20 +62,19 @@ class RetroEnvCreator:
         if cfg.gray_scale:
             env = GrayScaleObservation(env=env, keep_dim=True)
         if cfg.grabbit:
-            env = Grabbit(env, [x for x in cfg.grabbit.split(",")])   
+            env = Grabbit(env, [x for x in cfg.grabbit.split(",")])
         if cfg.show_observation:
-            env = ShowObservation(env)     
+            env = ShowObservation(env)
         if cfg.on_the_spot_wrapper:
             if cfg.skip_frames:
-                env = FindAndStoreColorWrapper(env, 
+                env = FindAndStoreColorWrapper(env,
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
                                                cooldown=10)
             else:
-                env = FindAndStoreColorWrapper(env, 
+                env = FindAndStoreColorWrapper(env,
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
                                                cooldown=10)
 
         return env
-
