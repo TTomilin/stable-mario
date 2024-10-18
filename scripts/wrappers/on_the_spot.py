@@ -5,6 +5,7 @@ from collections import deque
 import gymnasium as gym
 import numpy as np
 from gymnasium.spaces import Box
+import imageio
 
 from utilities.imaging import ImageUtilities
 
@@ -182,14 +183,13 @@ class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstruct
         # note: we receive 'observation' as a single (colored) image
 
         # detect presence of color:
-        color_position = (ImageUtilities.find_color(self.color, observation) != None)
+        color_position = ImageUtilities.find_color(self.color, observation)
 
         # store color if cooldown elapsed:
         if color_position != None and self.counter > self.step_cooldown:
             self.frames.append(observation)
             self.counter = 0
-            #print(f"Frame stored: {self.ret_counter}")
-            #self.ret_counter = self.ret_counter + 1
+            print("Frame stored.")
         elif color_position:
             pass
         self.counter += 1
@@ -236,7 +236,7 @@ class OnTheSpotWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
 
     def observation(self, observation):
         # detect presence of color:
-        color_found = ImageUtilities.find_color(self.color, observation)
+        color_found = (ImageUtilities.find_color(self.color, observation) != None)
 
         # store color if cooldown elapsed:
         if color_found and self.counter > self.step_cooldown:
@@ -246,6 +246,8 @@ class OnTheSpotWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
             print("Frame added.")
         elif color_found:
             pass
+
+        self.counter += 1
 
         # let returned observation be the memory, with the current frame added to it
         return_observation = np.concatenate((np.expand_dims(observation, axis=0), self.memory), axis=0)

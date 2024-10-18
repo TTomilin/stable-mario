@@ -1,3 +1,9 @@
+from stable_baselines3.common.callbacks import BaseCallback
+from stable_baselines3.common.evaluation import evaluate_policy
+from utilities.model_manager import ModelManager
+from colorist import Color
+from torch import device
+
 import argparse
 import json
 import os
@@ -72,7 +78,8 @@ class CustomEvalCallback(BaseCallback):
             if mean_reward > self.__previous_best_total_reward:
                 self.__previous_best_total_reward = mean_reward
                 self.__save_new_best_model(mean_reward) # save new best model
-                self.__save_obs_rms() # save running mean for normalizer
+                if self.cfg.normalize_observation: # if normalization is applied...
+                    self.__save_obs_rms() # save running mean for normalizer
 
             self.__ep_completed_since_update = 0
 

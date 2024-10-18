@@ -38,12 +38,12 @@ class RetroEnvCreator:
                 env = FindAndStoreColorWrapper(env, 
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
-                                               cooldown=10)
+                                               cooldown=25)
             else:
                 env = FindAndStoreColorWrapper(env, 
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
-                                               cooldown=10)
+                                               cooldown=25)
         if cfg.delay:
             env = Delay(env, delay=cfg.delay_time)
         if cfg.discretize:
