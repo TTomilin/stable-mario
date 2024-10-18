@@ -37,6 +37,8 @@ def main(cfg: argparse.Namespace):
     # create environment:
     env = RetroEnvCreator.create(cfg, log_dir, CONFIG)
 
+    print(env.get_wrapper_attr("obs_rms"))
+
     # Create a callback to save best model
     callback = None
     if cfg.save_best:

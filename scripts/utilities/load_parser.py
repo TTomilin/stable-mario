@@ -10,3 +10,4 @@ class LoadParser(BaseParser):
         self.arg("--log_reward_summary", default=False, action='store_true', help="Whether to log the min, mean, max reward each n episodes.")
         self.arg("--log_reward_summary_frequency", type=int, default=5, help="Frequency with which to log the smallest episode reward, measured in episodes.")
         self.arg("--deterministic", action='store_true', default=False, help="Whether the agent should act deterministically, i.e. always pick action that maximizes pmf.")
+        self.arg("--load_obs_rms", action='store_true', default=False, help="Whether the agent should load the normalizer's running mean")

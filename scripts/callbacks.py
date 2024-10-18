@@ -11,6 +11,7 @@ import gymnasium
 import wandb
 import statistics
 import argparse
+import scipy
 
 RESUME_COMMAND = 'resume_training.py'
 REWARD_KEY = 'mean_reward'
@@ -68,7 +69,8 @@ class CustomEvalCallback(BaseCallback):
 
             if mean_reward > self.__previous_best_total_reward:
                 self.__previous_best_total_reward = mean_reward
-                self.__save_new_best_model(mean_reward)
+                self.__save_new_best_model(mean_reward) # save new best model
+                self.__save_obs_rms() # save running mean for normalizer
 
             self.__ep_completed_since_update = 0
 
@@ -86,6 +88,16 @@ class CustomEvalCallback(BaseCallback):
         if self.__cfg.with_wandb:
             wandb.save(f"{self.__log_dir}/best_model/{self.__wandb_file_name}.zip")
             wandb.save(f"{self.__log_dir}/best_model/{self.__wandb_file_name}_info.json")
+
+    def __save_obs_rms(self):
+        obs_rms_dir = f"{self.__log_dir}/best_model/obs_rms"
+        os.makedirs(obs_rms_dir, exist_ok=True)
+
+        obs_rms = self.__eval_env.get_wrapper_attr("obs_rms")
+
+        scipy.io.savemat(f'{obs_rms_dir}/var.mat', mdict={'out': obs_rms.var}, oned_as='row')
+        scipy.io.savemat(f'{obs_rms_dir}/mean.mat', mdict={'out': obs_rms.mean}, oned_as='row')
+        scipy.io.savemat(f'{obs_rms_dir}/count.mat', mdict={'out': obs_rms.count}, oned_as='row')
 
     def __get_average_reward(self):
         total_episode_rewards = []

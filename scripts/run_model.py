@@ -5,11 +5,12 @@ from utilities.load_parser import LoadParser
 from utilities.train_parser import TrainParser
 from utilities.environment_creator import RetroEnvCreator
 from utilities.wandb_manager import WandbManager
+from wrappers.normalizers import RestoreObsRms
 
 import os
 from datetime import datetime
 
-import wandb
+import scipy
 from stable_baselines3 import PPO
 
 from sb3_contrib import QRDQN
@@ -53,6 +54,11 @@ def main(cfg: argparse.Namespace):
     # Create environment
     env = RetroEnvCreator.create(reinit_env_args, log_dir, CONFIG)
 
+    # load the running mean:
+    if cfg.load_obs_rms:
+        env = RestoreObsRms(env, load_directory)
+        #try_load_rms(load_directory, env)
+
     # Load the model
     model = None
     if reinit_env_args.model == "PPO":
@@ -92,6 +98,16 @@ def try_load_model(directory, names, model_type, env):
     if model == None:
         print("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
     return model
+
+def try_load_rms(directory, env):
+    obs_rms_dir = f"{directory}/obs_rms"
+
+    obs_rms_handle = env.get_wrapper_attr("obs_rms")
+
+    obs_rms_handle.var = scipy.io.loadmat(f'{obs_rms_dir}/var.mat')['out']
+    obs_rms_handle.mean = scipy.io.loadmat(f'{obs_rms_dir}/mean.mat')['out']
+    obs_rms_handle.count = scipy.io.loadmat(f'{obs_rms_dir}/count.mat')['out'][0,0]
+    print(obs_rms_handle.count)
 
 if __name__ == '__main__':
     parser = LoadParser(arg_source=sys.argv[1:])
