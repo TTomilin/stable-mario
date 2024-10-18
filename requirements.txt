@@ -12,3 +12,4 @@ readline~=8.2
 torchvision~=0.15.1
 tensorboard~=2.11.2
 opencv-python~=4.5.5.64
+moviepy~=1.0.3
