@@ -1,20 +1,16 @@
-import sys
-
 import argparse
-from utilities.load_parser import LoadParser
-from utilities.train_parser import TrainParser
-from utilities.environment_creator import RetroEnvCreator
-from utilities.wandb_manager import WandbManager
-
 import os
+import sys
 from datetime import datetime
 
-import wandb
+from sb3_contrib import QRDQN
 from stable_baselines3 import PPO
 
-from sb3_contrib import QRDQN
-
 from config import CONFIG
+from utilities.environment_creator import RetroEnvCreator
+from utilities.load_parser import LoadParser
+from utilities.train_parser import TrainParser
+from utilities.wandb_manager import WandbManager
 
 
 def main(cfg: argparse.Namespace):
@@ -23,13 +19,13 @@ def main(cfg: argparse.Namespace):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_dir = f"{load_directory}/trained_footage/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
-    
+
     # Load training parameters:
     train_command = None
     with open(f"{load_directory}/train_command.txt", 'r') as file:
         train_command = file.read()
-    argv = train_command.split(" ") # convert arguments to list
-    train_parser = TrainParser(arg_source=argv[1:]) # feed arguments into parser
+    argv = train_command.split(" ")  # convert arguments to list
+    train_parser = TrainParser(arg_source=argv[1:])  # feed arguments into parser
     reinit_env_args = train_parser.get_args()
     reinit_env_args_dict = vars(reinit_env_args)
 
@@ -70,15 +66,17 @@ def main(cfg: argparse.Namespace):
     obs, _ = env.reset()
     while True:
         env.render()
-        
+
         if reinit_env_args.discretize:
-            action = model.predict(obs, deterministic=deterministic)[0] # Model's action are returned as tuple with one element. Corresponds to discretized action.
+            action = model.predict(obs, deterministic=deterministic)[
+                0]  # Model's action are returned as tuple with one element. Corresponds to discretized action.
         else:
             action = model.predict(obs, deterministic)
         obs, reward, terminated, truncated, info = env.step(action)
 
         if terminated or truncated:
             obs, _ = env.reset()
+
 
 def try_load_model(directory, names, model_type, env):
     model = None
@@ -90,8 +88,10 @@ def try_load_model(directory, names, model_type, env):
         except FileNotFoundError:
             pass
     if model == None:
-        print("Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
+        print(
+            "Could not find model's zipfile. Please check if the file is present and whether its name is <game_name>.zip/<game_name>-bak.zip")
     return model
+
 
 if __name__ == '__main__':
     parser = LoadParser(arg_source=sys.argv[1:])

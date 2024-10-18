@@ -7,8 +7,8 @@ from stable_baselines3.common.torch_layers import NatureCNN, FlattenExtractor
 from stable_baselines3.common.type_aliases import GymEnv
 from torch import device, nn
 
-from scripts.models.recurrent_policy import RecurrentPolicy
-from scripts.policy_arguments.feature_extractors import BatchNorm, NatureRNN
+from models.recurrent_policy import RecurrentPolicy
+from policy_arguments.feature_extractors import BatchNorm, NatureRNN
 
 
 class ModelManager:

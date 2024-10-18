@@ -1,20 +1,19 @@
 import argparse
-import sys
-
-from utilities.train_parser import TrainParser
-from utilities.environment_creator import RetroEnvCreator
-from utilities.model_manager import ModelManager
-from utilities.wandb_manager import WandbManager
-from config import CONFIG
-from callbacks import CustomEvalCallback
-
 import os
-from copy import deepcopy
+import sys
 from datetime import datetime
 from pathlib import Path
 
-import wandb
 import torch
+import wandb
+
+from callbacks import CustomEvalCallback
+from config import CONFIG
+from utilities.environment_creator import RetroEnvCreator
+from utilities.model_manager import ModelManager
+from utilities.train_parser import TrainParser
+from utilities.wandb_manager import WandbManager
+
 
 def main(cfg: argparse.Namespace):
     # create logging directory:
@@ -22,13 +21,13 @@ def main(cfg: argparse.Namespace):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     log_dir = f"{experiment_dir}/saves/{cfg.game}/{timestamp}"
     os.makedirs(log_dir, exist_ok=True)
-    
+
     # select optimal training hardware:
     device = torch.device("cuda") if cfg.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
-    
+
     # save the exact training command to a textfile in the logging directory:
     with open(f"{log_dir}/train_command.txt", "w") as commandFile:
-        commandFile.write(' '.join(sys.argv[0:])) # save the training command (needed for model re-initialization)
+        commandFile.write(' '.join(sys.argv[0:]))  # save the training command (needed for model re-initialization)
 
     # initialize wandb run:
     if cfg.with_wandb:
@@ -40,13 +39,13 @@ def main(cfg: argparse.Namespace):
     # Create a callback to save best model
     callback = None
     if cfg.save_best:
-        callback = CustomEvalCallback(cfg=cfg, eval_env=env, 
-                                                log_dir=log_dir,
-                                                device=device,
-                                                system_file_name=f"{cfg.game}_best",
-                                                wandb_file_name=f"{cfg.game}_best",
-                                                eval_freq=cfg.eval_freq,
-                                                eval_metric=cfg.eval_metric)
+        callback = CustomEvalCallback(cfg=cfg, eval_env=env,
+                                      log_dir=log_dir,
+                                      device=device,
+                                      system_file_name=f"{cfg.game}_best",
+                                      wandb_file_name=f"{cfg.game}_best",
+                                      eval_freq=cfg.eval_freq,
+                                      eval_metric=cfg.eval_metric)
 
     # Create the model
     model = ModelManager.create_model(cfg, env, device, log_dir)
@@ -69,9 +68,10 @@ def main(cfg: argparse.Namespace):
         if cfg.with_wandb:
             wandb.save(f"{log_dir}/{cfg.game}-bak.zip")
 
+
 if __name__ == '__main__':
     parser = TrainParser(arg_source=sys.argv[1:])
     args = parser.get_args()
     parser.validate_args(args)
-    
+
     main(args)

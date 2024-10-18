@@ -8,10 +8,10 @@ from stable_baselines3.common.atari_wrappers import ClipRewardEnv, MaxAndSkipEnv
 
 import stable_retro
 import stable_retro.data
-from scripts.wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
-from scripts.wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit
-from scripts.wrappers.on_the_spot import FindAndStoreColorWrapper
-from scripts.wrappers.timing import Delay
+from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
+from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit
+from wrappers.on_the_spot import FindAndStoreColorWrapper
+from wrappers.timing import Delay
 from stable_retro.examples.discretizer import Discretizer
 
 STEPS_PER_FRAME = 4

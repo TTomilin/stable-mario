@@ -1,40 +1,34 @@
 import argparse
-import sys
 import pathlib
+import sys
 
-from utilities.train_parser import TrainParser
-from utilities.resume_parser import ResumeParser
-from utilities.environment_creator import RetroEnvCreator
-from utilities.model_manager import ModelManager
-from utilities.wandb_manager import WandbManager
+import torch
+import wandb
+
 from callbacks import CustomEvalCallback
 from config import CONFIG
+from utilities.environment_creator import RetroEnvCreator
+from utilities.model_manager import ModelManager
+from utilities.resume_parser import ResumeParser
+from utilities.train_parser import TrainParser
+from utilities.wandb_manager import WandbManager
 
-import os
-from copy import copy
-from datetime import datetime
-from pathlib import Path
 
-import wandb
-import torch
-from stable_baselines3.common.callbacks import EvalCallback
-from stable_baselines3.common.monitor import Monitor
-
-def main(cfg: argparse.Namespace):    
+def main(cfg: argparse.Namespace):
     # Load training parameters:
     train_command = None
     with open(f"{cfg.directory}/train_command.txt", 'r') as file:
         train_command = file.read()
-    argv = train_command.split(" ") # convert arguments to list
-    train_parser = TrainParser(arg_source=argv[1:]) # feed arguments into parser
+    argv = train_command.split(" ")  # convert arguments to list
+    train_parser = TrainParser(arg_source=argv[1:])  # feed arguments into parser
     train_args = train_parser.get_args()
-    
+
     # select optimal training hardware:
     device = torch.device("cuda") if train_args.device == "cuda" and torch.cuda.is_available() else torch.device("cpu")
 
     # initialize wandb run:
     path = pathlib.Path(cfg.directory)
-    timestamp_original_run = path.stem # note: assumes we keep identifying logging folders by their timestamp
+    timestamp_original_run = path.stem  # note: assumes we keep identifying logging folders by their timestamp
     if train_args.with_wandb:
         WandbManager.ResumeWandb(train_args, cfg.directory, timestamp_original_run)
 
@@ -44,17 +38,16 @@ def main(cfg: argparse.Namespace):
     # Create callback:
     callback = None
     if train_args.save_best:
-        callback = CustomEvalCallback(cfg=train_args, eval_env=env, 
-                                                log_dir=cfg.directory,
-                                                device=device,
-                                                system_file_name=f"{train_args.game}_best",
-                                                wandb_file_name=f"{train_args.game}_best",
-                                                eval_freq=train_args.eval_freq)
-
+        callback = CustomEvalCallback(cfg=train_args, eval_env=env,
+                                      log_dir=cfg.directory,
+                                      device=device,
+                                      system_file_name=f"{train_args.game}_best",
+                                      wandb_file_name=f"{train_args.game}_best",
+                                      eval_freq=train_args.eval_freq)
 
     # Load the model:
     model = ModelManager.load_model(train_args.model, train_args.game, cfg.directory, env)
-    
+
     # Determine number of timesteps
     timesteps = CONFIG[train_args.game]["timesteps"]
     if train_args.timesteps > 0:
@@ -72,6 +65,7 @@ def main(cfg: argparse.Namespace):
         # upload last model to wandb:
         if cfg.with_wandb:
             wandb.save(f"{cfg.directory}/{train_args.game}-bak.zip")
+
 
 if __name__ == '__main__':
     parser = ResumeParser(arg_source=sys.argv[1:])
