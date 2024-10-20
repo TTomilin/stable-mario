@@ -145,3 +145,8 @@ wheelhouse
 tests/test_cibuildwheel/tmp_dockerfiles
 /scripts/saves/
 /saves/
+/wandb
+/videos
+/train_dir
+/sample_factory/mario/wandb/
+/sample_factory/mario/train_dir/
