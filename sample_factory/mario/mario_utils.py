@@ -1,7 +1,7 @@
 from typing import Optional
 
 import gymnasium as gym
-from gymnasium.wrappers import ResizeObservation, FrameStack
+from gymnasium.wrappers import ResizeObservation
 
 import stable_retro
 from sample_factory.envs.env_wrappers import (
@@ -22,6 +22,24 @@ class MarioSpec:
 
 MARIO_ENVS = [
     MarioSpec("broom_zoom", "BroomZoom-v0"),
+    MarioSpec("spook_spike", "SpookSpike-v0"),
+    MarioSpec("flippin_out", "FlippinOut-v0"),
+    MarioSpec("on_the_spot", "OnTheSpot-v0"),
+    MarioSpec("amplifried", "Amplifried-v0"),
+    MarioSpec("bill_bounce", "BillBounce-v0"),
+    MarioSpec("bunny_belt", "BunnyBelt-v0"),
+    MarioSpec("pest_aside", "PestAside-v0"),
+    MarioSpec("match-em", "MatchEm-v0"),
+    MarioSpec("hammergeddon", "Hammergeddon-v0"),
+    MarioSpec("sort_stack", "SortStack-v0"),
+    MarioSpec("stompbot_xl", "StompbotXL-v0"),
+    MarioSpec("fling_shot", "FlingShot-v0"),
+    MarioSpec("big_popper", "BigPopper-v0"),
+    MarioSpec("melon_folly", "MelonFolly-v0"),
+    MarioSpec("cloud_climb", "CloudClimb-v0"),
+    MarioSpec("grabbit", "Grabbit-v0"),
+    MarioSpec("forest_jump", "ForestJump-v0"),
+    MarioSpec("drop_em", "DropEm-v0"),
 ]
 
 
