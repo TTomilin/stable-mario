@@ -1,4 +1,5 @@
 """Wrapper for recording videos."""
+import fcntl
 import os
 from typing import Callable, Optional
 
@@ -38,15 +39,15 @@ class RecordVideo(gym.Wrapper, gym.utils.RecordConstructorArgs):
     """
 
     def __init__(
-        self,
-        env: gym.Env,
-        video_folder: str,
-        episode_trigger: Callable[[int], bool] = None,
-        step_trigger: Callable[[int], bool] = None,
-        video_length: int = 0,
-        name_prefix: str = "rl-video",
-        disable_logger: bool = False,
-        dummy_env: bool = False,
+            self,
+            env: gym.Env,
+            video_folder: str,
+            episode_trigger: Callable[[int], bool] = None,
+            step_trigger: Callable[[int], bool] = None,
+            video_length: int = 0,
+            name_prefix: str = "rl-video",
+            disable_logger: bool = False,
+            dummy_env: bool = False,
     ):
         """Wrapper records videos of rollouts.
 
@@ -85,7 +86,8 @@ class RecordVideo(gym.Wrapper, gym.utils.RecordConstructorArgs):
 
         self.video_folder = os.path.abspath(video_folder)
         if os.path.isdir(self.video_folder) or dummy_env:
-            logger.debug(f"Recording disabled. Another process is already recording video to {self.video_folder} folder")
+            logger.debug(
+                f"Recording disabled. Another process is already recording video to {self.video_folder} folder")
             self.disable_recording = True
         if not self.disable_recording:
             os.makedirs(self.video_folder, exist_ok=True)
@@ -135,6 +137,9 @@ class RecordVideo(gym.Wrapper, gym.utils.RecordConstructorArgs):
             metadata={"step_id": self.step_id, "episode_id": self.episode_id},
             disable_logger=self.disable_logger,
         )
+
+        # Lock the file before writing (exclusive lock)
+        self._lock_file(base_path + '.mp4')
 
         self.video_recorder.capture_frame()
         self.recorded_frames = 1
@@ -188,6 +193,10 @@ class RecordVideo(gym.Wrapper, gym.utils.RecordConstructorArgs):
         if self.recording:
             assert self.video_recorder is not None
             self.video_recorder.close()
+
+            # Unlock the file after closing (releasing the lock)
+            base_path = os.path.join(self.video_folder, f"{self.name_prefix}-step-{self.step_id}.mp4")
+            self._unlock_file(base_path)
         self.recording = False
         self.recorded_frames = 1
 
@@ -207,6 +216,22 @@ class RecordVideo(gym.Wrapper, gym.utils.RecordConstructorArgs):
                 return recorded_frames + super().render(*args, **kwargs)
         else:
             return super().render(*args, **kwargs)
+
+    def _lock_file(self, file_path):
+        """Lock the file to ensure exclusive access during writing."""
+        try:
+            self.lock_file = open(file_path, 'wb')  # Open the file in write mode
+            fcntl.flock(self.lock_file, fcntl.LOCK_EX)  # Acquire an exclusive lock
+        except Exception as e:
+            logger.error(f"Failed to lock file {file_path}: {e}")
+
+    def _unlock_file(self, file_path):
+        """Unlock the file after writing is complete."""
+        try:
+            fcntl.flock(self.lock_file, fcntl.LOCK_UN)  # Release the lock
+            self.lock_file.close()  # Close the file
+        except Exception as e:
+            logger.error(f"Failed to unlock file {file_path}: {e}")
 
     def close(self):
         """Closes the wrapper then the video recorder."""
