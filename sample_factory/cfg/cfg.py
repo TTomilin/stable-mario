@@ -51,8 +51,8 @@ def add_mario_args(p: ArgumentParser):
     p.add_argument('--render_mode', type=str, default='rgb_array', help='Rendering mode')
     p.add_argument("--record", default=True, type=str2bool, help="Whether to record gameplay.")
     p.add_argument("--video_dir", default='videos', type=str, help="Record episodes to this folder after an interval.")
-    p.add_argument("--video_length", default=2500, type=int, help="Length of recorded video.")
-    p.add_argument("--record_every", default=10000, type=int, help="Interval after how many steps to record a video.")
+    p.add_argument("--video_length", default=1000, type=int, help="Length of recorded video.")
+    p.add_argument("--record_every", default=25000, type=int, help="Interval after how many steps to record a video.")
     p.add_argument("--load_state", type=str, default=None, help="Path to the game save state to load")
     p.add_argument("--discretize", default=True, type=str2bool, help="Limit agent's actions as specified in config.")
 
