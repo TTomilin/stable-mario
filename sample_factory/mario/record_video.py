@@ -7,6 +7,8 @@ import gymnasium as gym
 from gymnasium import logger
 from gymnasium.wrappers.monitoring import video_recorder
 
+from sample_factory.utils.utils import log
+
 
 def capped_cubic_video_schedule(episode_id: int) -> bool:
     """The default episode trigger.
@@ -223,7 +225,7 @@ class RecordVideo(gym.Wrapper, gym.utils.RecordConstructorArgs):
             self.lock_file = open(file_path, 'wb')  # Open the file in write mode
             fcntl.flock(self.lock_file, fcntl.LOCK_EX)  # Acquire an exclusive lock
         except Exception as e:
-            logger.error(f"Failed to lock file {file_path}: {e}")
+            log.error(f"Failed to lock file {file_path}: {e}")
 
     def _unlock_file(self, file_path):
         """Unlock the file after writing is complete."""
@@ -231,7 +233,7 @@ class RecordVideo(gym.Wrapper, gym.utils.RecordConstructorArgs):
             fcntl.flock(self.lock_file, fcntl.LOCK_UN)  # Release the lock
             self.lock_file.close()  # Close the file
         except Exception as e:
-            logger.error(f"Failed to unlock file {file_path}: {e}")
+            log.error(f"Failed to unlock file {file_path}: {e}")
 
     def close(self):
         """Closes the wrapper then the video recorder."""

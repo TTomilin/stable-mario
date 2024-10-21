@@ -646,11 +646,11 @@ class Runner(EventLoopObject, Configurable):
             video_path = join(video_dir, video_file)
             video_tag = f"video/step_{step_number}"
 
-            # Wait for the file to be unlocked, with a 20s timeout
-            if wait_for_file_unlock(video_path, timeout=20):
+            # Wait for the file to be unlocked, with a timeout
+            if wait_for_file_unlock(video_path, timeout=60):
                 wandb.log({video_tag: wandb.Video(video_path, format='mp4')})
             else:
-                print(f"Video {video_file} was not fully written within the timeout period.")
+                log.warn(f"Video {video_file} was not fully written within the timeout period.")
 
     def _propagate_training_info(self):
         """
