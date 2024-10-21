@@ -610,7 +610,7 @@ class Runner(EventLoopObject, Configurable):
         video_files = [f for f in os.listdir(video_dir) if f.endswith('.mp4')]
 
         # Filter files based on episode number being greater than last_logged_episode
-        episode_pattern = re.compile(r"doom-step-(\d+).mp4")
+        episode_pattern = re.compile(r"mario-step-(\d+).mp4")
         new_videos = []
         for video_file in video_files:
             match = episode_pattern.search(video_file)

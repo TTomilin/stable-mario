@@ -36,6 +36,7 @@ def init_wandb(cfg):
         wandb.init(
             project=cfg.wandb_project,
             entity=cfg.wandb_user,
+            monitor_gym=True,
             sync_tensorboard=True,
             id=wandb_unique_id,
             name=wandb_unique_id,
@@ -52,6 +53,7 @@ def init_wandb(cfg):
         log.error(f"Could not initialize WandB! {exc}")
         raise
 
+    wandb.gym.monitor()
     wandb.config.update(cfg, allow_val_change=True)
 
 

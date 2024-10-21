@@ -10,7 +10,6 @@ def add_basic_cli_args(p: ArgumentParser):
     p.add_argument("-h", "--help", action="store_true", help="Print the help message", required=False)
     p.add_argument("--algo", type=str, default="PPO", help="Algorithm to use")
     p.add_argument("--game", type=str, default="broom_zoom", help="Name of the game to use")
-    p.add_argument("--record_gameplay", default=False, action="store_true", help="Run the script only to record gameplay")
     p.add_argument(
         "--timestamp",
         type=str,
@@ -50,9 +49,13 @@ def add_basic_cli_args(p: ArgumentParser):
 
 def add_mario_args(p: ArgumentParser):
     p.add_argument('--render_mode', type=str, default='rgb_array', help='Rendering mode')
-    p.add_argument("--video_dir", default='videos', type=str, help="Record episodes to this folder after an internval.")
+    p.add_argument("--record", default=True, type=str2bool, help="Whether to record gameplay.")
+    p.add_argument("--video_dir", default='videos', type=str, help="Record episodes to this folder after an interval.")
+    p.add_argument("--video_length", default=2500, type=int, help="Length of recorded video.")
+    p.add_argument("--record_every", default=10000, type=int, help="Interval after how many steps to record a video.")
     p.add_argument("--load_state", type=str, default=None, help="Path to the game save state to load")
     p.add_argument("--discretize", default=True, type=str2bool, help="Limit agent's actions as specified in config.")
+
 
 def add_rl_args(p: ArgumentParser):
     """Arguments not specific to any particular RL algorithm."""

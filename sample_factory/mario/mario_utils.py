@@ -1,7 +1,7 @@
+import os
 from typing import Optional
 
-import gymnasium as gym
-from gymnasium.wrappers import ResizeObservation
+from gymnasium.wrappers import ResizeObservation, RecordEpisodeStatistics
 
 import stable_retro
 from sample_factory.envs.env_wrappers import (
@@ -9,6 +9,8 @@ from sample_factory.envs.env_wrappers import (
     MaxAndSkipEnv,
     NoopResetEnv, PixelFormatChwWrapper,
 )
+from sample_factory.mario.record_video import RecordVideo
+from sample_factory.utils.utils import experiment_dir
 from scripts.config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
 
@@ -47,7 +49,7 @@ def mario_env_by_name(name):
     for cfg in MARIO_ENVS:
         if cfg.name == name:
             return cfg
-    raise Exception("Unknown Mario env")
+    raise Exception("Unknown Minigame")
 
 
 def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None):
@@ -63,11 +65,16 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
     if game["clip_reward"]:
         env = ClipRewardEnv(env)
 
+    if cfg.record:
+        video_folder = os.path.join(experiment_dir(cfg), cfg.video_dir)
+        env = RecordVideo(env, video_folder=video_folder, step_trigger=lambda step: not step % cfg.record_every,
+                          name_prefix='mario', video_length=cfg.video_length, dummy_env=env_config is None)
+
     if mario_spec.default_timeout is not None:
         env._max_episode_steps = mario_spec.default_timeout
 
     # these are chosen to match Stable-Baselines3 and CleanRL implementations as precisely as possible
-    env = gym.wrappers.RecordEpisodeStatistics(env)
+    env = RecordEpisodeStatistics(env)
     env = NoopResetEnv(env, noop_max=30)
     env = MaxAndSkipEnv(env, skip=cfg.env_frameskip)
     env = ResizeObservation(env, game["resize"])

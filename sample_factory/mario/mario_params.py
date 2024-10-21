@@ -9,4 +9,6 @@ def mario_override_defaults(_env, parser):
         rollout=128,
         num_epochs=4,
         num_batches_per_epoch=4,
+        num_envs_per_worker=1,
+        worker_num_splits=1,
     )
