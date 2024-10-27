@@ -74,7 +74,7 @@ CONFIG = {
         'hammergeddon': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], ['UP', 'B'], []],
         'game_env': 'hammergeddon-MP',
-        'state': 'Level1',
+        'state': 'hammergeddonplayland',
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000
@@ -150,5 +150,45 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 129740258283
+        },
+        'shell_stack':{
+            'actions': [[], ['A']],
+            'game_env': 'shell_stack-MP',
+            'state': 'shell_stack',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'koopa_crunch':{
+            'actions': [[], ['A'],['B'],['DOWN'],['LEFT'],['RIGHT']],
+            'game_env': 'koopa_crunch-MP',
+            'state': 'koopa_crunch',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'stop_em':{
+            'actions': [[], ['A'],['DOWN'],['UP']],
+            'game_env': 'stop_em-MP',
+            'state': 'stop_em',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'sled_slide':{
+            'actions': [[], ['A'],['B'],['A','LEFT'],['LEFT'],['RIGHT'],['A','RIGHT'],['B','LEFT'],['B','RIGHT']],
+            'game_env': 'sled_slide-MP',
+            'state': 'sled_slide',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'barrel_peril':{
+            'actions': [['B', 'LEFT'], ['UP', 'B'], ['RIGHT', 'B'], ['DOWN', 'B'],['A'],['B', 'LEFT','UP'], ['UP', 'B','RIGHT'], ['RIGHT', 'B','DOWN'], ['DOWN', 'B','LEFT']],
+            'game_env': 'barrel_peril-MP',
+            'state': 'barrel_peril',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 10000000000
         }
 }
