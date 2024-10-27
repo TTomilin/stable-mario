@@ -190,5 +190,13 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 10000000000
+        },
+        'boo_bye':{
+            'actions': [[],['A'],['LEFT'],['RIGHT'],['A','LEFT'],['A','RIGHT']],
+            'game_env': 'boo_bye-MP',
+            'state': 'boo_bye',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 10000000000
         }
 }
