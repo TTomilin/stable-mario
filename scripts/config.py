@@ -198,5 +198,29 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 10000000000
+        },
+        'crushed_ice':{
+            'actions': [[], ['LEFT'],['DOWN'],['UP'],['RIGHT'],['RIGHT','UP'],['RIGHT','DOWN'],['LEFT','UP'],['LEFT','DOWN']],
+            'game_env': 'crushed_ice-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'floor_it':{
+            'actions': [[], ['DOWN'],['UP'],['A'],['B'],['A','B']],
+            'game_env': 'floor_it-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'splatterball':{
+            'actions': [[], ['LEFT'],['DOWN'],['UP'],['RIGHT'],['RIGHT','UP'],['RIGHT','DOWN'],['LEFT','UP'],['LEFT','DOWN'],['A'], ['A','LEFT'],['A','DOWN'],['A','UP'],['A','RIGHT'],['A','RIGHT','UP'],['A','RIGHT','DOWN'],['A','LEFT','UP'],['A','LEFT','DOWN'],['R'], ['R','LEFT'],['R','DOWN'],['R','UP'],['R','RIGHT'],['R','RIGHT','UP'],['R','RIGHT','DOWN'],['R','LEFT','UP'],['R','LEFT','DOWN'],['B'], ['B','LEFT'],['B','DOWN'],['B','UP'],['B','RIGHT'],['B','RIGHT','UP'],['B','RIGHT','DOWN'],['B','LEFT','UP'],['B','LEFT','DOWN'],['B','A'], ['B','A','LEFT'],['B','A','DOWN'],['B','A','UP'],['B','A','RIGHT'],['B','A','RIGHT','UP'],['B','A','RIGHT','DOWN'],['B','A','LEFT','UP'],['B','A','LEFT','DOWN'],['B','R'], ['B','R','LEFT'],['B','R','DOWN'],['B','R','UP'],['B','R','RIGHT'],['B','R','RIGHT','UP'],['B','R','RIGHT','DOWN'],['B','R','LEFT','UP'],['B','R','LEFT','DOWN']],
+            'game_env': 'splatterball-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
         }
 }
