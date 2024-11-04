@@ -82,7 +82,7 @@ CONFIG = {
         'sort_stack': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], []],
         'game_env': 'sort_stack-MP',
-        'state': 'Level1',
+        'state': 'Sort_Stack',
         'clip_reward': False,
         'resize': (160, 144),
         'timesteps': 10000000
