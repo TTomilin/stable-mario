@@ -222,5 +222,21 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 129740258283
-        }
+        },
+        'go_go_pogo':{
+            'actions': [[], ['LEFT'],['RIGHT'],['A'],['LEFT','A'],['A','RIGHT']],
+            'game_env': 'go_go_pogo-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'bob_ooom':{
+            'actions': [[], ['LEFT'],['RIGHT'],['A']],
+            'game_env': 'bob_ooom-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
 }
