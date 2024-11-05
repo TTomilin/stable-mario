@@ -247,4 +247,12 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        'see_monkey':{
+            'actions': [[], ['LEFT','A'],['RIGHT','A'],['A'],['LEFT'],['RIGHT']],
+            'game_env': 'see_monkey-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
 }
