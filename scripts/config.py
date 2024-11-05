@@ -232,8 +232,16 @@ CONFIG = {
             'timesteps': 129740258283
         },
         'bob_ooom':{
-            'actions': [[], ['LEFT'],['RIGHT'],['A']],
+            'actions': [[], ['LEFT','B'],['RIGHT','B'],['A']],
             'game_env': 'bob_ooom-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'reel_cheep':{
+            'actions': [[], ['LEFT'],['RIGHT'],['UP'],['DOWN'],['LEFT','UP'],['RIGHT','UP'],['LEFT','DOWN'],['RIGHT','DOWN'],['L'],['R']],
+            'game_env': 'reel_cheep-MP',
             'state': 'Level1',
             'clip_reward': False,
             'resize': (160, 160),
