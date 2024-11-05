@@ -10,7 +10,7 @@ CONFIG = {
     'spook_spike': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],
         'game_env': 'spook_spike-MP',
-        'state': 'Level1',
+        'state': 'Level2',
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 1000000,
