@@ -263,4 +263,12 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        'chicken':{
+            'actions': [[], ['A'],['B']],
+            'game_env': 'chicken-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        }
 }
