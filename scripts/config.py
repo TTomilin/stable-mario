@@ -255,4 +255,12 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        'tankdown':{
+            'actions': [[], ['LEFT','A'],['RIGHT','A'],['A'],['LEFT'],['RIGHT'],['UP'],['UP','A'],['DOWN'],['DOWN','A']],
+            'game_env': 'tankdown-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
 }
