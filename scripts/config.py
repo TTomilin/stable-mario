@@ -278,5 +278,13 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 129740258283
+        },
+        'dreadmill':{
+            'actions': [[],['LEFT'],['RIGHT'],['UP','LEFT'],['UP','RIGHT'],['DOWN','LEFT'],['DOWN','RIGHT'],['DOWN'],['UP']],
+            'game_env': 'dreadmill-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
         }
 }
