@@ -270,5 +270,13 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 129740258283
+        },
+        'outta_my_way':{
+            'actions': [[], ['A'],['B'],['LEFT'],['RIGHT'],['A','LEFT'],['A','RIGHT'],['B','LEFT'],['B','RIGHT']],
+            'game_env': 'outta_my_way-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
         }
 }
