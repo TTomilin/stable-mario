@@ -10,7 +10,7 @@ CONFIG = {
     'spook_spike': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],
         'game_env': 'spook_spike-MP',
-        'state': 'Level1',
+        'state': 'Level2',
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 1000000,
@@ -74,7 +74,7 @@ CONFIG = {
         'hammergeddon': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], ['UP', 'B'], []],
         'game_env': 'hammergeddon-MP',
-        'state': 'Level1',
+        'state': 'hammergeddonplayland',
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000
@@ -82,7 +82,7 @@ CONFIG = {
         'sort_stack': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], []],
         'game_env': 'sort_stack-MP',
-        'state': 'Level1',
+        'state': 'Sort_Stack',
         'clip_reward': False,
         'resize': (160, 144),
         'timesteps': 10000000
@@ -147,6 +147,150 @@ CONFIG = {
             'actions': [[], ['A']],
             'game_env': 'drop_em-MP',
             'state': 'drop_em',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'shell_stack':{
+            'actions': [[], ['A']],
+            'game_env': 'shell_stack-MP',
+            'state': 'shell_stack',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'koopa_crunch':{
+            'actions': [[], ['A'],['B'],['DOWN'],['LEFT'],['RIGHT']],
+            'game_env': 'koopa_crunch-MP',
+            'state': 'koopa_crunch',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'stop_em':{
+            'actions': [[], ['A'],['DOWN'],['UP']],
+            'game_env': 'stop_em-MP',
+            'state': 'stop_em',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'sled_slide':{
+            'actions': [[], ['A'],['B'],['A','LEFT'],['LEFT'],['RIGHT'],['A','RIGHT'],['B','LEFT'],['B','RIGHT']],
+            'game_env': 'sled_slide-MP',
+            'state': 'sled_slide',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'barrel_peril':{
+            'actions': [['B', 'LEFT'], ['UP', 'B'], ['RIGHT', 'B'], ['DOWN', 'B'],['A'],['B', 'LEFT','UP'], ['UP', 'B','RIGHT'], ['RIGHT', 'B','DOWN'], ['DOWN', 'B','LEFT']],
+            'game_env': 'barrel_peril-MP',
+            'state': 'barrel_peril',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 10000000000
+        },
+        'boo_bye':{
+            'actions': [[],['A'],['LEFT'],['RIGHT'],['A','LEFT'],['A','RIGHT']],
+            'game_env': 'boo_bye-MP',
+            'state': 'boo_bye',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 10000000000
+        },
+        'crushed_ice':{
+            'actions': [[], ['LEFT'],['DOWN'],['UP'],['RIGHT'],['RIGHT','UP'],['RIGHT','DOWN'],['LEFT','UP'],['LEFT','DOWN']],
+            'game_env': 'crushed_ice-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'floor_it':{
+            'actions': [[], ['DOWN'],['UP'],['A'],['B'],['A','B']],
+            'game_env': 'floor_it-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'splatterball':{
+            'actions': [[], ['LEFT'],['DOWN'],['UP'],['RIGHT'],['RIGHT','UP'],['RIGHT','DOWN'],['LEFT','UP'],['LEFT','DOWN'],['A'], ['A','LEFT'],['A','DOWN'],['A','UP'],['A','RIGHT'],['A','RIGHT','UP'],['A','RIGHT','DOWN'],['A','LEFT','UP'],['A','LEFT','DOWN'],['R'], ['R','LEFT'],['R','DOWN'],['R','UP'],['R','RIGHT'],['R','RIGHT','UP'],['R','RIGHT','DOWN'],['R','LEFT','UP'],['R','LEFT','DOWN'],['B'], ['B','LEFT'],['B','DOWN'],['B','UP'],['B','RIGHT'],['B','RIGHT','UP'],['B','RIGHT','DOWN'],['B','LEFT','UP'],['B','LEFT','DOWN'],['B','A'], ['B','A','LEFT'],['B','A','DOWN'],['B','A','UP'],['B','A','RIGHT'],['B','A','RIGHT','UP'],['B','A','RIGHT','DOWN'],['B','A','LEFT','UP'],['B','A','LEFT','DOWN'],['B','R'], ['B','R','LEFT'],['B','R','DOWN'],['B','R','UP'],['B','R','RIGHT'],['B','R','RIGHT','UP'],['B','R','RIGHT','DOWN'],['B','R','LEFT','UP'],['B','R','LEFT','DOWN']],
+            'game_env': 'splatterball-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'go_go_pogo':{
+            'actions': [[], ['LEFT'],['RIGHT'],['A'],['LEFT','A'],['A','RIGHT']],
+            'game_env': 'go_go_pogo-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'bob_ooom':{
+            'actions': [[], ['LEFT','B'],['RIGHT','B'],['A']],
+            'game_env': 'bob_ooom-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'reel_cheep':{
+            'actions': [[], ['LEFT'],['RIGHT'],['UP'],['DOWN'],['LEFT','UP'],['RIGHT','UP'],['LEFT','DOWN'],['RIGHT','DOWN'],['L'],['R']],
+            'game_env': 'reel_cheep-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'see_monkey':{
+            'actions': [[], ['LEFT','A'],['RIGHT','A'],['A'],['LEFT'],['RIGHT']],
+            'game_env': 'see_monkey-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'tankdown':{
+            'actions': [[], ['LEFT','A'],['RIGHT','A'],['A'],['LEFT'],['RIGHT'],['UP'],['UP','A'],['DOWN'],['DOWN','A']],
+            'game_env': 'tankdown-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'chicken':{
+            'actions': [[], ['A'],['B']],
+            'game_env': 'chicken-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'outta_my_way':{
+            'actions': [[], ['A'],['B'],['LEFT'],['RIGHT'],['A','LEFT'],['A','RIGHT'],['B','LEFT'],['B','RIGHT']],
+            'game_env': 'outta_my_way-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'dreadmill':{
+            'actions': [[],['LEFT'],['RIGHT'],['UP','LEFT'],['UP','RIGHT'],['DOWN','LEFT'],['DOWN','RIGHT'],['DOWN'],['UP']],
+            'game_env': 'dreadmill-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'chomp_walker':{
+            'actions': [[],['LEFT'],['RIGHT'],['UP','LEFT'],['UP','RIGHT'],['DOWN','LEFT'],['DOWN','RIGHT'],['DOWN'],['UP']],
+            'game_env': 'chomp_walker-MP',
+            'state': 'Level1',
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 129740258283
