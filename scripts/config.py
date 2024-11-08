@@ -286,5 +286,13 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 129740258283
+        },
+        'chomp_walker':{
+            'actions': [[],['LEFT'],['RIGHT'],['UP','LEFT'],['UP','RIGHT'],['DOWN','LEFT'],['DOWN','RIGHT'],['DOWN'],['UP']],
+            'game_env': 'chomp_walker-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
         }
 }
