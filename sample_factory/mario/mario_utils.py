@@ -42,7 +42,26 @@ MARIO_ENVS = [
     MarioSpec("grabbit", "Grabbit-v0"),
     MarioSpec("forest_jump", "ForestJump-v0"),
     MarioSpec("drop_em", "DropEm-v0"),
+    MarioSpec("barrel_peril", "BarrelPeril-v0"),
+    MarioSpec("bob_ooom", "BobOoom-v0"),
+    MarioSpec("boo_bye", "BooBye-v0"),
+    MarioSpec("chicken", "Chicken-v0"),
+    MarioSpec("chomp_walker", "ChompWalker-v0"),
+    MarioSpec("crushed_ice", "CrushedIce-v0"),
+    MarioSpec("dreadmill", "Dreadmill-v0"),
+    MarioSpec("floor_it", "FloorIt-v0"),
+    MarioSpec("go_go_pogo", "GoGoPogo-v0"),
+    MarioSpec("koopa_crunch", "KoopaCrunch-v0"),
+    MarioSpec("outta_my_way", "OuttaMyWay-v0"),
+    MarioSpec("reel_cheep", "ReelCheep-v0"),
+    MarioSpec("see_monkey", "SeeMonkey-v0"),
+    MarioSpec("shell_stack", "ShellStack-v0"),
+    MarioSpec("sled_slide", "SledSlide-v0"),
+    MarioSpec("splatterball", "Splatterball-v0"),
+    MarioSpec("stop_em", "StopEm-v0"),
+    MarioSpec("tankdown", "Tankdown-v0"),
 ]
+
 
 
 def mario_env_by_name(name):
