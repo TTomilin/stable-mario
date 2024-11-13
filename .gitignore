@@ -149,3 +149,8 @@ tests/test_cibuildwheel/tmp_dockerfiles
 /train_dir
 /sample_factory/mario/wandb/
 /sample_factory/mario/train_dir/
+
+# prevents commit:
+third-party/capnproto/c++/ekam-provider/c++header
+third-party/capnproto/c++/ekam-provider/canonical
+third-party/capnproto/c++/LICENSE.txt
