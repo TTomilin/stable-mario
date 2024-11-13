@@ -90,7 +90,7 @@ setup(
     url="https://github.com/farama-foundation/stable-retro",
     version=open(VERSION_PATH).read().strip(),
     license="MIT",
-    install_requires=["gymnasium>=0.27.1", "pyglet>=1.3.2,==1.*", "farama-notifications>=0.0.1", "wandb==0.16.4", "colorist==1.1.2", "pygame==2.1.0", "matplotlib==3.8.2", "pandas==2.2.0", "sb3-contrib==2.2.1", "torchvision==0.18.0", "tensorboard==2.16.2", "opencv-python==4.9.0.80"],
+    install_requires=["gymnasium>=0.27.1", "pyglet>=1.3.2,==1.*", "farama-notifications>=0.0.1", "wandb==0.16.4", "colorist==1.1.2", "pygame==2.1.0", "matplotlib==3.8.2", "pandas==2.2.0", "sb3-contrib==2.2.1", "torchvision==0.18.0", "tensorboard==2.16.2", "opencv-python==4.9.0.80", "sample_factory==2.1.1", "scipy==1.12.0", "signal-slot-mp==1.0.5", "colorlog==6.9.0", "tensorboardX==2.6.2.2"],
     python_requires=">=3.8.0,<3.13",
     ext_modules=[Extension("stable_retro._retro", ["CMakeLists.txt", "src/*.cpp"])],
     cmdclass={"build_ext": CMakeBuild},
