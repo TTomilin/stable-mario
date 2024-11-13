@@ -5,8 +5,11 @@ import os
 import sys
 from enum import Flag
 
-from stable_retro._retro import GameDataGlue, RetroEmulator
-from stable_retro._retro import data_path as _data_path
+for line in sys.path:
+    print(line)
+
+from retro._retro import GameDataGlue, RetroEmulator
+from retro._retro import data_path as _data_path
 
 __all__ = [
     "GameData",
