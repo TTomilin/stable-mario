@@ -7,6 +7,7 @@ from enum import Flag
 
 for line in sys.path:
     print(line)
+sys.path.append("~/miniconda3/envs/stable-mario-self/lib/python3.9/site-packages/Retro_Tools-0.0-py3.9.egg")
 
 from retro._retro import GameDataGlue, RetroEmulator
 from retro._retro import data_path as _data_path
