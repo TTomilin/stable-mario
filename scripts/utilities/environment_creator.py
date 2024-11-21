@@ -13,7 +13,7 @@ from wrappers.observation import Rescale, ShowObservation, CenterCrop
 from wrappers.timing import Delay
 from wrappers.on_the_spot import HackOnTheSpotWrapper, FindAndStoreColorWrapper
 from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
-from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit
+from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit, SledSlide
 from wrappers.on_the_spot import FindAndStoreColorWrapper
 from wrappers.timing import Delay
 from stable_retro.examples.discretizer import Discretizer
@@ -82,6 +82,8 @@ class RetroEnvCreator:
             env = GrayScaleObservation(env=env, keep_dim=True)
         if cfg.grabbit:
             env = Grabbit(env, [x for x in cfg.grabbit.split(",")])
+        if cfg.sled_slide:
+            env = SledSlide(env)
         if cfg.show_observation:
             env = ShowObservation(env)
         if cfg.on_the_spot_wrapper:
@@ -95,5 +97,5 @@ class RetroEnvCreator:
                                                color=[26 * 8, 29 * 8, 16 * 8],
                                                memory_depth=5,
                                                cooldown=10)
-
+        
         return env

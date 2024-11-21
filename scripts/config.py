@@ -180,7 +180,7 @@ CONFIG = {
             'game_env': 'sled_slide-MP',
             'state': 'sled_slide',
             'clip_reward': False,
-            'resize': (160, 160),
+            'resize': (40, 40),
             'timesteps': 129740258283
         },
         'barrel_peril':{

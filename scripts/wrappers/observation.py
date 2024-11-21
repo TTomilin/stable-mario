@@ -185,3 +185,20 @@ class Grabbit(gymnasium.Wrapper):
                 else:
                     state[i, j] = [0, 0, 0]
         return state, reward, done, truncated, info
+
+class SledSlide(gymnasium.Wrapper):
+    """
+    """
+
+    def __init__(self, env: gym.Env) -> None:
+        """
+        
+        """
+        gymnasium.Wrapper.__init__(self, env)
+
+    def step(self, action: WrapperActType) -> tuple[WrapperObsType, SupportsFloat, bool, bool, dict[str, Any]]:
+        state, reward, done, truncated, info = self.env.step(action)
+        if info['progress'] != 14:
+            state[0] = [info['speed']//5, 0, 0]
+            state[1] = [info['speed']//5, 0, 0]
+        return state, reward, done, truncated, info
