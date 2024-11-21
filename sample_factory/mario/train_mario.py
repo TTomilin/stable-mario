@@ -1,4 +1,8 @@
 import sys
+import os
+
+sample_factory_path = '/'.join(os.getcwd().split("/")[:-2])
+sys.path.append(sample_factory_path)
 
 from sample_factory.cfg.arguments import parse_full_cfg, parse_sf_args
 from sample_factory.envs.env_utils import register_env

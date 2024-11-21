@@ -5,6 +5,9 @@ import os
 import sys
 from enum import Flag
 
+for line in sys.path:
+    print(line)
+
 from retro._retro import GameDataGlue, RetroEmulator
 from retro._retro import data_path as _data_path
 
