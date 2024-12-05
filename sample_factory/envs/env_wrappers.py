@@ -474,3 +474,49 @@ class ActionCounterWrapper(gym.Wrapper):
             self.episode_count += 1
 
         return obs, reward, terminated, truncated, info
+
+
+class StackFramesWrapper(ObservationWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+    
+    def observation(self, observation):
+        print(observation.shape)
+        return observation
+    
+class OnTheSpotWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
+    """Show image that AI is fed during training.
+
+    This wrapper works by displaying the image seen by the AI under all previous wrappers applied.
+    Note that order matters: the wrapper will only display the effects of other wrappers that have
+    been applied before it.
+
+    Example:
+        >>> env = ShowObservation(env)
+    """
+
+    def __init__(self, env: gym.Env, n_skip_frames=4, color: np.ndarray=[0,0,0], observation_shape: tuple=(3,80,80), memory_depth: int=2,
+                 cooldown: int=25) -> None:
+        """Shows a graphical representation of the AIs observations
+
+        Args:
+            env: The environment to apply the wrapper
+        """
+        gym.utils.RecordConstructorArgs.__init__(self, num_stack=memory_depth + 1)
+        gym.ObservationWrapper.__init__(self, env)
+
+        self.color = color
+        self.step_cooldown = 25
+        self.observation_dimension = observation_shape
+        print(observation_shape)
+        self.memory_depth = memory_depth
+        self.memory = np.zeros((self.memory_depth,) + self.observation_dimension)
+        self.counter = 0
+
+    def observation(self, observation):
+        self.counter += 1
+
+        # let returned observation be the memory, with the current frame added to it
+        return_observation = np.concatenate((np.expand_dims(observation, axis=0), self.memory), axis=0)
+
+        return return_observation

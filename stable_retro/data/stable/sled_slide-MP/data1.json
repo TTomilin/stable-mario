@@ -1,0 +1,12 @@
+{
+  "info": {
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "progress": {
+      "address": 33719962,
+      "type": ">u2"
+    }
+  }
+}

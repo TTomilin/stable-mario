@@ -1,15 +1,23 @@
 {
   "info": {
     "height": {
-      "address": 33657581,
+      "address": 33657265,
       "type": "=u2"
     },
     "ingame": {
       "address": 33744576,
       "type": "=u2"
     },
-    "x-coordinate": {
-      "address": 33649665,
+    "time": {
+      "address": 33718277,
+      "type": "=i2"
+    },
+    "timer": {
+      "address": 33719846,
+      "type": "<u4"
+    },
+    "xcoordinate": {
+      "address": 33649345,
       "type": "=u2"
     }
   }

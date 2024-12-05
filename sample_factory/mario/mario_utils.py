@@ -7,7 +7,7 @@ import stable_retro
 from sample_factory.envs.env_wrappers import (
     ClipRewardEnv,
     MaxAndSkipEnv,
-    NoopResetEnv, PixelFormatChwWrapper,
+    NoopResetEnv, PixelFormatChwWrapper, StackFramesWrapper, OnTheSpotWrapper
 )
 from sample_factory.mario.record_video import RecordVideo
 from sample_factory.utils.utils import experiment_dir
@@ -92,6 +92,7 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
     if mario_spec.default_timeout is not None:
         env._max_episode_steps = mario_spec.default_timeout
 
+    
     # these are chosen to match Stable-Baselines3 and CleanRL implementations as precisely as possible
     env = RecordEpisodeStatistics(env)
     env = NoopResetEnv(env, noop_max=30)
@@ -99,4 +100,7 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
     env = ResizeObservation(env, game["resize"])
     env = PixelFormatChwWrapper(env)
     # env = FrameStack(env, cfg.env_framestack)  # TODO out of order
+    env = OnTheSpotWrapper(env)
+    if cfg.stack_frames_test != 0:
+        env = StackFramesWrapper(env)
     return env
