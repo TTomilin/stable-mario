@@ -251,6 +251,7 @@ def init_core_info(path):
             core_info = f.read()
             RetroEmulator.load_core_info(core_info)
             EMU_INFO.update(json.loads(core_info))
+            print(EMU_INFO)
             for platform, core in EMU_INFO.items():
                 EMU_CORES[platform] = core["lib"] + "_libretro." + EXT
                 for ext in core["ext"]:
