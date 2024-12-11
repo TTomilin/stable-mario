@@ -250,6 +250,7 @@ def init_core_info(path):
             EMU_INFO.update(json.loads(core_info))
             for platform, core in EMU_INFO.items():
                 EMU_CORES[platform] = core["lib"] + "_libretro." + EXT
+                print(EMU_CORES[platform])
                 for ext in core["ext"]:
                     EMU_EXTENSIONS["." + ext] = platform
 
