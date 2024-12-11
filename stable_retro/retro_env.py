@@ -100,16 +100,16 @@ class RetroEnv(gym.Env):
 
         self.system = stable_retro.get_romfile_system(rom_path)
 
+        core = stable_retro.get_system_info(self.system)
+        self.buttons = core["buttons"]
+        self.num_buttons = len(self.buttons)
+
         # We can't have more than one emulator per process. Before creating an
         # emulator, ensure that unused ones are garbage-collected
         gc.collect()
         self.em = stable_retro.RetroEmulator(rom_path)
         self.em.configure_data(self.data)
         self.em.step()
-
-        core = stable_retro.get_system_info(self.system)
-        self.buttons = core["buttons"]
-        self.num_buttons = len(self.buttons)
 
         try:
             assert self.data.load(
