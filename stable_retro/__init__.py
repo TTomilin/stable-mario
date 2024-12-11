@@ -6,6 +6,7 @@ from stable_retro.enums import Actions, Observations, State
 from stable_retro.retro_env import RetroEnv
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+print(core_path)
 core_path(os.path.join(os.path.dirname(__file__), "cores"))
 
 with open(os.path.join(os.path.dirname(__file__), "VERSION.txt")) as f:

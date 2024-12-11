@@ -9,7 +9,7 @@ __pycache__/
 *.o
 
 # stable link:
-stable_retro/data/stable
+stable_retro/data/stable_new
 
 # Distribution / packaging
 .Python
