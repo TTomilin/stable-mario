@@ -101,6 +101,7 @@ class RetroEnv(gym.Env):
         self.system = stable_retro.get_romfile_system(rom_path)
 
         core = stable_retro.get_system_info(self.system)
+        print(core)
         self.buttons = core["buttons"]
         self.num_buttons = len(self.buttons)
 
