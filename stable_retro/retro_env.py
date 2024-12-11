@@ -99,11 +99,11 @@ class RetroEnv(gym.Env):
             scenario_path = stable_retro.data.get_file_path(game, scenario + ".json", inttype)
 
         self.system = stable_retro.get_romfile_system(rom_path)
+        print(self.system)
 
         # We can't have more than one emulator per process. Before creating an
         # emulator, ensure that unused ones are garbage-collected
         gc.collect()
-        print(rom_path)
         self.em = stable_retro.RetroEmulator(rom_path)
         self.em.configure_data(self.data)
         self.em.step()
