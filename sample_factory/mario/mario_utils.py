@@ -13,6 +13,7 @@ from sample_factory.mario.record_video import RecordVideo
 from sample_factory.utils.utils import experiment_dir
 from scripts.config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
+from scripts.wrappers.observation import CustomFrameStack
 
 
 class MarioSpec:
@@ -98,5 +99,6 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
     env = MaxAndSkipEnv(env, skip=cfg.env_frameskip)
     env = ResizeObservation(env, game["resize"])
     env = PixelFormatChwWrapper(env)
+    env = CustomFrameStack(env, 5)
     # env = FrameStack(env, cfg.env_framestack)  # TODO out of order
     return env

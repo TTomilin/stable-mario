@@ -127,6 +127,61 @@ class HackOnTheSpotWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorAr
         self.relevant_frame = obs
 
         return self.observation(obs), info
+    
+class CustomFrameStack(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
+    def __init__(
+            self,
+            env: gym.Env,
+            color: np.ndarray,
+            memory_depth: int,
+            cooldown: int
+    ):
+        """Observation wrapper that stacks the observations in a rolling manner.
+
+        Args:
+            env (Env): The environment to apply the wrapper
+            num_stack (int): The number of frames to stack
+            lz4_compress (bool): Use lz4 to compress the frames internally
+        """
+        gym.utils.RecordConstructorArgs.__init__(
+            self, num_stack=memory_depth + 1, lz4_compress=False
+        )
+        gym.ObservationWrapper.__init__(self, env)
+
+        self.stack_depth = memory_depth
+        self.frames = deque(maxlen=self.stack_depth)
+        self.ret_frames = deque(maxlen=self.stack_depth + 1)
+
+        low = np.tile(self.observation_space.low, (self.stack_depth + 1, 1, 1))
+        high = np.tile(self.observation_space.high, (self.stack_depth + 1, 1, 1))
+        self.observation_space = Box(
+            low=low, high=high, dtype=self.observation_space.dtype
+        )
+
+    def observation(self, observation):
+        # verify memory depth and n.o. elts in queue:
+        assert len(self.frames) == self.stack_depth, (len(self.frames), self.stack_depth)
+
+        # add the current observation to ret_frames:
+        self.frames.append(observation)
+
+        # convert the queue ret_frames to a single matrix and return:
+        return np.concatenate(self.ret_frames, axis=0)
+        # there is some (avoidable) overhead here, but there is a similar amount of overhead in VecFrameStack.
+
+    def step(self, action):
+        observation, reward, terminated, truncated, info = self.env.step(action)
+
+        # return stacked observation, leave rest untouched:
+        return self.observation(observation), reward, terminated, truncated, info
+
+    def reset(self, **kwargs):
+        obs, info = self.env.reset(**kwargs)
+
+        # at first, we duplicate the first observation stack_depth times into memory to avoid mismatch in observation size
+        [self.frames.append(obs) for _ in range(self.stack_depth)]
+
+        return self.observation(obs), info
 
 class FindAndStoreColorWrapper(gym.ObservationWrapper, gym.utils.RecordConstructorArgs):
     def __init__(
