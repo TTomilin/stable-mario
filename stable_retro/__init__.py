@@ -29,7 +29,7 @@ stable_retro.data.init_core_info(core_path())
 
 
 def get_core_path(corename):
-    print(os.path.join(core_path(), stable_retro.data.EMU_CORES[corename]))
+    print("!!!" + os.path.join(core_path(), stable_retro.data.EMU_CORES[corename]))
     return os.path.join(core_path(), stable_retro.data.EMU_CORES[corename])
 
 
