@@ -93,12 +93,14 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
     if mario_spec.default_timeout is not None:
         env._max_episode_steps = mario_spec.default_timeout
 
+    if cfg.stack_frames:
+        env = CustomFrameStack(env, cfg.n_stack_frames)
+
     # these are chosen to match Stable-Baselines3 and CleanRL implementations as precisely as possible
     env = RecordEpisodeStatistics(env)
     env = NoopResetEnv(env, noop_max=30)
     env = MaxAndSkipEnv(env, skip=cfg.env_frameskip)
     env = ResizeObservation(env, game["resize"])
     env = PixelFormatChwWrapper(env)
-    env = CustomFrameStack(env, 5)
     # env = FrameStack(env, cfg.env_framestack)  # TODO out of order
     return env
