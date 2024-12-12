@@ -1,0 +1,24 @@
+{
+  "info": {
+    "died": {
+      "address": 33672430,
+      "type": "|u1"
+    },
+    "game_over": {
+      "address": 33672648,
+      "type": ">u4"
+    },
+    "time": {
+      "address": 33719846,
+      "type": "<u4"
+    },
+    "x_pos": {
+      "address": 33677119,
+      "type": "<u4"
+    },
+    "y_pos": {
+      "address": 33672319,
+      "type": "<u4"
+    }
+  }
+}

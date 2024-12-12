@@ -1,0 +1,40 @@
+previous_score = 0
+previous_health = 0
+previous_speed = 0
+
+function reward()
+    -- compute score based on distance
+    local score_rew = data.score - previous_score
+
+    -- compute score based on speed
+    local score_speed = (data.speed - previous_speed) * 0.01
+
+    local score_turn = 0
+    if data.turn > 80 or data.turn < -80 then
+        score_turn = -10 -- heavily punish turning toward the lava
+    end
+    
+    -- compute score based on hearts lost/gained
+    local score_health = 0
+    local health_change = data.health - previous_health   
+    if data.score > 0 and health_change < 0 then
+        score_health = -10 -- heavily punish running into anything
+    elseif data.score > 0 and health_change > 0 then
+        score_health = 1 -- somewhat reward picking up health
+        
+    end
+    
+    previous_score = data.score -- update previous values
+    previous_health = data.health 
+    previous_speed = data.speed
+
+    local score_total = score_rew + score_health + score_speed + score_turn;
+    if data.game_over_new == 1 and data.score < 5 then
+        score_total = -1000
+        print(string.format("score: %f", score_total))
+    elseif data.game_over_new == 1 then
+        print(string.format("score: %f", score_total))
+    end
+
+    return score_total;
+end

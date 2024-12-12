@@ -1,0 +1,28 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "ingame": {
+        "op": "equal"
+      }
+    }
+  },
+  "reward": {
+    "variables": {
+      "Score": {
+        "reward": 0.009999999776482582
+      },
+      "ingame": {
+        "measurement": "absolute",
+        "op": "equal",
+        "reward": -9.999999747378752e-06,
+        "reference": 1
+      }
+    }
+  }
+}

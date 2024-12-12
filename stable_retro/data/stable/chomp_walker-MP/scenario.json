@@ -1,0 +1,25 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "ingame": {
+        "op": "equal"
+      }
+    }
+  },
+  "reward": {
+    "variables": {
+      "time": {
+        "reward": 9.999999747378752e-06
+      },
+      "x": {
+        "reward": 0.0010000000474974513
+      }
+    }
+  }
+}

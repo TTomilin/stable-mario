@@ -1,0 +1,28 @@
+{
+  "info": {
+    "error_1": {
+      "address": 50353748,
+      "type": "|u1"
+    },
+    "error_3": {
+      "address": 33625467,
+      "type": ">d8"
+    },
+    "error_4": {
+      "address": 33718456,
+      "type": ">=d4"
+    },
+    "game_over": {
+      "address": 33719555,
+      "type": ">u4"
+    },
+    "stage": {
+      "address": 33718460,
+      "type": "<d4"
+    },
+    "time": {
+      "address": 33718382,
+      "type": "<u4"
+    }
+  }
+}

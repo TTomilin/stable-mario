@@ -4,6 +4,10 @@
       "address": 33719469,
       "type": ">u4"
     },
+    "score": {
+      "address": 33718300,
+      "type": "|i1"
+    },
     "spooky_spike_score": {
       "address": 33718298,
       "type": "><u4"

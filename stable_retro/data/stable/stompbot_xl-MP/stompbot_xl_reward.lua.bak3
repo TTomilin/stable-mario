@@ -1,0 +1,30 @@
+previous_score = 0
+previous_speed = 0
+cumulative_score = 0
+
+function reward()
+    local score_turn = 0
+    if data.turn > 80 or data.turn < -80 then
+        score_turn = -512 * 10^-6 -- heavily punish turning toward the lava
+    end
+
+    -- compute score based on speed
+    local score_speed = data.speed * 10^-6
+    
+    previous_score = data.score -- update previous values
+    previous_speed = data.speed
+
+    local score_total = score_turn + score_speed;
+    if data.game_over_new == 1 and data.score < 5 then
+        score_total = -1000
+    end
+
+    cumulative_score = score_total + cumulative_score
+
+    if data.game_over_new == 1 then
+        print(string.format("score: %f", cumulative_score))
+        print(string.format("distance: %f", data.score))
+    end
+
+    return score_total;
+end

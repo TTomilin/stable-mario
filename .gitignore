@@ -8,9 +8,6 @@ __pycache__/
 *.dll
 *.o
 
-# stable link:
-stable_retro/data/stable_new
-
 # Distribution / packaging
 .Python
 env/

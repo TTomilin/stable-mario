@@ -1,0 +1,27 @@
+previous_score = 0
+previous_speed = 0
+cumulative_score = 0
+
+function reward()
+    -- compute score based on distance
+    local score_rew = data.score - previous_score
+
+    -- compute score based on speed
+    local score_speed = math.max(-2, math.min((data.speed - previous_speed) * 0.01, 2)) -- clamp to [-2, 2]
+    
+    previous_score = data.score -- update previous values
+    previous_speed = data.speed
+
+    local score_total = score_rew + score_speed;
+    if data.game_over_new == 1 and data.score < 5 then
+        score_total = -1000
+    end
+
+    cumulative_score = score_total + cumulative_score
+
+    if data.game_over_new == 1 then
+        print(string.format("score: %f", cumulative_score))
+    end
+
+    return score_total;
+end

@@ -1,0 +1,34 @@
+previous_score = 0
+previous_health = 0
+previous_speed = 0
+cumulative_score = 0
+go_counter = 0
+
+function reward()
+    -- compute score based on speed
+    local score_speed = data.speed * 10^-5
+
+    -- compute score based on distance
+    local score_incr = data.score - previous_score
+    previous_score = data.score -- update previous score
+
+    local score_total = score_incr + score_speed;
+    if data.score < 5 then
+        score_total = 0
+    end
+
+    cumulative_score = score_total + cumulative_score
+
+    if data.game_over_new == 1 then
+        go_counter = go_counter + 1
+        cumulative_score = 0
+    end
+
+    if math.fmod(go_counter, 10000) == 0 then
+        print(string.format("score: %f", cumulative_score))
+        print(string.format("distance: %f", data.score))
+        go_counter = 0
+    end
+
+    return score_total;
+end

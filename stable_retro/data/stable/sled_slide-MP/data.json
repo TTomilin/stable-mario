@@ -1,0 +1,20 @@
+{
+  "info": {
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "progress": {
+      "address": 33719962,
+      "type": ">u2"
+    },
+    "speed": {
+      "address": 33719848,
+      "type": "=i4"
+    },
+    "time": {
+      "address": 33719930,
+      "type": "><u4"
+    }
+  }
+}

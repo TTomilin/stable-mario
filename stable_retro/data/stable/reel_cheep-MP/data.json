@@ -1,0 +1,16 @@
+{
+  "info": {
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "score": {
+      "address": 33718300,
+      "type": "=i4"
+    },
+    "time": {
+      "address": 33718305,
+      "type": "|u1"
+    }
+  }
+}

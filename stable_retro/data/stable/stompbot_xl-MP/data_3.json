@@ -1,0 +1,28 @@
+{
+  "info": {
+    "game_over": {
+      "address": 33718425,
+      "type": ">u4"
+    },
+    "game_over_new": {
+      "address": 33718427,
+      "type": ">u2"
+    },
+    "health": {
+      "address": 33739632,
+      "type": ">d6"
+    },
+    "score": {
+      "address": 33718449,
+      "type": ">u4"
+    },
+    "speed": {
+      "address": 33718394,
+      "type": "><u4"
+    },
+    "turn": {
+      "address": 33718401,
+      "type": "|i1"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "info": {
+    "coins": {
+      "address": 50358228,
+      "type": "<u2"
+    },
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "spike": {
+      "address": 33718298,
+      "type": "><u4"
+    }
+  }
+}
