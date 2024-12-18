@@ -103,6 +103,7 @@ class RetroEnv(gym.Env):
         # We can't have more than one emulator per process. Before creating an
         # emulator, ensure that unused ones are garbage-collected
         gc.collect()
+        print("test")
         core = stable_retro.RetroEmulator(rom_path)
         print(core.size())
         self.em = stable_retro.RetroEmulator(rom_path)
