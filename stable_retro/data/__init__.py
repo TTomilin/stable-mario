@@ -5,7 +5,7 @@ import os
 import sys
 from enum import Flag
 
-from retro._retro import GameDataGlue, RetroEmulator
+from retro._retro import GameDataGlue, RetroEmulator, core_path
 from retro._retro import data_path as _data_path
 
 __all__ = [
@@ -248,6 +248,7 @@ def init_core_info(path):
         with open(fname) as f:
             core_info = f.read()
             print(RetroEmulator.load_core_info(core_info))
+            print(core_path())
             EMU_INFO.update(json.loads(core_info))
             for platform, core in EMU_INFO.items():
                 EMU_CORES[platform] = core["lib"] + "_libretro." + EXT
