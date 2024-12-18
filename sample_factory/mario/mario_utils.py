@@ -61,6 +61,7 @@ MARIO_ENVS = [
     MarioSpec("splatterball", "Splatterball-v0"),
     MarioSpec("stop_em", "StopEm-v0"),
     MarioSpec("tankdown", "Tankdown-v0"),
+    MarioSpec("switch_way", "SwitchWay-v0"),
 ]
 
 
