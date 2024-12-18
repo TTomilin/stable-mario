@@ -247,8 +247,7 @@ def init_core_info(path):
     for fname in glob.glob(os.path.join(path, "*.json")):
         with open(fname) as f:
             core_info = f.read()
-            print(RetroEmulator.load_core_info(core_info))
-            print(core_path())
+            RetroEmulator.load_core_info(core_info)
             EMU_INFO.update(json.loads(core_info))
             for platform, core in EMU_INFO.items():
                 EMU_CORES[platform] = core["lib"] + "_libretro." + EXT
