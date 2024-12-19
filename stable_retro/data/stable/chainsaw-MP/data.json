@@ -1,0 +1,16 @@
+{
+  "info": {
+    "hits": {
+      "address": 33718271,
+      "type": ">i2"
+    },
+    "ingame": {
+      "address": 33744576,
+      "type": "<i2"
+    },
+    "yoshi": {
+      "address": 33718276,
+      "type": "<i2"
+    }
+  }
+}

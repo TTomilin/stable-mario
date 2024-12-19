@@ -72,9 +72,9 @@ CONFIG = {
         'timesteps': 1000000
     },
         'hammergeddon': {
-        'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], ['A'], ['B'], ['UP', 'B'], []],
+        'actions': [['LEFT'], ['RIGHT'], ['A'], ['B'], ['A', 'B'], ['RIGHT','A'], ['LEFT','A'],['RIGHT','B'], ['LEFT','B']],
         'game_env': 'hammergeddon-MP',
-        'state': 'hammergeddonplayland',
+        'state': 'Level1',
         'clip_reward': False,
         'resize': (80, 72),
         'timesteps': 10000000
@@ -290,6 +290,30 @@ CONFIG = {
         'chomp_walker':{
             'actions': [[],['LEFT'],['RIGHT'],['UP','LEFT'],['UP','RIGHT'],['DOWN','LEFT'],['DOWN','RIGHT'],['DOWN'],['UP']],
             'game_env': 'chomp_walker-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'trap_floor':{
+            'actions': [[],['A'],['B'],['A','B']],
+            'game_env': 'trap_floor-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'stair_scare':{
+            'actions': [[],['A']],
+            'game_env': 'stair_scare-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'chainsaw':{
+            'actions': [[],['L'],['R'],['L','R']],
+            'game_env': 'chainsaw-MP',
             'state': 'Level1',
             'clip_reward': False,
             'resize': (160, 160),

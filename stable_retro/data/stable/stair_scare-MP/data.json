@@ -1,0 +1,12 @@
+{
+  "info": {
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "location": {
+      "address": 33658797,
+      "type": "=i2"
+    }
+  }
+}
