@@ -1,8 +1,32 @@
 {
   "info": {
-    "time": {
-      "address": 50349890,
-      "type": "|i1"
+    "blue": {
+      "address": 50358346,
+      "type": "|u1"
+    },
+    "green": {
+      "address": 50358345,
+      "type": "|u1"
+    },
+    "koopa": {
+      "address": 33657438,
+      "type": "|u1"
+    },
+    "orange": {
+      "address": 50358343,
+      "type": "|u1"
+    },
+    "pink": {
+      "address": 50358342,
+      "type": "|u1"
+    },
+    "score": {
+      "address": 50358319,
+      "type": ">u2"
+    },
+    "yellow": {
+      "address": 50358344,
+      "type": "|u1"
     }
   }
 }

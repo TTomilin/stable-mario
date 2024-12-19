@@ -16,10 +16,9 @@
     }
   },
   "reward": {
-    "variables": {
-      "koopa_ice": {
-        "reward": -0.009999999776482582
-      }
-    }
-  }
+    "script": "lua:reward"
+  },
+  "scripts":[
+    "reward.lua"
+  ]
 }

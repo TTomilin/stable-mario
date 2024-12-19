@@ -16,12 +16,9 @@
     }
   },
   "reward": {
-    "variables": {
-      "score": {
-        "reward": -0.009999999776482582
-      },
-      "time": {
-	"reward": 0.000001
-    }
-  }
+    "script": "lua:reward"
+  },
+  "scripts":[
+    "reward.lua"
+  ]
 }

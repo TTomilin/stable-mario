@@ -12,7 +12,7 @@ function reward()
         reward = 0.004*(start_distance - distance) 
         start_distance = distance
     end
-    reward = reward + 0.001*(last_distance - distance)
+    reward = reward + 0.001*(last_distance - distance) -0.0001
     last_distance = distance
     return reward
 end

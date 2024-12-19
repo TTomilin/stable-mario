@@ -7,17 +7,16 @@
   ],
   "done": {
     "variables": {
-      "mario": {
-        "op": "equal",
-        "reference": 1
+      "ingame":{
+        "op": "equal"
       }
     }
   },
   "reward": {
-    "variables": {
-      "winn": {
-        "reward": 1.0
-      }
-    }
-  }
+    "script": "lua:reward"
+  },
+  "scripts":[
+    "reward.lua"
+  ]
 }
+ 
