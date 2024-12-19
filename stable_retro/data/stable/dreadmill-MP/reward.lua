@@ -1,17 +1,25 @@
-x_target = 2500
-
-start_x = -112
-
-start_distance = 2612 --also the best distance
-
+xfin = 2500
+xstart = -112
+bestdistance = xfin-xstart
+lastdistance = bestdistance
+nothadreward = true
 function reward()
-    local distance = x_target - data.x
-    local reward
-    if distance < start_distance then
-        reward = 1/distance
-        start_distance = distance
-    else
-        reward = -0.00001
+    local reward = 0
+    if nothadreward then
+        local distance 
+        distance = xfin - data.x
+        if distance < bestdistance then
+            reward = 0.0008*(bestdistance - distance)
+            bestdistance = distance
+        end
+        if data.x > 2499 then
+            reward = reward + 1
+            nothadreward = false
+        end
+        reward = reward + 0.0002*(lastdistance - distance) - 0.0001
+        lastdistance = distance
+    else 
+        reward = -0.001
     end
-    return reward;
+    return reward
 end

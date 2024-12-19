@@ -13,13 +13,10 @@
     }
   },
   "reward": {
-    "variables": {
-      "time": {
-        "reward": 0.0010000000474974513
-      },
-      "x": {
-        "reward": 0.0010000000474974513
-      }
-    }
-  }
+    "script": "lua:reward"
+  },
+  "scripts":[
+    "reward.lua"
+  ]
 }
+
