@@ -5,7 +5,7 @@ import os
 import sys
 from enum import Flag
 
-from retro._retro import GameDataGlue, RetroEmulator, core_for_rom
+from retro._retro import GameDataGlue, RetroEmulator
 from retro._retro import data_path as _data_path
 
 __all__ = [
