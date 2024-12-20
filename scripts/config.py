@@ -295,6 +295,14 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+	    'switch_way':{
+            'actions': [[], ['A'],['LEFT'],['RIGHT'],['A','LEFT'],['A','RIGHT']],
+            'game_env': 'switch_way-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
         'trap_floor':{
             'actions': [[],['A'],['B'],['A','B']],
             'game_env': 'trap_floor-MP',
@@ -318,5 +326,5 @@ CONFIG = {
             'clip_reward': False,
             'resize': (160, 160),
             'timesteps': 129740258283
-        }
+        },
 }
