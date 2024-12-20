@@ -1,0 +1,32 @@
+{
+  "info": {
+    "blue": {
+      "address": 33741754,
+      "type": "|i1"
+    },
+    "green": {
+      "address": 33741802,
+      "type": "|u1"
+    },
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "red": {
+      "address": 33741730,
+      "type": "|u1"
+    },
+    "score": {
+      "address": 33719504,
+      "type": "<u4"
+    },
+    "time": {
+      "address": 33719500,
+      "type": "<u2"
+    },
+    "yellow": {
+      "address": 33741778,
+      "type": "|d1"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "game_over_new": {
+        "op": "equal",
+        "reference": 1
+      },
+      "score": {
+        "op": "equal",
+        "reference": 101
+      }
+    }
+  },
+  "reward": {
+    "script": "lua:reward"
+  },
+  "scripts": [
+    "stompbot_xl_reward.lua"
+  ]
+}

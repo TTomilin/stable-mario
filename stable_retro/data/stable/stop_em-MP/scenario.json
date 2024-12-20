@@ -1,0 +1,27 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "mario": {
+        "op": "equal",
+        "reference": 1
+      },
+      "score": {
+        "op": "greater-or-equal",
+        "reference": 31
+      }
+    }
+  },
+  "reward": {
+    "variables": {
+      "score": {
+        "reward": 0.019999999552965164
+      }
+    }
+  }
+}

@@ -55,6 +55,8 @@ def add_mario_args(p: ArgumentParser):
     p.add_argument("--record_every", default=25000, type=int, help="Interval after how many steps to record a video.")
     p.add_argument("--load_state", type=str, default=None, help="Path to the game save state to load")
     p.add_argument("--discretize", default=True, type=str2bool, help="Limit agent's actions as specified in config.")
+    p.add_argument("--stack_frames", action="store_true", default=False, help="Whether to use framestack.")
+    p.add_argument("--n_stack_frames", default=4, type=int, help="Number of frames to stack.")
 
 
 def add_rl_args(p: ArgumentParser):

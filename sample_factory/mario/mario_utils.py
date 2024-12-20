@@ -13,6 +13,7 @@ from sample_factory.mario.record_video import RecordVideo
 from sample_factory.utils.utils import experiment_dir
 from scripts.config import CONFIG
 from stable_retro.examples.discretizer import Discretizer
+from scripts.wrappers.observation import CustomFrameStack
 
 
 class MarioSpec:
@@ -60,6 +61,7 @@ MARIO_ENVS = [
     MarioSpec("splatterball", "Splatterball-v0"),
     MarioSpec("stop_em", "StopEm-v0"),
     MarioSpec("tankdown", "Tankdown-v0"),
+    MarioSpec("switch_way", "SwitchWay-v0"),
 ]
 
 
@@ -91,6 +93,9 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
 
     if mario_spec.default_timeout is not None:
         env._max_episode_steps = mario_spec.default_timeout
+
+    if cfg.stack_frames:
+        env = CustomFrameStack(env, cfg.n_stack_frames)
 
     # these are chosen to match Stable-Baselines3 and CleanRL implementations as precisely as possible
     env = RecordEpisodeStatistics(env)

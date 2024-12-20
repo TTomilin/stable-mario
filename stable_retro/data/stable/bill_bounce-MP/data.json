@@ -1,0 +1,16 @@
+{
+  "info": {
+    "hit": {
+      "address": 33646861,
+      "type": ">u4"
+    },
+    "score": {
+      "address": 33719538,
+      "type": "><u4"
+    },
+    "time": {
+      "address": 33719484,
+      "type": "<u4"
+    }
+  }
+}

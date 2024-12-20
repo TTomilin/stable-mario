@@ -1,8 +1,12 @@
 {
   "info": {
     "game_over": {
-      "address": 33719462,
-      "type": "=d1"
+      "address": 33670536,
+      "type": "<i2"
+    },
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
     },
     "score": {
       "address": 33719701,

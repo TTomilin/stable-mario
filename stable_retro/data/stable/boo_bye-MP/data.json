@@ -7,6 +7,10 @@
     "boo_bye_score": {
       "address": 33719430,
       "type": ">=u4"
+    },
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
     }
   }
 }

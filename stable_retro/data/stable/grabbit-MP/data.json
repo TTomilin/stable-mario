@@ -1,0 +1,16 @@
+{
+  "info": {
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "score": {
+      "address": 33718420,
+      "type": "=u2"
+    },
+    "unconcious": {
+      "address": 33677662,
+      "type": "=u2"
+    }
+  }
+}

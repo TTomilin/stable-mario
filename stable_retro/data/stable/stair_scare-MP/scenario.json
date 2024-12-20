@@ -13,9 +13,13 @@
     }
   },
   "reward": {
-    "script": "lua:reward"
-  },
-  "scripts": [
-    "stair_scare_reward.lua"
-  ]
+    "variables": {
+      "hits": {
+        "reward": 1.0
+      },
+      "yoshi": {
+        "reward": -1.0
+      }
+    }
+  }
 }

@@ -1,0 +1,16 @@
+{
+  "info": {
+    "ingame": {
+      "address": 50353844,
+      "type": "=u1"
+    },
+    "koopa_ice": {
+      "address": 50358617,
+      "type": ">u4"
+    },
+    "time": {
+      "address": 50358610,
+      "type": ">=u4"
+    }
+  }
+}

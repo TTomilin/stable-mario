@@ -1,0 +1,34 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "ingame": {
+        "op": "equal"
+      }
+    }
+  },
+  "reward": {
+    "variables": {
+      "blue": {
+        "reward": 0.10000000149011612
+      },
+      "green": {
+        "reward": 0.30000001192092896
+      },
+      "red": {
+        "reward": 0.10000000149011612
+      },
+      "yellow": {
+        "reward": 0.20000000298023224
+      },
+      "time":{
+        "reward": 0.001
+      }
+    }
+  }
+}

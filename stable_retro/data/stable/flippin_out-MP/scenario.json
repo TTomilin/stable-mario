@@ -1,0 +1,29 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "game_over": {
+        "op": "equal",
+        "reference": 1
+      },
+      "died": {
+        "op": "equal",
+        "reference": 1
+      },
+      "time": {
+        "op": "equal"
+      }
+    }
+  },
+  "reward": {
+    "script": "lua:reward"
+  },
+  "scripts": [
+    "flippin_out_reward.lua"
+  ]
+}

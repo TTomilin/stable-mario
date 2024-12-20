@@ -1,0 +1,12 @@
+{
+  "info": {
+    "ingame": {
+      "address": 33744573,
+      "type": ">u4"
+    },
+    "score": {
+      "address": 33719418,
+      "type": "><u4"
+    }
+  }
+}

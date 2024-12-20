@@ -1,0 +1,22 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "game_over": {
+        "op": "equal",
+        "reference": 1
+      }
+    }
+  },
+  "reward": {
+    "script": "lua:reward"
+  },
+  "scripts":[
+    "fling_shot_reward.lua"
+  ]
+}

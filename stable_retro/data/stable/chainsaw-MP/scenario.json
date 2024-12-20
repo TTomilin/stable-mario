@@ -15,13 +15,10 @@
   "reward": {
     "variables": {
       "hits": {
-        "reward": 0.10000000149011612
+        "reward": 1.0
       },
-      "ingame": {
-        "measurement": "absolute",
-        "op": "equal",
-        "penalty": 9.999999747378752e-05,
-        "reference": 1
+      "yoshi": {
+        "reward": -1.0
       }
     }
   }

@@ -1,0 +1,12 @@
+{
+  "info": {
+    "game_over": {
+      "address": 33719462,
+      "type": "=d1"
+    },
+    "score": {
+      "address": 33719701,
+      "type": ">u4"
+    }
+  }
+}

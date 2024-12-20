@@ -14,7 +14,6 @@ from wrappers.timing import Delay
 from wrappers.on_the_spot import HackOnTheSpotWrapper, FindAndStoreColorWrapper
 from wrappers.logger import LogVariance, LogRewardSummary, StepRewardLogger
 from wrappers.observation import Rescale, ShowObservation, CenterCrop, FilterColors, Grabbit, SledSlide
-from wrappers.on_the_spot import FindAndStoreColorWrapper
 from wrappers.timing import Delay
 from stable_retro.examples.discretizer import Discretizer
 

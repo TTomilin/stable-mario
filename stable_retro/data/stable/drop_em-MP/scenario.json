@@ -1,0 +1,23 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "coins": {
+        "op": "greater-or-equal",
+        "reference": 31
+      }
+    }
+  },
+  "reward": {
+    "variables": {
+      "coins": {
+        "reward": 0.019999999552965164
+      }
+    }
+  }
+}

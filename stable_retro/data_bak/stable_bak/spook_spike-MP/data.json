@@ -1,0 +1,12 @@
+{
+  "info": {
+    "game_over": {
+      "address": 33719469,
+      "type": ">u4"
+    },
+    "spooky_spike_score": {
+      "address": 33718298,
+      "type": "><u4"
+    }
+  }
+}

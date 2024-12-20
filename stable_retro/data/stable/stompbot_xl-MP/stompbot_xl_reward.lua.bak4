@@ -1,0 +1,20 @@
+previous_score = 0
+previous_health = 0
+previous_speed = 0
+cumulative_score = 0
+
+function reward()
+    -- compute score based on distance
+    local score_rew = (data.score - previous_score) * data.speed * 10^-5
+
+    local score_total = score_rew;
+
+    cumulative_score = score_total + cumulative_score
+
+    if data.game_over_new == 1 then
+        print(string.format("score: %f", cumulative_score))
+        print(string.format("distance: %f", data.score))
+    end
+
+    return score_total;
+end

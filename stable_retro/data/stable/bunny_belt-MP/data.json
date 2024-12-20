@@ -1,12 +1,16 @@
 {
   "info": {
-    "time": {
-      "address": 33719482,
+    "action": {
+      "address": 33719495,
       "type": "<u4"
     },
     "score": {
-      "address": 33719485,
+      "address": 33719501,
       "type": ">u4"
+    },
+    "time": {
+      "address": 33719482,
+      "type": "<u4"
     }
   }
 }

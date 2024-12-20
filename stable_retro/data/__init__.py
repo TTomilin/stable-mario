@@ -5,9 +5,6 @@ import os
 import sys
 from enum import Flag
 
-for line in sys.path:
-    print(line)
-
 from retro._retro import GameDataGlue, RetroEmulator
 from retro._retro import data_path as _data_path
 
@@ -246,6 +243,7 @@ def add_custom_integration(path):
 
 
 def init_core_info(path):
+    print(path)
     for fname in glob.glob(os.path.join(path, "*.json")):
         with open(fname) as f:
             core_info = f.read()

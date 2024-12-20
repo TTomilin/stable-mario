@@ -1,13 +1,17 @@
 previous_score = 0
-time = 0
+total = 0
 
 function reward()
-    local score_rew = data.broom_zoom_score - previous_score
-    previous_score = data.broom_zoom_score
+    local score_rew = 0
 
-    if data.game_over == 1 then
-        print(string.format("episode reward: %d", previous_score)) -- just for debugging: wanted to see if average episode score matches the one displayed by stable-baselines
+    if data.broom_zoom_score > previous_score then
+        score_rew = 1
+        total = total + score_rew
     end
+    if data.game_over == 1 then
+        print(string.format("episode reward: %d", total))
+    end
+    previous_score = data.broom_zoom_score
 
     return score_rew;
 end
