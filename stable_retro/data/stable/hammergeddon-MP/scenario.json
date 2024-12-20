@@ -1,21 +1,25 @@
 {
-"crop": [
-  0,
-  0,
-  0,
-  0
-],
-"done": {
-  "variables": {
-    "ingame": {
-      "op": "equal"
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "ingame": {
+        "op": "equal"
+      }
+    }
+  },
+  "reward": {
+    "variables": {
+      "hp_opp": {
+        "penalty": -1.0
+      },
+      "hp_player": {
+        "penalty": 1.0
+      }
     }
   }
-},
-"reward": {
-  "script": "lua:reward"
-},
-"scripts": [
-  "reward.lua"
-]
 }
