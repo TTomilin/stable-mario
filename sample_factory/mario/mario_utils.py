@@ -64,7 +64,8 @@ MARIO_ENVS = [
     MarioSpec("switch_way", "SwitchWay-v0"),
     MarioSpec("trap_floor","TrapFloor-v0"),
     MarioSpec("stair_scare","StairScare-v0"),
-    MarioSpec("chainsaw","ChainSaw-v0")
+    MarioSpec("chainsaw","ChainSaw-v0"),
+    MarioSpec("scratch-em","ScratchEm-v0"),
 ]
 
 

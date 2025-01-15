@@ -327,4 +327,12 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        'scratch-em':{
+            'actions': [[], ['A'], ['LEFT'], ['RIGHT'], ['UP'], ['DOWN'], ['A', 'LEFT'], ['A', 'RIGHT'], ['B', 'LEFT'], ['B', 'RIGHT'], ['A', 'UP'], ['B', 'UP'], ['A', 'DOWN'], ['B', 'DOWN']],
+            'game_env': 'scratch-em-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
 }

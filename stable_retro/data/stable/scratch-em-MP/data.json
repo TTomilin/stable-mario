@@ -1,0 +1,12 @@
+{
+  "info": {
+    "coins": {
+      "address": 50358996,
+      "type": "|u1"
+    },
+    "ingame": {
+      "address": 33670270,
+      "type": "|i1"
+    }
+  }
+}

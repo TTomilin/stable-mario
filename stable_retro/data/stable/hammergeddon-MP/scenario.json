@@ -13,13 +13,9 @@
     }
   },
   "reward": {
-    "variables": {
-      "hp_opp": {
-        "penalty": -1.0
-      },
-      "hp_player": {
-        "penalty": 1.0
-      }
-    }
-  }
+    "script": "lua:reward"
+  },
+  "scripts": [
+    "reward.lua"
+  ]
 }
