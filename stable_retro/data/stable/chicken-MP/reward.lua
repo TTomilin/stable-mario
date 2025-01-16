@@ -1,14 +1,21 @@
-finished = false
-total = 0
+peachfin = false
+mariofin = false
 function reward()
-    local reward
-    if finished then
-        reward = 0
-    elseif data.winn == 1 then
+    local reward = 0
+    if data.xmario < 70 and not mariofin and peachfin then
+        mariofin = true
         reward = 1
-        total = total + 1
-        finished = true
+    elseif data.xmario < 70 and not mariofin and not peachfin then
+        mariofin = true
+        reward = -1
+    elseif data.ingame == 0 then
+        if mariofin and not peachfin then
+            reward = 2
+        elseif not mariofin then
+            reward = -1
+        end
+    elseif data.xpeach > 169 then
+            peachfin = true
     end
-    reward = -0.001
     return reward
 end

@@ -4,6 +4,14 @@
       "address": 33744576,
       "type": "=u2"
     },
+    "xmario": {
+      "address": 33671217,
+      "type": "|u1"
+    },
+    "xpeach": {
+      "address": 33671369,
+      "type": "|u1"
+    },
     "mario": {
       "address": 33680274,
       "type": "|u1"
