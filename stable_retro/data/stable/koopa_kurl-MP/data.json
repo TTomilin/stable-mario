@@ -1,0 +1,36 @@
+{
+  "info": {
+    "ingame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "shell1": {
+      "address": 33677016,
+      "type": "|i1"
+    },
+    "shell2": {
+      "address": 33677092,
+      "type": "|i1"
+    },
+    "shell3": {
+      "address": 33677168,
+      "type": "|i1"
+    },
+    "shell4": {
+      "address": 33677244,
+      "type": "|i1"
+    },
+    "shell5": {
+      "address": 33677320,
+      "type": "|i1"
+    },
+    "shell6": {
+      "address": 33677396,
+      "type": "|i1"
+    },
+    "turn": {
+      "address": 33718322,
+      "type": "|i1"
+    }
+  }
+}
