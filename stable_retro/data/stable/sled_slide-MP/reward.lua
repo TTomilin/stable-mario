@@ -24,7 +24,7 @@ function reward()
     elseif progress < highestsegment then
         reward = -0.0001
     else
-        reward = 1*(progress - lastsegment) + 0.0000001*(data.speed) + 0.005*(data.speed - previousspeed)
+        reward = 1*(progress - lastsegment) + 0.000001*(data.speed) + 0.005*(data.speed - previousspeed)
         previousspeed = data.speed
         if progress > lastsegment then 
             highestsegment = progress
@@ -33,5 +33,9 @@ function reward()
     end 
     reward = reward / 17
     return reward 
+end
+
+function endcondition()
+    return data.ingame == 0 or math.abs(data.progress - highestsegment) > 1
 end
 
