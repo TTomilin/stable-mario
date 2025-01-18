@@ -18,7 +18,7 @@ function reward()
     elseif gotreward and leeway == 0 then
         reward = -0.01
     elseif (progress == 0) and (not notpassed13) and (not gotreward) then
-        reward = 10 * data.time
+        reward = 0.10 * data.time
         gotreward = true
         leeway = 4
     elseif progress < highestsegment then
