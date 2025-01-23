@@ -455,10 +455,6 @@ py::str corePath(py::handle hint = py::none()) {
 	return Retro::corePath(py::str(hint));
 }
 
-py::str coreForRom(py::handle hint = py::none()) {
-	return Retro::coreForRom(py::str(hint))
-}
-
 py::str dataPath(py::handle hint = py::none()) {
 	return Retro::GameData::dataPath(py::str(hint));
 }
@@ -537,5 +533,4 @@ PYBIND11_MODULE(_retro, m) {
 
 	m.def("core_path", &::corePath, py::arg("hint") = py::none());
 	m.def("data_path", &::dataPath, py::arg("hint") = py::none());
-	m.def("core_for_rom", &::CoreForRom, py::arg("hint") = py::none());
 }
