@@ -6,11 +6,7 @@
     0
   ],
   "done": {
-    "variables": {
-      "ingame": {
-        "op": "equal"
-      }
-    }
+    "script": "lua:endcondition"
   },
   "reward": {
     "script": "lua:reward"
