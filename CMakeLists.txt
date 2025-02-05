@@ -311,14 +311,9 @@ set(BUILD_STATIC_LIBS
     ON
     CACHE BOOL "" FORCE)
 
-if(LIBZIP_FOUND AND NOT LIBZIP_VERSION VERSION_LESS 1.0.0)
-  include_directories(${LIBZIP_INCLUDE_DIRS})
-  link_directories(${LIBZIP_LIBRARY_DIRS})
-else()
-  set(LIBZIP_LIBRARIES zip)
-  add_subdirectory(third-party/libzip)
-  include_directories(third-party/libzip third-party/libzip/lib)
-endif()
+set(LIBZIP_LIBRARIES zip)
+add_subdirectory(third-party/libzip)
+include_directories(third-party/libzip third-party/libzip/lib)
 
 include_directories(${LUA_INCLUDE_DIRS})
 
