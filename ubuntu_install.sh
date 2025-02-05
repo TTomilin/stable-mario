@@ -10,3 +10,4 @@ sudo apt-get install zlib1g-dev
 sudo apt-get install -y python3-opengl
 conda install conda-forge::libcxx
 conda install -c conda-forge libstdcxx-ng
+sudo apt install libbz2-dev
