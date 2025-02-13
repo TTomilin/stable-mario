@@ -1,0 +1,32 @@
+{
+  "info": {
+    "cloud": {
+      "address": 50358438,
+      "type": "|u1"
+    },
+    "coins": {
+      "address": 50358408,
+      "type": "|u1"
+    },
+    "egg": {
+      "address": 50338791,
+      "type": "|u1"
+    },
+    "flower": {
+      "address": 50358435,
+      "type": "|u1"
+    },
+    "ingame": {
+      "address": 33667097,
+      "type": "|u1"
+    },
+    "shroom": {
+      "address": 50358436,
+      "type": "|u1"
+    },
+    "star": {
+      "address": 50358431,
+      "type": ">u4"
+    }
+  }
+}

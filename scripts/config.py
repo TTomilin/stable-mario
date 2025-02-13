@@ -335,6 +335,14 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        'pair-em':{
+            'actions': [[], ['A'], ['LEFT'], ['RIGHT'], ['UP'], ['DOWN'], ['A', 'LEFT'], ['A', 'RIGHT'], ['A', 'UP'],['A', 'DOWN']],
+            'game_env': 'pair-em-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
         'koopa_kurl':{
             'actions': [[], ['A'], ['LEFT'], ['RIGHT']],
             'game_env': 'koopa_kurl-MP',
@@ -343,4 +351,5 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        
 }

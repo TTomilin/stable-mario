@@ -11,6 +11,7 @@ function reward()
             current_location = data.location
             reward = reward + 0.25
             count = count + reward
+        end
         elseif data.location > current_location then
             reward = -count / 2
             current_location = 1000

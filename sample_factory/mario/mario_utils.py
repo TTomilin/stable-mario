@@ -67,6 +67,7 @@ MARIO_ENVS = [
     MarioSpec("chainsaw","ChainSaw-v0"),
     MarioSpec("scratch-em","ScratchEm-v0"),
     MarioSpec("koopa_kurl","KoopaKurl-v0"),
+    MarioSpec("pair-em","PairEm-v0")
 ]
 
 
