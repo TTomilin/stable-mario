@@ -14,7 +14,7 @@ function reward()
         leeway = leeway - 1
     end
     if progress == 14 and notpassed13 then
-        reward = -0.0001
+        reward = -17
     elseif gotreward and leeway == 0 then
         reward = -0.01
     elseif (progress == 0) and (not notpassed13) and (not gotreward) then
@@ -22,7 +22,7 @@ function reward()
         gotreward = true
         leeway = 4
     elseif progress < highestsegment then
-        reward = -0.0001
+        reward = -17
     else
         reward = 1*(progress - lastsegment) + 0.000001*(data.speed) + 0.005*(data.speed - previousspeed)
         previousspeed = data.speed
@@ -36,6 +36,6 @@ function reward()
 end
 
 function endcondition()
-    return data.ingame == 0 or math.abs(data.progress - highestsegment) > 1
+    return data.ingame == 0 or math.abs(data.progress - highestsegment) > 0
 end
 
