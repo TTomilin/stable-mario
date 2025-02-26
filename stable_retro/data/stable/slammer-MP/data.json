@@ -1,0 +1,12 @@
+{
+  "info": {
+    "mario_life": {
+      "address": 33719701,
+      "type": ">u4"
+    },
+    "yoshi_life": {
+      "address": 33719705,
+      "type": ">u4"
+    }
+  }
+}

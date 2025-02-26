@@ -1,0 +1,28 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "mario_life": {
+        "op": "equal"
+      },
+      "yoshi_life": {
+        "op": "equal"
+      }
+    }
+  },
+  "reward": {
+    "variables": {
+      "mario_life": {
+        "penalty": -5.0
+      },
+      "yoshi_life": {
+        "reward": 5.0
+      }
+    }
+  }
+}
