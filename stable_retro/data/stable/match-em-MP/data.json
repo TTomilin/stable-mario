@@ -3,6 +3,10 @@
     "coins": {
       "address": 50359176,
       "type": "<u2"
+    },
+    "ingame": {
+      "address": 33708507,
+      "type": "|u1"
     }
   }
 }

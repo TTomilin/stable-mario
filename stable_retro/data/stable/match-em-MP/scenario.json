@@ -6,23 +6,16 @@
     0
   ],
   "done": {
-    "condition": "any",
     "variables": {
-      "coins": {
-        "op": "less-than",
-        "reference": 0
-      },
-      "coins": {
-        "op": "greater-than",
-        "reference": 30
+      "ingame": {
+        "op": "equal"
       }
     }
   },
   "reward": {
-    "variables": {
-      "coins": {
-        "reward": 1.0
-      }
-    }
-  }
+    "script": "lua:reward"
+  },
+  "scripts": [
+    "match-em_reward.lua"
+  ]
 }
