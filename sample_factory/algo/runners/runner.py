@@ -601,6 +601,9 @@ class Runner(EventLoopObject, Configurable):
         for w in self.writers.values():
             w.flush()
 
+    def _update_state_probabilities(self):
+        return
+
     def log_new_videos_to_wandb(self):
         # List all video files in the directory
         video_dir = join(experiment_dir(cfg=self.cfg), self.cfg.video_dir)

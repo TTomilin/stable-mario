@@ -368,6 +368,14 @@ class NonBatchedVecEnv(Wrapper):
         self.num_agents: int = num_agents
         super().__init__(env)
 
+    def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None):
+        '''
+        initial_states = self.get_wrapper_attr("initial_states")
+        state_probabilities = self.get_wrapper_attr("state_probs")
+        next_state = np.random.choice(initial_states, p=state_probabilities)
+        options = options.update({'next_state': next_state})
+        '''
+        return self.env.reset(seed=seed, options=options)
 
 def make_env_func_non_batched(cfg: Config, env_config, render_mode: Optional[str] = None) -> NonBatchedVecEnv:
     """

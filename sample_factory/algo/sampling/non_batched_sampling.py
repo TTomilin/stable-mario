@@ -703,6 +703,10 @@ class NonBatchedVectorEnvRunner(VectorEnvRunner):
         """
         pass
 
+    def run_on_envs(self, callback):
+        for env in self.envs:
+            callback(env)
+
     def close(self):
         for e in self.envs:
             e.close()

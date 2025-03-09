@@ -178,6 +178,9 @@ class Sampler(AbstractSampler, ABC):
     def connect_update_training_info(self, update_training_info: signal) -> None:
         self._for_each_rollout_worker(lambda w: update_training_info.connect(w.on_update_training_info))
 
+    def change_state_probabilities(self, state_probabilities):
+        raise NotImplementedError
+
     def _inference_worker_ready(self, policy_id: PolicyID, worker_idx: int):
         assert not self.inference_workers[policy_id][worker_idx].is_ready
         log.info(f"Inference worker {policy_id}-{worker_idx} is ready!")

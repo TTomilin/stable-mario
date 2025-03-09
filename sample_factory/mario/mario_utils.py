@@ -82,9 +82,15 @@ def mario_env_by_name(name):
 def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None):
     mario_spec = mario_env_by_name(env_name)
 
-    game = CONFIG[cfg.game]
-    state = cfg.load_state if cfg.load_state is not None else game["state"]
-    env = stable_retro.make(game=game['game_env'], state=state, render_mode=render_mode)
+    if cfg.game_list == None:
+        # initialize single-game environment:
+        game = CONFIG[cfg.game]
+        state = cfg.load_state if cfg.load_state is not None else game["state"]
+        env = stable_retro.make(game=game['game_env'], state=state, render_mode=render_mode)
+    else:
+        # initialize multi-game environment:
+        raise NotImplementedError
+
 
     if cfg.discretize:
         env = Discretizer(env, game["actions"])
