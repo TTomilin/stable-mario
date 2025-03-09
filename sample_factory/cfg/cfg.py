@@ -58,6 +58,7 @@ def add_mario_args(p: ArgumentParser):
     p.add_argument("--stack_frames", action="store_true", default=False, help="Whether to use framestack.")
     p.add_argument("--n_stack_frames", default=4, type=int, help="Number of frames to stack.")
     p.add_argument("--game_list", nargs="*", type=str, default=None)
+    p.add_argument("--state_list", nargs="*", type=str, default=None)
 
 def add_rl_args(p: ArgumentParser):
     """Arguments not specific to any particular RL algorithm."""
