@@ -59,6 +59,9 @@ def add_mario_args(p: ArgumentParser):
     p.add_argument("--n_stack_frames", default=4, type=int, help="Number of frames to stack.")
     p.add_argument("--game_list", nargs="*", type=str, default=None)
     p.add_argument("--state_list", nargs="*", type=str, default=None)
+    p.add_argument("--target_reward_list", nargs="*", type=float, default=None)
+    p.add_argument("--random_task_probability", default=0.5, type=float)
+    p.add_argument("--episode_weight", default=0, type=float)
 
 def add_rl_args(p: ArgumentParser):
     """Arguments not specific to any particular RL algorithm."""

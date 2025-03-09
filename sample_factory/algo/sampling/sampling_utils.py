@@ -42,6 +42,9 @@ class VectorEnvRunner(Configurable):
 
     def synchronize_devices(self) -> None:
         raise NotImplementedError()
+    
+    def get_envs(self):
+        raise NotImplementedError()
 
     def close(self):
         raise NotImplementedError()

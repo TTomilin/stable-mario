@@ -87,11 +87,11 @@ class RetroMultiEnv(RetroEnv):
 
         # select & load random:
         N = len(self.game_list)
-        self.current_game = np.random.randint(0, N)
+        self.current_game_idx = np.random.randint(0, N)
         self.mean_episode_rewards_per_game = [0] * N
         self.episodes_per_game = [0] * N
         self.current_episode_reward = 0
-        self.load_game(self.current_game, self.inttype, self.use_restricted_actions, 
+        self.load_game(self.current_game_idx, self.inttype, self.use_restricted_actions, 
                        self.record, self.players, self.render_mode, self.scenario, self.info)
         
     def load_game(self, idx, inttype, use_restricted_actions, record, players, render_mode,
@@ -205,16 +205,12 @@ class RetroMultiEnv(RetroEnv):
 
         self.current_episode_reward += rew
         if done:
-            self.episodes_per_game[self.current_game] += 1
-            N = self.episodes_per_game[self.current_game]
-            self.mean_episode_rewards_per_game[self.current_game] += (1/N) * self.current_episode_reward
+            episode_extra_stats_dict = dict()
+            current_game_name = self.game_list[self.current_game_idx]
+            episode_extra_stats_dict["completed_task"] = current_game_name
+            episode_extra_stats_dict["episode_reward"] = self.current_episode_reward
             self.current_episode_reward = 0
-            reward_stats = dict()
-            for i, game in enumerate(self.game_list):
-                key = "{0}_reward".format(game)
-                value = self.mean_episode_rewards_per_game[i]
-                reward_stats[key] = value
-            info["episode_extra_stats"] = reward_stats
+            info["episode_extra_stats"] = episode_extra_stats_dict
 
         if self.render_mode == "human":
             self.render()
@@ -223,18 +219,19 @@ class RetroMultiEnv(RetroEnv):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        if options != None and "games" in options and "game_probabilities" in options:
+        if options != None and "game_probabilities" in options:
             game_probabilities = options["game_probabilities"]
-            games = options["games"]
+            games = list(game_probabilities.keys())
+            game_probabilities = list(game_probabilities.values())
             choice = np.random.choice(games, p=game_probabilities)
-            self.current_game = self.game_list.index(choice)
-            self.load_game(self.current_game, self.inttype, self.use_restricted_actions, 
+            self.current_game_idx = self.game_list.index(choice)
+            self.load_game(self.current_game_idx, self.inttype, self.use_restricted_actions, 
                        self.record, self.players, self.render_mode, self.scenario, self.info)
         else:
             N = len(self.game_list)
             choice = np.random.randint(0, N)
-            self.current_game = choice
-            self.load_game(self.current_game, self.inttype, self.use_restricted_actions, 
+            self.current_game_idx = choice
+            self.load_game(self.current_game_idx, self.inttype, self.use_restricted_actions, 
                        self.record, self.players, self.render_mode, self.scenario, self.info)
 
         if self.initial_state:
@@ -243,7 +240,7 @@ class RetroMultiEnv(RetroEnv):
             self.em.set_button_mask(np.zeros([self.num_buttons], np.uint8), p)
         self.em.step()
         if self.movie_path is not None:
-            rel_statename = os.path.splitext(os.path.basename(self.state_list[self.current_game]))[0]
+            rel_statename = os.path.splitext(os.path.basename(self.state_list[self.current_game_idx]))[0]
             self.record_movie(
                 os.path.join(
                     self.movie_path,

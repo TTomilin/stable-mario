@@ -9,7 +9,7 @@ import torch
 from signal_slot.signal_slot import signal
 
 from sample_factory.algo.sampling.batched_sampling import BatchedVectorEnvRunner
-from sample_factory.algo.sampling.non_batched_sampling import NonBatchedVectorEnvRunner
+from sample_factory.algo.sampling.non_batched_sampling import NonBatchedVectorEnvRunner, NonBatchedMultiEnvRunner
 from sample_factory.algo.sampling.sampling_utils import VectorEnvRunner, rollout_worker_device
 from sample_factory.algo.utils.context import SampleFactoryContext, set_global_context
 from sample_factory.algo.utils.env_info import EnvInfo
@@ -308,3 +308,33 @@ class RolloutWorker(HeartbeatStoppableEventLoopObject, Configurable):
             timings[self.object_id] = self.timing
         self.stop.emit(self.object_id, timings)
         super().on_stop(*args)
+
+class MultiRolloutWorker(RolloutWorker):
+        def init(self):
+            for split_idx in range(self.num_splits):
+                env_runner = NonBatchedMultiEnvRunner(
+                    self.cfg,
+                    self.env_info,
+                    self.vector_size // self.num_splits,
+                    self.worker_idx,
+                    split_idx,
+                    self.buffer_mgr,
+                    self.sampling_device,
+                    self.training_info,
+                )
+
+                env_runner.init(self.timing)
+
+                # send signal to the inference worker to start processing new observations
+                self.env_runners.append(env_runner)
+
+            for r in self.env_runners:
+                # This should kickstart experience collection. We will send a policy request to inference worker and
+                # will get an "advance_rollout" signal back, and continue this loop of
+                # advance_rollout->inference->advance_rollout until we collect the full rollout.
+                # On rare occasions we might not be able to get a free buffer here (i.e. if all buffers are
+                # taken by other workers). In that case, we will just enter an event loop and be woken up when
+                # a buffer is freed (see on_trajectory_buffers_available()).
+                self._maybe_send_policy_request(r)
+
+            self.is_initialized = True

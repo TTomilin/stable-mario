@@ -10,7 +10,7 @@ import numpy as np
 from sample_factory.algo.sampling.sampling_utils import VectorEnvRunner, record_episode_statistics_wrapper_stats
 from sample_factory.algo.utils.agent_policy_mapping import AgentPolicyMapping
 from sample_factory.algo.utils.env_info import EnvInfo, check_env_info
-from sample_factory.algo.utils.make_env import make_env_func_non_batched
+from sample_factory.algo.utils.make_env import make_env_func_non_batched, make_multi_env_func_non_batched
 from sample_factory.algo.utils.misc import EPISODIC, POLICY_ID_KEY
 from sample_factory.algo.utils.shared_buffers import BufferMgr
 from sample_factory.algo.utils.tensor_dict import TensorDict, to_numpy
@@ -703,10 +703,55 @@ class NonBatchedVectorEnvRunner(VectorEnvRunner):
         """
         pass
 
-    def run_on_envs(self, callback):
-        for env in self.envs:
-            callback(env)
-
     def close(self):
         for e in self.envs:
             e.close()
+
+class NonBatchedMultiEnvRunner(NonBatchedVectorEnvRunner):
+    def get_envs(self):
+        return self.envs
+
+    def init(self, timing: Timing):
+        for env_i in range(self.num_envs):
+            vector_idx = self.split_idx * self.num_envs + env_i
+
+            # global env id within the entire system
+            global_env_idx = self.worker_idx * self.cfg.num_envs_per_worker + vector_idx
+
+            env_config = AttrDict(
+                worker_index=self.worker_idx,
+                vector_index=vector_idx,
+                env_id=global_env_idx,
+            )
+
+            # log.info('Creating env %r... %d-%d-%d', env_config, self.worker_idx, self.split_idx, env_i)
+            env = make_multi_env_func_non_batched(self.cfg, env_config=env_config, render_mode=self.cfg.render_mode)
+            check_env_info(env, self.env_info, self.cfg)
+
+            self.envs.append(env)
+
+            actor_states_env, episode_rewards_env = [], []
+            for agent_idx in range(self.num_agents):
+                actor_state = ActorState(
+                    self.cfg,
+                    self.env_info,
+                    env,
+                    self.worker_idx,
+                    self.split_idx,
+                    env_i,
+                    agent_idx,
+                    global_env_idx,
+                    self.buffer_mgr,
+                    self.traj_buffer_queue,
+                    self.traj_tensors,
+                    self.policy_output_tensors[env_i, agent_idx],
+                    self.training_info,
+                    self.policy_mgr,
+                )
+                actor_states_env.append(actor_state)
+                episode_rewards_env.append(0.0)
+
+            self.actor_states.append(actor_states_env)
+            self.episode_rewards.append(episode_rewards_env)
+
+        self._reset()
