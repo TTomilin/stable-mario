@@ -209,11 +209,12 @@ class RetroMultiEnv(RetroEnv):
             N = self.episodes_per_game[self.current_game]
             self.mean_episode_rewards_per_game[self.current_game] += (1/N) * self.current_episode_reward
             self.current_episode_reward = 0
+            reward_stats = dict()
             for i, game in enumerate(self.game_list):
                 key = "{0}_reward".format(game)
                 value = self.mean_episode_rewards_per_game[i]
-                info[key] = value
-            print(info)
+                reward_stats[key] = value
+            info["episode_extra_stats"] = reward_stats
 
         if self.render_mode == "human":
             self.render()
