@@ -382,7 +382,8 @@ class NonBatchedVecMultiTaskEnv(NonBatchedVecEnv):
     def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None):
         if options == None:
             options = dict()
-        options = options.update({'task_probabilities': self.task_probabilities})
+        options['task_probabilities'] = self.task_probabilities
+        print(options)
         return self.env.reset(seed=seed, options=options)
 
 def make_env_func_non_batched(cfg: Config, env_config, render_mode: Optional[str] = None) -> NonBatchedVecEnv:

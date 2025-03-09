@@ -219,11 +219,13 @@ class RetroMultiEnv(RetroEnv):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        if options != None and "game_probabilities" in options:
-            game_probabilities = options["game_probabilities"]
-            games = list(game_probabilities.keys())
-            game_probabilities = list(game_probabilities.values())
-            choice = np.random.choice(games, p=game_probabilities)
+        print(options)
+        if options != None and "task_probabilities" in options and options["task_probabilities"] != None:
+            task_probabilities = options["task_probabilities"]
+            print(task_probabilities)
+            games = list(task_probabilities.keys())
+            task_probabilities = list(task_probabilities.values())
+            choice = np.random.choice(games, p=task_probabilities)
             self.current_game_idx = self.game_list.index(choice)
             self.load_game(self.current_game_idx, self.inttype, self.use_restricted_actions, 
                        self.record, self.players, self.render_mode, self.scenario, self.info)

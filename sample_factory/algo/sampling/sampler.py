@@ -312,7 +312,7 @@ class ParallelMultiSampler(ParallelSampler):
                 self.update_task_probabilities(env, task_probabilities)
 
     def _update_task_probability_env(env: NonBatchedVecMultiTaskEnv, task_probabilities: dict):
-        env.set_task_probabilities()
+        env.set_task_probabilities(task_probabilities)
 
     def _make_rollout_worker(self, event_loop, worker_idx: int):
         return MultiRolloutWorker(event_loop, worker_idx, self.buffer_mgr, self.inference_queues, self.cfg, self.env_info)
