@@ -298,6 +298,7 @@ class RolloutWorker(HeartbeatStoppableEventLoopObject, Configurable):
         """Update training info, this will be propagated to environments using TrainingInfoInterface and RewardShapingInterface."""
         for policy_id, info in training_info.items():
             self.training_info[policy_id] = info
+        #print("in worker: {0}".format(self.training_info))
 
     def on_stop(self, *args):
         for env_runner in self.env_runners:

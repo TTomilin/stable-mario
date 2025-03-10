@@ -1,3 +1,5 @@
+from typing import Dict, Any
+
 import gc
 import gzip
 import json
@@ -10,11 +12,12 @@ import stable_retro
 import stable_retro.data
 from stable_retro import RetroEnv
 from stable_retro.enums import State
+from sample_factory.envs.env_utils import TrainingInfoInterface
 
 __all__ = ["RetroEnv"]
 
 
-class RetroMultiEnv(RetroEnv):
+class RetroMultiEnv(RetroEnv, TrainingInfoInterface):
     """
     Multi-environment Retro Gym class
 
@@ -34,6 +37,8 @@ class RetroMultiEnv(RetroEnv):
         obs_type=stable_retro.Observations.IMAGE,
         render_mode="human",
     ):
+        TrainingInfoInterface.__init__(self)
+
         if not hasattr(self, "spec"):
             self.spec = None
         self._obs_type = obs_type
@@ -219,9 +224,10 @@ class RetroMultiEnv(RetroEnv):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        print(options)
-        if options != None and "task_probabilities" in options and options["task_probabilities"] != None:
-            task_probabilities = options["task_probabilities"]
+        if self.training_info != None:
+            print(self.training_info)
+        if self.training_info != None and "task_probabilities" in self.training_info and self.training_info["task_probabilities"] != None:
+            task_probabilities = self.training_info["task_probabilities"]
             print(task_probabilities)
             games = list(task_probabilities.keys())
             task_probabilities = list(task_probabilities.values())

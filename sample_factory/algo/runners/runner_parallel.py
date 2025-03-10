@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from signal_slot.signal_slot import EventLoop, EventLoopProcess
 
@@ -82,34 +82,10 @@ class MultiParallelRunner(ParallelRunner):
             game_config = CONFIG[cfg_game]
             game = game_config["game_env"]
             self.task_properties[game] = game_dict
-    
-    def init(self) -> StatusCode:
-        status = Runner.init(self)
-        if status != ExperimentStatus.SUCCESS:
-            return status
-
-        mp_ctx = get_mp_ctx(self.cfg.serial_mode)
-
-        for policy_id in range(self.cfg.num_policies):
-            batcher_event_loop = EventLoop("batcher_evt_loop")
-            self.batchers[policy_id] = self._make_batcher(batcher_event_loop, policy_id)
-            batcher_event_loop.owner = self.batchers[policy_id]
-
-            learner_proc = EventLoopProcess(f"learner_proc{policy_id}", mp_ctx, init_func=init_learner_process)
-            self.processes.append(learner_proc)
-
-            self.learners[policy_id] = self._make_learner(
-                learner_proc.event_loop,
-                policy_id,
-                self.batchers[policy_id],
-            )
-            learner_proc.event_loop.owner = self.learners[policy_id]
-            learner_proc.set_init_func_args((sf_global_context(), self.learners[policy_id]))
-
-        self.sampler = self._make_sampler(ParallelMultiSampler, self.event_loop)
-
-        self.connect_components()
-        return status
+        N = len(cfg.game_list)
+        self.task_probabilities = dict()
+        for key in self.task_properties:
+            self.task_probabilities[key] = 1 / N # initialize to uniform random
 
     @staticmethod
     def _episodic_stats_handler(runner: MultiParallelRunner, msg: Dict, policy_id: PolicyID) -> None:
@@ -123,4 +99,10 @@ class MultiParallelRunner(ParallelRunner):
         task_probabilities = runner.task_selector(runner.task_properties, 
                                                   runner.cfg.random_task_probability, 
                                                   runner.cfg.episode_weight)
-        runner.sampler.update_task_probabilities(task_probabilities)
+        runner.task_probabilities = task_probabilities
+
+    def _propagate_training_info(self):
+        training_info: Dict[PolicyID, Dict[str, Any]] = dict()
+        for policy_id in range(self.cfg.num_policies):
+            training_info[policy_id] = dict({"task_probabilities": self.task_probabilities})
+        self.update_training_info.emit(training_info)
