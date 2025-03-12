@@ -351,5 +351,13 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        'watch-em':{
+            'actions': [[], ['A'], ['LEFT'], ['RIGHT'],['UP']],
+            'game_env': 'watch-em-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
         
 }
