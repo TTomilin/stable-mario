@@ -1,11 +1,15 @@
 {
   "info": {
     "coins": {
-      "address": 50358255,
-      "type": ">i2"
+      "address": 50358256,
+      "type": "|u1"
     },
     "ingame": {
-      "address": 33670158,
+      "address": 50358492,
+      "type": "|u1"
+    },
+    "ingame2": {
+      "address": 33570520,
       "type": "|u1"
     }
   }
