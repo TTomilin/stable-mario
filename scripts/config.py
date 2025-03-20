@@ -359,5 +359,28 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
-        
+        'much_rush':{
+            'actions': [[], ['A'], ['B']],
+            'game_env': 'much_rush-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'slammer':{
+            'actions': [[], ['A'],['B']],
+            'game_env': 'slammer-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
+        'peek_n_sneak':{
+            'actions': [[], ['LEFT'],['RIGHT'],['B'], ['B','LEFT'],['B','RIGHT']],
+            'game_env': 'peek_n_sneak-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (160, 160),
+            'timesteps': 129740258283
+        },
 }

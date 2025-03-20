@@ -6,8 +6,12 @@
     0
   ],
   "done": {
+    "condition": "all",
     "variables": {
       "ingame": {
+        "op": "equal"
+      },
+      "ingame2": {
         "op": "equal"
       }
     }
