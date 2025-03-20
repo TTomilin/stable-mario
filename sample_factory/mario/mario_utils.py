@@ -68,7 +68,10 @@ MARIO_ENVS = [
     MarioSpec("scratch-em","ScratchEm-v0"),
     MarioSpec("koopa_kurl","KoopaKurl-v0"),
     MarioSpec("pair-em","PairEm-v0"),
-    MarioSpec("watch-em","WatchEm-v0")
+    MarioSpec("watch-em","WatchEm-v0"),
+    MarioSpec("slammer", "Slammer-v0"),
+    MarioSpec("much_rush","MuchRush-v0"),
+    MarioSpec("peek_n_sneak","PeakNSneak-v0"),
 ]
 
 
