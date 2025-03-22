@@ -407,7 +407,10 @@ def experiments_dir(cfg, mkdir=True) -> str:
 
 def experiment_dir(cfg, mkdir=True) -> str:
     suffix = cfg.timestamp if cfg.timestamp else ""
-    experiment = f'{cfg.algo}/{cfg.game}/{suffix}'
+    subfolder = cfg.game
+    if cfg.game_list != None:
+        subfolder = ",".join(sorted(cfg.game_list))
+    experiment = f'{cfg.algo}/{subfolder}/{suffix}'
     experiments_root = experiments_dir(cfg, mkdir)
     return maybe_ensure_dir_exists(join(experiments_root, experiment), mkdir)
 

@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from sample_factory.algo.runners.runner import Runner
-from sample_factory.algo.runners.runner_parallel import ParallelRunner
+from sample_factory.algo.runners.runner_parallel import ParallelRunner, MultiParallelRunner
 from sample_factory.algo.runners.runner_serial import SerialRunner
 from sample_factory.algo.utils.misc import ExperimentStatus
 from sample_factory.cfg.arguments import maybe_load_from_checkpoint
@@ -15,7 +15,9 @@ def make_runner(cfg: Config) -> Tuple[Config, Runner]:
         # unless they're explicitly specified in the command line
         cfg = maybe_load_from_checkpoint(cfg)
 
-    if cfg.serial_mode:
+    if cfg.game_list != None:
+        runner_cls = MultiParallelRunner
+    elif cfg.serial_mode:
         runner_cls = SerialRunner
     else:
         runner_cls = ParallelRunner

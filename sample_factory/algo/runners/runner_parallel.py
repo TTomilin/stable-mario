@@ -1,15 +1,22 @@
-from typing import List
+from __future__ import annotations
+from typing import List, Dict, Any
 
 from signal_slot.signal_slot import EventLoop, EventLoopProcess
 
 from sample_factory.algo.learning.learner_worker import init_learner_process
+from sample_factory.utils.dicts import iterate_recursively
+from collections import deque
+import numpy as np
 from sample_factory.algo.runners.runner import Runner
 from sample_factory.algo.sampling.sampler import ParallelSampler
 from sample_factory.algo.utils.context import sf_global_context
 from sample_factory.algo.utils.misc import ExperimentStatus
 from sample_factory.algo.utils.multiprocessing_utils import get_mp_ctx
-from sample_factory.utils.typing import StatusCode
+from sample_factory.utils.typing import StatusCode, PolicyID
 from sample_factory.utils.utils import log
+from sample_factory.mario.task_selectors import default_task_selector
+from sample_factory.algo.utils.misc import EPISODIC
+from scripts.config import CONFIG
 
 
 class ParallelRunner(Runner):
@@ -63,3 +70,68 @@ class ParallelRunner(Runner):
 
         self.sampler.join()
         super()._on_everything_stopped()
+
+class MultiParallelRunner(ParallelRunner):
+    def __init__(self, cfg, task_selector=default_task_selector):
+        super().__init__(cfg)
+        self.task_selector = task_selector
+        self.task_properties = dict()
+        for i, cfg_game in enumerate(cfg.game_list):
+            game_dict = dict()
+            game_dict['n_episodes'] = 0
+            game_dict['total_reward'] = 0
+            if cfg.reward_list != None:
+                game_dict['target_reward'] = cfg.reward_list[i]
+            game_config = CONFIG[cfg_game]
+            game = game_config["game_env"]
+            self.task_properties[game] = game_dict
+        N = len(cfg.game_list)
+        self.task_probabilities = dict()
+        for key in self.task_properties:
+            self.task_probabilities[key] = 1 / N # initialize to uniform random
+
+    @staticmethod
+    def _episodic_stats_handler(runner: MultiParallelRunner, msg: Dict, policy_id: PolicyID) -> None:
+        # Do changing of state probabilities here
+        s = msg[EPISODIC]
+        for _, key, value in iterate_recursively(s):
+            if isinstance(value, str): # in case the value is of type string...
+                continue # then we don't want to include it in episodic stat reporting
+
+            if key not in runner.policy_avg_stats:
+                max_len = runner.cfg.heatmap_avg if key == 'heatmap' else runner.cfg.stats_avg
+                runner.policy_avg_stats[key] = [
+                    deque(maxlen=max_len) for _ in range(runner.cfg.num_policies)
+                ]
+
+            if isinstance(value, np.ndarray) and value.ndim > 0 and key != 'heatmap':
+                if len(value) > runner.policy_avg_stats[key][policy_id].maxlen:
+                    # increase maxlen to make sure we never ignore any stats from the environments
+                    runner.policy_avg_stats[key][policy_id] = deque(maxlen=len(value))
+
+                runner.policy_avg_stats[key][policy_id].extend(value)
+            else:
+                runner.policy_avg_stats[key][policy_id].append(value)
+        
+        episode_extra_stats = s['episode_extra_stats']
+        game_dict = runner.task_properties[episode_extra_stats["completed_task"]]
+        game_dict["n_episodes"] += 1
+        game_dict["total_reward"] += episode_extra_stats["episode_reward"]
+
+        task_probabilities = runner.task_selector(runner.task_properties, 
+                                                  runner.cfg.random_task_probability, 
+                                                  runner.cfg.episode_weight)
+        runner.task_probabilities = task_probabilities
+
+    def print_stats(self, fps, sample_throughput, total_env_steps):
+        if hasattr(self, "task_probabilities"):
+            log.debug("Task probabilities: %s", str(self.task_probabilities))
+        if hasattr(self, "task_properties"):    
+            log.debug("Task properties: %s", str(self.task_properties))
+        return super().print_stats(fps, sample_throughput, total_env_steps)
+
+    def _propagate_training_info(self):
+        training_info: Dict[PolicyID, Dict[str, Any]] = dict()
+        for policy_id in range(self.cfg.num_policies):
+            training_info[policy_id] = dict({"task_probabilities": self.task_probabilities})
+        self.update_training_info.emit(training_info)

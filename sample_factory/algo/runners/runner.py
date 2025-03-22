@@ -287,6 +287,7 @@ class Runner(EventLoopObject, Configurable):
 
     @staticmethod
     def _episodic_stats_handler(runner: Runner, msg: Dict, policy_id: PolicyID) -> None:
+        # Do changing of state probabilities here
         s = msg[EPISODIC]
         for _, key, value in iterate_recursively(s):
             if key not in runner.policy_avg_stats:

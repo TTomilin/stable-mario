@@ -239,7 +239,8 @@ class RolloutWorker(HeartbeatStoppableEventLoopObject, Configurable):
         with inference_context(self.cfg.serial_mode):
             runner = self.env_runners[split_idx]
             complete_rollouts, episodic_stats = runner.advance_rollouts(policy_id, self.timing)
-
+            #if (len(episodic_stats) > 0):
+            #    print(episodic_stats)
             with self.timing.add_time("complete_rollouts"):
                 if complete_rollouts:
                     self._enqueue_complete_rollouts(complete_rollouts)

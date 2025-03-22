@@ -85,16 +85,31 @@ def mario_env_by_name(name):
 
 def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None):
     mario_spec = mario_env_by_name(env_name)
+    if cfg.game_list == None:
+        # initialize single-game environment:
+        game_config = CONFIG[cfg.game]
+        state = cfg.load_state if cfg.load_state is not None else game_config["state"]
+        env = stable_retro.make(game=game_config['game_env'], state=state, render_mode=render_mode)
+        env.metadata["render_fps"] = cfg.render_fps
 
-    game = CONFIG[cfg.game]
-    state = cfg.load_state if cfg.load_state is not None else game["state"]
-    env = stable_retro.make(game=game['game_env'], state=state, render_mode=render_mode)
-    env.metadata["render_fps"] = cfg.render_fps
+    else:
+        # initialize multi-game environment:
+        game_list = []
+        state_list = []
+        for i, cfg_game in enumerate(cfg.game_list):
+            game_config = CONFIG[cfg_game]
+            game_list.append(game_config["game_env"])
+            if len(state_list) == len(game_list):
+                state_list.append(cfg.state_list[i])
+            else:
+                state_list.append(game_config["state"])
+        env = stable_retro.make_multi(game_list=game_list, state_list=state_list, render_mode=render_mode, min_task_repeat=cfg.min_task_repeat)
+        env.metadata["render_fps"] = cfg.render_fps
 
     if cfg.discretize:
-        env = Discretizer(env, game["actions"])
+        env = Discretizer(env, game_config["actions"])
 
-    if game["clip_reward"]:
+    if game_config["clip_reward"]:
         env = ClipRewardEnv(env)
 
     if cfg.record:
@@ -112,7 +127,7 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
     env = RecordEpisodeStatistics(env)
     env = NoopResetEnv(env, noop_max=30)
     env = MaxAndSkipEnv(env, skip=cfg.env_frameskip)
-    env = ResizeObservation(env, game["resize"])
+    env = ResizeObservation(env, game_config["resize"])
     env = PixelFormatChwWrapper(env)
     # env = FrameStack(env, cfg.env_framestack)  # TODO out of order
 
