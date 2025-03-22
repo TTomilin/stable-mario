@@ -5,7 +5,7 @@ from signal_slot.queue_utils import get_queue
 from signal_slot.signal_slot import BoundMethod, EventLoop, EventLoopObject, EventLoopProcess, signal
 
 from sample_factory.algo.sampling.inference_worker import InferenceWorker, init_inference_process
-from sample_factory.algo.sampling.rollout_worker import RolloutWorker, MultiRolloutWorker, init_rollout_worker_process
+from sample_factory.algo.sampling.rollout_worker import RolloutWorker, init_rollout_worker_process
 from sample_factory.algo.utils.context import sf_global_context
 from sample_factory.algo.utils.env_info import EnvInfo
 from sample_factory.algo.utils.heartbeat import HeartbeatStoppableEventLoopObject
@@ -16,7 +16,6 @@ from sample_factory.algo.utils.shared_buffers import BufferMgr
 from sample_factory.cfg.configurable import Configurable
 from sample_factory.utils.typing import Config, MpQueue, PolicyID
 from sample_factory.utils.utils import log
-from sample_factory.algo.utils.make_env import NonBatchedVecMultiTaskEnv
 
 class AbstractSampler(EventLoopObject, Configurable):
     def __init__(
@@ -75,9 +74,6 @@ class AbstractSampler(EventLoopObject, Configurable):
 
     def join(self) -> None:
         """This is where we could join processes or threads if sampler starts any."""
-        raise NotImplementedError()
-    
-    def update_task_probabilities(self, state_probabilities):
         raise NotImplementedError()
 
 class Sampler(AbstractSampler, ABC):
@@ -300,19 +296,3 @@ class ParallelSampler(Sampler):
         for p in self.processes:
             log.debug(f"Waiting for process {p.name} to join...")
             p.join()
-
-class ParallelMultiSampler(ParallelSampler):
-    def update_task_probabilities(self, task_probabilities):
-        for worker in self.rollout_workers:
-            self._update_task_probability_worker(worker, task_probabilities)
-    
-    def _update_task_probability_worker(self, rollout_worker: RolloutWorker, task_probabilities: dict):
-        for env_runner in rollout_worker.env_runners:
-            for env in env_runner.get_envs():
-                self.update_task_probabilities(env, task_probabilities)
-
-    def _update_task_probability_env(env: NonBatchedVecMultiTaskEnv, task_probabilities: dict):
-        env.set_task_probabilities(task_probabilities)
-
-    def _make_rollout_worker(self, event_loop, worker_idx: int):
-        return MultiRolloutWorker(event_loop, worker_idx, self.buffer_mgr, self.inference_queues, self.cfg, self.env_info)

@@ -370,21 +370,6 @@ class NonBatchedVecEnv(Wrapper):
 
     def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None):
         return self.env.reset(seed=seed, options=options)
-    
-class NonBatchedVecMultiTaskEnv(NonBatchedVecEnv):
-    def __init__(self, env):
-        super().__init__(env)
-        self.task_probabilities = None # initialization to None is important. Else, error will occur in RetroMultiEnv
-
-    def set_task_probabilities(self, task_probabilities):
-        self.task_probabilities = task_probabilities
-
-    def reset(self, *, seed: int | None = None, options: dict[str, Any] | None = None):
-        if options == None:
-            options = dict()
-        options['task_probabilities'] = self.task_probabilities
-        print(options)
-        return self.env.reset(seed=seed, options=options)
 
 def make_env_func_non_batched(cfg: Config, env_config, render_mode: Optional[str] = None) -> NonBatchedVecEnv:
     """
@@ -396,9 +381,4 @@ def make_env_func_non_batched(cfg: Config, env_config, render_mode: Optional[str
     """
     env = create_env(cfg.game, cfg=cfg, env_config=env_config, render_mode=render_mode)
     env = NonBatchedVecEnv(env)
-    return env
-
-def make_multi_env_func_non_batched(cfg: Config, env_config, render_mode: Optional[str] = None) -> NonBatchedVecMultiTaskEnv:
-    env = create_env(cfg.game, cfg=cfg, env_config=env_config, render_mode=render_mode)
-    env = NonBatchedVecMultiTaskEnv(env)
     return env

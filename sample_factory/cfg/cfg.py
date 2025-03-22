@@ -57,11 +57,12 @@ def add_mario_args(p: ArgumentParser):
     p.add_argument("--discretize", default=True, type=str2bool, help="Limit agent's actions as specified in config.")
     p.add_argument("--stack_frames", action="store_true", default=False, help="Whether to use framestack.")
     p.add_argument("--n_stack_frames", default=4, type=int, help="Number of frames to stack.")
-    p.add_argument("--game_list", nargs="*", type=str, default=None)
-    p.add_argument("--state_list", nargs="*", type=str, default=None)
-    p.add_argument("--target_reward_list", nargs="*", type=float, default=None)
-    p.add_argument("--random_task_probability", default=0.5, type=float)
-    p.add_argument("--episode_weight", default=0, type=float)
+    p.add_argument("--game_list", nargs="*", type=str, default=None, help="A space-separated list of games that are switched between during multi-task learning.")
+    p.add_argument("--state_list", nargs="*", type=str, default=None, help="A space-separated list of states for each game in '--game_list'. Ensure both lists are in same order.")
+    p.add_argument("--reward_list", nargs="*", type=float, default=None, help="A space-saparated list of target rewards for each game in '--game_list'. Ensure that lists are in same order.")
+    p.add_argument("--random_task_probability", default=0.5, type=float, help="Probability of choosing a random game when switching between games in a multi-task setting.")
+    p.add_argument("--episode_weight", default=0, type=float, help="Weight of number of episodes played for deciding probability distribution over games in multi-task learning.")
+    p.add_argument("--min_task_repeat", type=int, default=1, help="The minimum number of times an environment must repeat a game before the task can be switched in a multi-task learning context.")
 
 def add_rl_args(p: ArgumentParser):
     """Arguments not specific to any particular RL algorithm."""

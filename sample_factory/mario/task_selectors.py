@@ -4,7 +4,7 @@ import numpy as np
 def default_task_selector(task_properties: dict, epsilon: float, alpha: float):
     preferred_task = random.choice(list(task_properties.keys())) # pick preferred task at random
     worst_criterion = np.inf # minimal criterion -> highest selection probability
-    print(task_properties)
+    #print(task_properties) # uncomment to see probabilities computed for each task
     for key in task_properties:
         game_dict = task_properties[key]
         

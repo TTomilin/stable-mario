@@ -98,7 +98,7 @@ def make_mario_env(env_name, cfg, env_config, render_mode: Optional[str] = None)
                 state_list.append(cfg.state_list[i])
             else:
                 state_list.append(game_config["state"])
-        env = stable_retro.make_multi(game_list=game_list, state_list=state_list, render_mode=render_mode)
+        env = stable_retro.make_multi(game_list=game_list, state_list=state_list, render_mode=render_mode, min_task_repeat=cfg.min_task_repeat)
 
     if cfg.discretize:
         env = Discretizer(env, game_config["actions"])

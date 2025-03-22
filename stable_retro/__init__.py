@@ -65,10 +65,10 @@ def make(game, state=State.DEFAULT, inttype=stable_retro.data.Integrations.DEFAU
     check_game_exists(game, inttype)
     return RetroEnv(game, state, inttype=inttype, **kwargs)
 
-def make_multi(game_list, state_list=None, inttype=stable_retro.data.Integrations.DEFAULT, **kwargs):
+def make_multi(game_list, state_list=None, inttype=stable_retro.data.Integrations.DEFAULT, min_task_repeat: int=1, **kwargs):
     """
     Create a Gym environment for specified games
     """
     for game in game_list:
         check_game_exists(game, inttype)
-    return RetroMultiEnv(game_list, state_list, inttype=inttype, **kwargs)
+    return RetroMultiEnv(game_list, state_list, inttype=inttype, min_task_repeat=min_task_repeat, **kwargs)

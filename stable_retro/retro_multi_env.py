@@ -36,6 +36,7 @@ class RetroMultiEnv(RetroEnv, TrainingInfoInterface):
         inttype=stable_retro.data.Integrations.STABLE,
         obs_type=stable_retro.Observations.IMAGE,
         render_mode="human",
+        min_task_repeat = 1
     ):
         TrainingInfoInterface.__init__(self)
 
@@ -96,6 +97,8 @@ class RetroMultiEnv(RetroEnv, TrainingInfoInterface):
         self.mean_episode_rewards_per_game = [0] * N
         self.episodes_per_game = [0] * N
         self.current_episode_reward = 0
+        self.min_task_repeat = min_task_repeat
+        self.current_repeat_count = 0
         self.load_game(self.current_game_idx, self.inttype, self.use_restricted_actions, 
                        self.record, self.players, self.render_mode, self.scenario, self.info)
         
@@ -215,6 +218,7 @@ class RetroMultiEnv(RetroEnv, TrainingInfoInterface):
             episode_extra_stats_dict["completed_task"] = current_game_name
             episode_extra_stats_dict["episode_reward"] = self.current_episode_reward
             self.current_episode_reward = 0
+            self.current_repeat_count += 1
             info["episode_extra_stats"] = episode_extra_stats_dict
 
         if self.render_mode == "human":
@@ -224,15 +228,16 @@ class RetroMultiEnv(RetroEnv, TrainingInfoInterface):
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
-        if self.training_info != None:
-            print(self.training_info)
-        if self.training_info != None and "task_probabilities" in self.training_info and self.training_info["task_probabilities"] != None:
+
+        if (self.training_info != None and "task_probabilities" in self.training_info 
+            and self.training_info["task_probabilities"] != None and self.current_repeat_count >= self.min_task_repeat):
             task_probabilities = self.training_info["task_probabilities"]
-            print(task_probabilities)
+            #print(task_probabilities) # uncomment to see probabilities used to sample tasks
             games = list(task_probabilities.keys())
             task_probabilities = list(task_probabilities.values())
             choice = np.random.choice(games, p=task_probabilities)
             self.current_game_idx = self.game_list.index(choice)
+            self.current_repeat_count = 0
             self.load_game(self.current_game_idx, self.inttype, self.use_restricted_actions, 
                        self.record, self.players, self.render_mode, self.scenario, self.info)
         else:
