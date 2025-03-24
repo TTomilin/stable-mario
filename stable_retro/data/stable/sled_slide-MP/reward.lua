@@ -4,7 +4,14 @@ highestsegment = 0
 previousspeed = 0
 gotreward = false
 leeway = 0
+globreward = 0
+
 function reward()
+    return globreward 
+end
+
+function endcondition()
+    globreward = 0
     local reward = 0
     local progress = data.progress
     if progress == 13 then
@@ -31,11 +38,7 @@ function reward()
         end
         lastsegment = progress
     end 
-    reward = reward / 17
-    return reward 
-end
-
-function endcondition()
+    globreward = reward / 17
     return data.ingame == 0 or math.abs(data.progress - highestsegment) > 0
 end
 
