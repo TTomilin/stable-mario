@@ -17,7 +17,6 @@ from sample_factory.cfg.configurable import Configurable
 from sample_factory.utils.typing import Config, MpQueue, PolicyID
 from sample_factory.utils.utils import log
 
-
 class AbstractSampler(EventLoopObject, Configurable):
     def __init__(
         self,
@@ -76,7 +75,6 @@ class AbstractSampler(EventLoopObject, Configurable):
     def join(self) -> None:
         """This is where we could join processes or threads if sampler starts any."""
         raise NotImplementedError()
-
 
 class Sampler(AbstractSampler, ABC):
     def __init__(
