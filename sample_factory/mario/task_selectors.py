@@ -14,7 +14,7 @@ def default_task_selector(task_properties: dict, epsilon: float, alpha: float):
         else:
             mean_reward = 0
         if "target_reward" in game_dict:
-            criterion = mean_reward - game_dict["target_reward"]
+            criterion = (mean_reward - game_dict["target_reward"]) / game_dict["target_reward"]
         else:
             criterion = mean_reward
 
