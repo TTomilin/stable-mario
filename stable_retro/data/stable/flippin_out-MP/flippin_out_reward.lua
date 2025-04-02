@@ -14,6 +14,7 @@ function reward()
     local current_distance = ((math.abs(data.x - target_x)) / x_step) + ((math.abs(data.y - target_y)) / y_step) -- compute manhattan distance to target
     if current_distance < closest_distance then -- check if new best has been achieved
         score = (closest_distance - current_distance) - 0.01 -- reward model for getting closer
+        score = score / 1328.33
         closest_distance = current_distance -- update closest_distance
     end
     
