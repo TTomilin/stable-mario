@@ -10,6 +10,7 @@ function reward()
     if distance < start_distance then
         reward = 1/distance
         start_distance = distance
+        reward = reward / 3.2053
     else
         reward = 0
     end
