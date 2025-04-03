@@ -18,9 +18,10 @@
   "reward": {
     "variables": {
       "mario_life": {
-        "penalty": -5.0
+        "penalty": 0.20000000298023224
       },
       "yoshi_life": {
+        "penalty": -0.20000000298023224,
         "reward": 5.0
       }
     }
