@@ -1,0 +1,16 @@
+{
+  "info": {
+    "in_minigame": {
+      "address": 33744576,
+      "type": "=u2"
+    },
+    "game_ram_num": {
+      "address": 33744540,
+      "type": "=u2"
+    },
+    "game_over": {
+      "address": 33718356,
+      "type": "|u1"
+    }
+  }
+}

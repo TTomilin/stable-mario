@@ -5,6 +5,7 @@ from retro._retro import Movie, RetroEmulator, core_path
 from stable_retro.enums import Actions, Observations, State
 from stable_retro.retro_env import RetroEnv
 from stable_retro.retro_multi_env import RetroMultiEnv
+from stable_retro.overworld_env import OverworldEnv
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 core_path(os.path.join(os.path.dirname(__file__), "cores"))
@@ -64,6 +65,13 @@ def make(game, state=State.DEFAULT, inttype=stable_retro.data.Integrations.DEFAU
     """
     check_game_exists(game, inttype)
     return RetroEnv(game, state, inttype=inttype, **kwargs)
+
+def make_overworld(game, state=State.DEFAULT, inttype=stable_retro.data.Integrations.DEFAULT, **kwargs):
+    """
+    Create a Gym environment for the mario party overworld
+    """
+    check_game_exists(game, inttype)
+    return OverworldEnv(game, state, inttype=inttype, **kwargs)
 
 def make_multi(game_list, state_list=None, inttype=stable_retro.data.Integrations.DEFAULT, min_task_repeat: int=1, **kwargs):
     """

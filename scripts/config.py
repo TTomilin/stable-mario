@@ -6,6 +6,8 @@ CONFIG = {
         'clip_reward': False,
         'resize': (40, 36),
         'timesteps': 100000000000,
+        'game_ram_num': 31,
+        'model_path': "/home/ctrl/AP_self/repo/stable-mario/stable_retro/data/stable/broom_zoom-MP/broom_zoom_model.pth"
     },
     'spook_spike': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],
@@ -85,7 +87,8 @@ CONFIG = {
         'state': 'Sort_Stack',
         'clip_reward': False,
         'resize': (160, 144),
-        'timesteps': 10000000
+        'timesteps': 10000000,
+        'game_ram_num': 19
     },
         'stompbot_xl': {
         #'actions': [['UP'], ['UP', 'A'], ['UP', 'B'], ['LEFT'], ['LEFT', 'A'], ['LEFT', 'B'], ['RIGHT'], ['RIGHT', 'A'], ['RIGHT', 'B'], ['A'], ['B'], ['UP', 'RIGHT'], ['UP', 'RIGHT', 'A'], ['UP', 'RIGHT', 'B'], ['UP', 'LEFT'], ['UP', 'LEFT', 'A'], ['UP', 'LEFT', 'B'], []],
@@ -383,4 +386,12 @@ CONFIG = {
             'resize': (160, 160),
             'timesteps': 129740258283
         },
+        'overworld':{
+            'actions': [[], ['LEFT'],['RIGHT'],['B'], ['A'],['UP'], ['DOWN'], ['START'], ['SELECT'], ['L'], ['R']],
+            'game_env': 'overworld-MP',
+            'state': 'Level1',
+            'clip_reward': False,
+            'resize': (240,160),
+            'timesteps': 129740258283
+        }
 }
