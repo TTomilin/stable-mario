@@ -1,7 +1,9 @@
 import warnings
 from sample_factory.model.actor_critic import ActorCriticSharedWeights, ActorCritic
+from sample_factory.algo.utils.context import global_model_factory
 from stable_retro.examples.discretizer import Discretizer
 from gymnasium.wrappers import ResizeObservation, RecordEpisodeStatistics
+from gymnasium.spaces import Dict
 from sample_factory.envs.env_wrappers import NoopResetEnv, MaxAndSkipEnv, PixelFormatChwWrapper
 import torch
 
@@ -99,13 +101,15 @@ class OverworldEnv(gym.Env):
     def load_model(self, path, game_dict):
         if path.endswith('.pth'):
             # determine the observation and action space:
-            resoluton = game_dict['resize']
+            resolution = game_dict['resize']
             n_actions = len(game_dict['actions'])
-            model_obs_space = gym.spaces.Box(0, 255, (3, resoluton[0], resoluton[1]), dtype=np.uint8)
+            model_obs_space = Dict({"obs": gym.spaces.Box(0, 255, (3, resolution[0], resolution[1]), np.uint8)})
             model_act_space = gym.spaces.Discrete(n_actions)
 
             # create corresponding AC:            
-            model = ActorCriticSharedWeights(obs_space=model_obs_space, action_space=model_act_space, cfg=self.cfg)
+            model_factory = global_model_factory()
+            model = ActorCriticSharedWeights(model_factory=model_factory, obs_space=model_obs_space, 
+                                            action_space=model_act_space, cfg=self.cfg)
             # load weights into this AC:
             checkpoint = torch.load(path)
             model.load_state_dict(checkpoint['model'])
@@ -114,10 +118,10 @@ class OverworldEnv(gym.Env):
         else:
             raise ValueError("File extension of {0} not recognized.".format(path))
         
-    def get_game_dict(info):
+    def get_game_dict(self, info):
         current_game_dict = None
         game_ram_num = info['game_ram_num']
-        for game_dict in CONFIG:
+        for game_dict in CONFIG.values():
             if game_dict['game_ram_num'] == game_ram_num:
                 current_game_dict = game_dict
                 break
