@@ -7,6 +7,7 @@ from sample_factory.algo.learning.learner_worker import init_learner_process
 from sample_factory.utils.dicts import iterate_recursively
 from collections import deque
 import numpy as np
+import wandb
 from sample_factory.algo.runners.runner import Runner
 from sample_factory.algo.sampling.sampler import ParallelSampler
 from sample_factory.algo.utils.context import sf_global_context
@@ -14,7 +15,7 @@ from sample_factory.algo.utils.misc import ExperimentStatus
 from sample_factory.algo.utils.multiprocessing_utils import get_mp_ctx
 from sample_factory.utils.typing import StatusCode, PolicyID
 from sample_factory.utils.utils import log
-from sample_factory.mario.task_selectors import default_task_selector
+from sample_factory.mario.task_selectors import default_task_selector, enhanced_task_selector
 from sample_factory.algo.utils.misc import EPISODIC
 from scripts.config import CONFIG
 
@@ -72,7 +73,7 @@ class ParallelRunner(Runner):
         super()._on_everything_stopped()
 
 class MultiParallelRunner(ParallelRunner):
-    def __init__(self, cfg, task_selector=default_task_selector):
+    def __init__(self, cfg, task_selector=enhanced_task_selector):
         super().__init__(cfg)
         self.task_selector = task_selector
         self.task_properties = dict()
@@ -80,11 +81,26 @@ class MultiParallelRunner(ParallelRunner):
             game_dict = dict()
             game_dict['n_episodes'] = 0
             game_dict['total_reward'] = 0
+            game_dict['training_progress'] = 0
             if cfg.reward_list != None:
                 game_dict['target_reward'] = cfg.reward_list[i]
+                if game_dict['target_reward'] <= 0:
+                    game_dict['target_reward'] = 0.5
+            else:
+                game_dict['target_reward'] = 0.5
+            game_dict['record'] = game_dict['target_reward']
             game_config = CONFIG[cfg_game]
+            try:
+                game_dict['start_reward'] = game_config['random_reward']
+            except:
+                print(f"{cfg_game} does not have a random reward in the config. Random reward is set to 0.")
+                game_dict['start_reward'] = 0
             game = game_config["game_env"]
             self.task_properties[game] = game_dict
+            if self.cfg.with_wandb and (wandb.run != None):
+                wandb.define_metric(name=f"{game} Reward", step_metric="global_step")
+                wandb.define_metric(name=f"{game} Runs", step_metric="global_step")
+                wandb.define_metric(name=f"{game} Progress", step_metric="global_step")
         N = len(cfg.game_list)
         self.task_probabilities = dict()
         for key in self.task_properties:
@@ -117,7 +133,14 @@ class MultiParallelRunner(ParallelRunner):
         game_dict = runner.task_properties[episode_extra_stats["completed_task"]]
         game_dict["n_episodes"] += 1
         game_dict["total_reward"] += episode_extra_stats["episode_reward"]
-
+        if episode_extra_stats["episode_reward"] > game_dict["record"]:
+            game_dict["record"] = episode_extra_stats["episode_reward"]
+        game_dict["training_progress"] = 0.99 * game_dict["training_progress"] + 0.01 * (episode_extra_stats["episode_reward"]-game_dict["start_reward"])
+        if runner.cfg.with_wandb:
+            try:
+                wandb.log({f"{episode_extra_stats['completed_task'][:-3]} Reward": episode_extra_stats["episode_reward"],f"{episode_extra_stats['completed_task'][:-3]} Runs": game_dict["n_episodes"],f"{episode_extra_stats['completed_task'][:-3]} Progress": game_dict["training_progress"]/(game_dict["record"]-game_dict["start_reward"])})
+            except:
+                pass
         task_probabilities = runner.task_selector(runner.task_properties, 
                                                   runner.cfg.random_task_probability, 
                                                   runner.cfg.episode_weight)
