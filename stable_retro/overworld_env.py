@@ -103,7 +103,7 @@ class OverworldEnv(gym.Env):
         num_agents = 1 # for our purposes, we hard code number of agents
         rnn_states = torch.zeros([num_agents, rnn_size], dtype=torch.float32, device=device)
 
-        with torch.nograd():
+        with torch.no_grad():
             while info['game_ram_num'] != 0:
                 # prepare inputs:
                 ob = prepare_and_normalize_obs(model, torch.from_numpy(ob)) # normalize input
@@ -122,7 +122,7 @@ class OverworldEnv(gym.Env):
                 
                 # take the next actions, get next observation:
                 ob, _, _, _, info = self.retro_env(actions)
-                print("!") # debug
+                red("!") # debug
 
 
     def set_env_to_game(self, retro_env, game_dict):
