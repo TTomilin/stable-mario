@@ -1,10 +1,12 @@
 import warnings
 from sample_factory.model.actor_critic import ActorCriticSharedWeights, ActorCritic
+from sample_factory.algo.utils.tensor_dict import TensorDict
 from sample_factory.algo.utils.context import global_model_factory
 from stable_retro.examples.discretizer import Discretizer
 from gymnasium.wrappers import ResizeObservation, RecordEpisodeStatistics
 from gymnasium.spaces import Dict
 from sample_factory.envs.env_wrappers import NoopResetEnv, MaxAndSkipEnv, PixelFormatChwWrapper
+from sample_factory.algo.utils.rl_utils import prepare_and_normalize_obs
 import torch
 
 import gymnasium as gym
@@ -80,9 +82,14 @@ class OverworldEnv(gym.Env):
 
     def complete_minigame(self, model: ActorCritic, ob, info):
         # have the model play the game until the game is over:
+        in_dim = model.encoders[0].get_out_size()
+        rnn_states = torch.zeros(in_dim)
         while info['game_ram_num'] != 0:
-            result = model.forward(ob) # model processes observation
+            ob = TensorDict({"obs": prepare_and_normalize_obs(model, torch.from_numpy(ob))})
+            result = model.forward(ob, rnn_states) # model processes observation
             action = result['actions'] # determine action from result
+            rnn_states = result['new_rnn_states']
+            print("!!!")
             ob, _, _, _, info = self.retro_env(action) # take action, get next observation
 
 

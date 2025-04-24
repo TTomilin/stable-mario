@@ -561,6 +561,7 @@ class PPOLearner(Configurable):
             valids = mb.valids
 
         # calculate policy head outside of recurrent loop
+        print(mb.normalized_obs.keys())
         with self.timing.add_time("forward_head"):
             head_outputs = self.actor_critic.forward_head(mb.normalized_obs)
             minibatch_size: int = head_outputs.size(0)
