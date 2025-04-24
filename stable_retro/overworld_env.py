@@ -1,13 +1,21 @@
 import warnings
 from sample_factory.model.actor_critic import ActorCriticSharedWeights, ActorCritic
-from sample_factory.algo.utils.tensor_dict import TensorDict
+from sample_factory.utils.attr_dict import AttrDict
 from sample_factory.algo.utils.context import global_model_factory
+from sample_factory.algo.utils.env_info import extract_env_info
+from sample_factory.model.model_utils import get_rnn_size
+from sample_factory.algo.utils.action_distributions import argmax_actions
+from sample_factory.algo.utils.make_env import make_env_func_batched
+from sample_factory.algo.utils.make_env import BatchedVecEnv
+from sample_factory.algo.utils.tensor_utils import unsqueeze_tensor
+from sample_factory.algo.sampling.batched_sampling import preprocess_actions
 from stable_retro.examples.discretizer import Discretizer
 from gymnasium.wrappers import ResizeObservation, RecordEpisodeStatistics
 from gymnasium.spaces import Dict
 from sample_factory.envs.env_wrappers import NoopResetEnv, MaxAndSkipEnv, PixelFormatChwWrapper
 from sample_factory.algo.utils.rl_utils import prepare_and_normalize_obs
 import torch
+from colorist import red
 
 import gymnasium as gym
 import numpy as np
@@ -48,6 +56,7 @@ class OverworldEnv(gym.Env):
         self.observation_space = self.retro_env.observation_space
         self.buttons = self.retro_env.buttons
         self.cfg = cfg
+        self.render_mode = "rgb_array" # TODO: make this adapt based on current cfg, take a look at enjoy.py for inspiration
 
     def step(self, a):
         ob, rew, done, truncated, info = self.retro_env.step(a)
@@ -81,16 +90,39 @@ class OverworldEnv(gym.Env):
         self.retro_env = self.set_env_to_game(self.retro_env, CONFIG['overworld'])
 
     def complete_minigame(self, model: ActorCritic, ob, info):
+        red("!!!!!!!!!!!!!!!!!!!!")
         # have the model play the game until the game is over:
-        in_dim = model.encoders[0].get_out_size()
-        rnn_states = torch.zeros(in_dim)
-        while info['game_ram_num'] != 0:
-            ob = TensorDict({"obs": prepare_and_normalize_obs(model, torch.from_numpy(ob))})
-            result = model.forward(ob, rnn_states) # model processes observation
-            action = result['actions'] # determine action from result
-            rnn_states = result['new_rnn_states']
-            print("!!!")
-            ob, _, _, _, info = self.retro_env(action) # take action, get next observation
+        
+        # get environment info:
+        env = BatchedVecEnv(self.retro_env)
+        env_info = extract_env_info(env, self.cfg) # TODO: use cfg employed when TRAINING model instead of current cfg
+        
+        # prepare first rnn_states:
+        rnn_size = get_rnn_size(self.cfg) # TODO: use cfg employed when TRAINING model instead of current cfg
+        device = torch.device("cpu" if self.cfg.device == "cpu" else "cuda") # TODO: use cfg employed when TRAINING model instead of current cfg
+        num_agents = 1 # for our purposes, we hard code number of agents
+        rnn_states = torch.zeros([num_agents, rnn_size], dtype=torch.float32, device=device)
+
+        with torch.nograd():
+            while info['game_ram_num'] != 0:
+                # prepare inputs:
+                ob = prepare_and_normalize_obs(model, torch.from_numpy(ob)) # normalize input
+                
+                # Determine next action:
+                policy_outputs = model(ob, rnn_states) # have model process observations
+                actions = policy_outputs['actions'] # get actions from model output
+                if True: # TODO: check if the user wants to use deterministic actions or not. If so, execute this if-clause.
+                    action_distribution = model.action_distribution()
+                    actions = argmax_actions(action_distribution)
+                if actions.ndim == 1:
+                    actions = unsqueeze_tensor(actions, dim=-1)
+                actions = preprocess_actions(env_info, actions) 
+
+                rnn_states = policy_outputs["new_rnn_states"]
+                
+                # take the next actions, get next observation:
+                ob, _, _, _, info = self.retro_env(actions)
+                print("!") # debug
 
 
     def set_env_to_game(self, retro_env, game_dict):
@@ -117,6 +149,7 @@ class OverworldEnv(gym.Env):
             model_factory = global_model_factory()
             model = ActorCriticSharedWeights(model_factory=model_factory, obs_space=model_obs_space, 
                                             action_space=model_act_space, cfg=self.cfg)
+            model.eval() # set to inference mode
             # load weights into this AC:
             checkpoint = torch.load(path)
             model.load_state_dict(checkpoint['model'])
