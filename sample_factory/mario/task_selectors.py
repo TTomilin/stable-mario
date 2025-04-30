@@ -4,7 +4,7 @@ import numpy as np
 def default_task_selector(task_properties: dict, epsilon: float, alpha: float):
     preferred_task = random.choice(list(task_properties.keys())) # pick preferred task at random
     worst_criterion = np.inf # minimal criterion -> highest selection probability
-    #print(task_properties) # uncomment to see probabilities computed for each task
+    # print(task_properties) # uncomment to see probabilities computed for each task
     for key in task_properties:
         game_dict = task_properties[key]
         
@@ -32,4 +32,32 @@ def default_task_selector(task_properties: dict, epsilon: float, alpha: float):
             task_probabilities[key] = epsilon / N + (1 - epsilon)
         else:
             task_probabilities[key] = epsilon / N
+    return task_probabilities
+
+def enhanced_task_selector(task_properties: dict, epsilon: float, alpha: float):
+    totalprogress = 0
+    totalnotargetprogress = None
+    task_probabilities = dict()
+    Nnontarget = 0
+    for key in task_properties:
+        if task_properties[key]['training_progress'] > 0:
+            progress = task_properties[key]['training_progress']
+        else:
+            progress = 0
+        totalprogress += 1 - progress/task_properties[key]['record']
+        if progress<task_properties[key]['target_reward']:
+            Nnontarget += 1
+            if not totalnotargetprogress:
+                totalnotargetprogress = 1-progress/task_properties[key]['target_reward']
+            else:
+                totalnotargetprogress += 1-progress/task_properties[key]['target_reward']
+    if Nnontarget == 0:
+        epsilon = 1
+    for key in task_properties:
+        if task_properties[key]['training_progress'] > 0:
+            progress = task_properties[key]['training_progress']
+        else:
+            progress = 0
+        task_probabilities[key] = epsilon*(1-progress/task_properties[key]['record'])/totalprogress
+        if task_properties[key]['training_progress']<task_properties[key]['target_reward']: task_probabilities[key] += (1-epsilon)*(1-task_properties[key]['training_progress']/task_properties[key]['target_reward'])/totalnotargetprogress
     return task_probabilities

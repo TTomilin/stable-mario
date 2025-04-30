@@ -7,7 +7,8 @@ CONFIG = {
         'resize': (40, 36),
         'timesteps': 100000000000,
         'game_ram_num': 31,
-        'model_path': "/home/ctrl/AP_self/repo/stable-mario/stable_retro/data/stable/broom_zoom-MP/broom_zoom_model.pth"
+        'model_path': "/home/ctrl/AP_self/repo/stable-mario/stable_retro/data/stable/broom_zoom-MP/broom_zoom_model.pth",
+        'random_reward': 0.6
     },
     'spook_spike': {
         'actions': [['UP'], ['DOWN'], ['LEFT'], ['RIGHT'], []],
@@ -296,7 +297,8 @@ CONFIG = {
             'state': 'Level1',
             'clip_reward': False,
             'resize': (160, 160),
-            'timesteps': 129740258283
+            'timesteps': 129740258283,
+            'random_reward': 0.55
         },
 	    'switch_way':{
             'actions': [[], ['A'],['LEFT'],['RIGHT'],['A','LEFT'],['A','RIGHT']],
