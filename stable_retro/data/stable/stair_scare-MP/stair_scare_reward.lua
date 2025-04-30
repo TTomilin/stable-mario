@@ -17,5 +17,5 @@ function reward()
             current_location = 1000
         end
     end
-    return reward
+    return reward / 45
 end

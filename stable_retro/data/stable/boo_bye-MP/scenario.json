@@ -16,7 +16,7 @@
   "reward": {
     "variables": {
       "boo_bye_score": {
-        "reward": 1.0
+        "reward": 0.001
       }
     }
   }

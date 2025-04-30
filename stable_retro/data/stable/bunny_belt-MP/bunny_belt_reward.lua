@@ -32,5 +32,5 @@ function reward()
     prev_action = data.action
     prev_score = data.score
 
-    return reward
+    return reward / 1050
 end

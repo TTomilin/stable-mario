@@ -9,5 +9,5 @@ function reward()
     local score_incr = data.score - previous_score
     previous_score = data.score -- update previous score
 
-    return score_incr;
+    return score_incr / 99;
 end

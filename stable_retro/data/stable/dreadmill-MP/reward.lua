@@ -21,5 +21,5 @@ function reward()
     else 
         reward = -0.001
     end
-    return reward
+    return reward / 3.4
 end

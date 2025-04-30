@@ -9,5 +9,5 @@ function reward ()
         prev_best_score = current_score
     end
 
-    return reward
+    return reward / 86
 end

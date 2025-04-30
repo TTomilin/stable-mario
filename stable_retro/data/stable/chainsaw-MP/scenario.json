@@ -15,10 +15,10 @@
   "reward": {
     "variables": {
       "hits": {
-        "reward": 1.0
+        "reward": 1
       },
       "yoshi": {
-        "reward": -1.0
+        "reward": -1
       }
     }
   }

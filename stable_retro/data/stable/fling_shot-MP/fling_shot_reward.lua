@@ -21,5 +21,5 @@ function reward()
     prev_x_coord = x_coord
     prev_score = score
 
-    return reward
+    return reward / 5000
 end

@@ -18,5 +18,5 @@ function reward()
         closest_distance = current_distance -- update closest_distance
     end
     
-    return score;
+    return score / 7
 end

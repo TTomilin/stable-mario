@@ -25,6 +25,6 @@ function reward()
         previous_turn_mario = data.shell1 + data.shell3 + data.shell5
         previous_turn_peach = data.shell2 + data.shell4 + data.shell6
     end
-    return reward
+    return reward * 2
 end
 

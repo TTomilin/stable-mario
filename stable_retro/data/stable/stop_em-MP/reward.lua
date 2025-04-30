@@ -13,6 +13,6 @@ function reward()
         score = data.score
         hold = false
     end
-    return reward
+    return reward / 29
 end
 

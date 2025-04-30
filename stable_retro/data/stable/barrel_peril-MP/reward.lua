@@ -13,7 +13,7 @@ function reward()
             bestdistance = distance
         end
         if data.y < -1150 then
-            reward = reward + 1
+            reward = (reward + 1)
             nothadreward = false
         end
         reward = reward + 0.0002*(lastdistance - distance) + 0.01*(data.time-time)
@@ -22,5 +22,5 @@ function reward()
     else 
         reward = -0.001
     end
-    return reward
+    return reward / 1.76
 end

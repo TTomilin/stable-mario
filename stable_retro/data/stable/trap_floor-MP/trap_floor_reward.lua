@@ -6,5 +6,5 @@ function reward()
         current_score = current_score - 1
         reward = reward + 1
     end
-    return reward
+    return reward / 42
 end

@@ -17,5 +17,5 @@ function reward()
     elseif data.xpeach > 169 then
             peachfin = true
     end
-    return reward
+    return reward / 1.8
 end

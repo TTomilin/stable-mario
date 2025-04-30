@@ -29,5 +29,5 @@ function reward()
         red = true
         reward = reward - 1.1
     end
-    return reward
+    return  * 10
 end
