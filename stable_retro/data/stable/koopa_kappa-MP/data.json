@@ -1,0 +1,12 @@
+{
+  "info": {
+    "life": {
+      "address": 50358216,
+      "type": "|u1"
+    },
+    "num_bowser": {
+      "address": 50358225,
+      "type": ">u4"
+    }
+  }
+}
