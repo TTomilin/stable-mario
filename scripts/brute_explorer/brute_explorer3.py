@@ -7,7 +7,7 @@ import numpy as np
 import stable_retro
 
 GAME_ENV = 'melon_folly-MP'
-LOAD_STATE = 'level1.state'
+LOAD_STATE = 'before0.state'
 PLAYTIME = 0
 
 
