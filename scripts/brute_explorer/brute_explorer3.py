@@ -6,8 +6,8 @@ import numpy as np
 
 import stable_retro
 
-GAME_ENV = 'MarioParty-GbAdvance'
-LOAD_STATE = 'Level1'
+GAME_ENV = 'melon_folly-MP'
+LOAD_STATE = 'level1.state'
 PLAYTIME = 0
 
 
@@ -88,7 +88,9 @@ def filter_actions(a):
 
 
 if __name__ == '__main__':
-    LOAD_STATE = str(sys.argv[1])[:-6]
-    SAVE_STATE = str(sys.argv[2])
-    RENDER_MODE = str(sys.argv[3])
+    # LOAD_STATE = str(sys.argv[1])[:-6]
+    # SAVE_STATE = str(sys.argv[2])
+    # RENDER_MODE = str(sys.argv[3])
+    SAVE_STATE = 'savemeehere'
+    RENDER_MODE = 'human'
     main()
