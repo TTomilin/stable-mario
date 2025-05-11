@@ -72,7 +72,10 @@ MARIO_ENVS = [
     MarioSpec("slammer", "Slammer-v0"),
     MarioSpec("much_rush","MuchRush-v0"),
     MarioSpec("peek_n_sneak","PeakNSneak-v0"),
-    MarioSpec("overworld", "Overworld-v0")
+    MarioSpec("overworld", "Overworld-v0"),
+    MarioSpec("melon_folly0", "MelonFolly0-v0"),
+    MarioSpec("melon_folly1", "MelonFolly1-v0"),
+    MarioSpec("melon_folly2", "MelonFolly2-v0"),
 ]
 
 

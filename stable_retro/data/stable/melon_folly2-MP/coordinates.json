@@ -1,0 +1,24 @@
+{
+  "info": {
+    "xend": {
+      "address": 33607759,
+      "type": "=u2"
+    },
+    "xvallaststood": {
+      "address": 33651921,
+      "type": "=u2"
+    },
+    "xvalplayer": {
+      "address": 33649897,
+      "type": "=u2"
+    },
+    "yvallaststood": {
+      "address": 33651969,
+      "type": "=u2"
+    },
+    "yvalplayer": {
+      "address": 33649901,
+      "type": "=u2"
+    }
+  }
+}

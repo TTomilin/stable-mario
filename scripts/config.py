@@ -395,5 +395,28 @@ CONFIG = {
             'clip_reward': False,
             'resize': (240,160),
             'timesteps': 129740258283
-        }
+        },
+        'melon_folly0': {
+        'actions': [['B', 'LEFT'], ['UP', 'B'], ['RIGHT', 'B'], ['DOWN', 'B']],
+        'game_env': 'melon_folly-MP',
+        'state': 'Mario0',
+        'clip_reward': False,
+        'resize': (240,160),
+        'timesteps': 10000000000
+    },
+        'melon_folly1': {
+        'actions': [['B', 'LEFT'], ['UP', 'B'], ['RIGHT', 'B'], ['DOWN', 'B']],
+        'game_env': 'melon_folly1-MP',
+        'state': 'Mario1',
+        'clip_reward': False,
+        'resize': (240,160),
+        'timesteps': 10000000000
+    },'melon_folly2': {
+        'actions': [['B', 'LEFT'], ['UP', 'B'], ['RIGHT', 'B'], ['DOWN', 'B']],
+        'game_env': 'melon_folly2-MP',
+        'state': 'Mario2',
+        'clip_reward': False,
+        'resize': (240,160),
+        'timesteps': 10000000000
+    },
 }

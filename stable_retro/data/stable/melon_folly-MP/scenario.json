@@ -1,0 +1,25 @@
+{
+  "crop": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "done": {
+    "variables": {
+      "ingame1": {
+        "op": "equal"
+      },
+      "level": {
+        "measurement": "delta",
+        "op": "nonzero"
+      }
+    }
+  },
+  "reward": {
+    "script": "lua:reward"
+  },
+  "scripts":[
+    "reward.lua"
+  ]
+}

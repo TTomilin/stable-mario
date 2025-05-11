@@ -1,0 +1,24 @@
+{
+  "info": {
+    "Inlevel": {
+      "address": 33744573,
+      "type": ">u4"
+    },
+    "ingame1": {
+      "address": 50353945,
+      "type": "|u1"
+    },
+    "level": {
+      "address": 33607506,
+      "type": ">u4"
+    },
+    "score": {
+      "address": 33607450,
+      "type": "><u4"
+    },
+    "time": {
+      "address": 33607476,
+      "type": "|u1"
+    }
+  }
+}
