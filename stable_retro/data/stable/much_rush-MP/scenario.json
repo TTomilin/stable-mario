@@ -5,6 +5,7 @@
     0,
     0
   ],
+
   "reward": {
     "script": "lua:reward"
   },

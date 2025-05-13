@@ -1,18 +1,14 @@
 current_score = 31
-frame_penalty = -0.00005  -- Negative reward per frame
-
+num_lives = 3
 function reward()
-    -- Initialize local reward
-    local local_reward = 0
-
-    -- Reward for score decrease
+    local_reward = 0
     if data.score < current_score then
         current_score = data.score
         local_reward = local_reward + 0.032
     end
-
-    -- Add frame penalty
-    local_reward = local_reward + frame_penalty
-
+    if data.lives < num_lives then
+        num_lives = data.lives
+        local_reward = local_reward - 0.33
+    end
     return local_reward
 end
