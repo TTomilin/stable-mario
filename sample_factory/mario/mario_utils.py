@@ -76,7 +76,7 @@ MARIO_ENVS = [
     MarioSpec("melon_folly0", "MelonFolly0-v0"),
     MarioSpec("melon_folly1", "MelonFolly1-v0"),
     MarioSpec("melon_folly2", "MelonFolly2-v0"),
-    MarioSpec("volleybomb", "VolleyBomb-v0"),
+    MarioSpec("volley_bomb", "VolleyBomb-v0"),
     MarioSpec("koopa_kappa", "KoopaKappa-v0"),
 ]
 
